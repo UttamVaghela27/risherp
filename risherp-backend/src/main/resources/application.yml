@@ -1,0 +1,76 @@
+# ============================================
+# RISHERP - Application Configuration
+# ============================================
+# Environment variables are used for sensitive values.
+# Default values after the colon (:) are for local development only.
+
+server:
+  port: ${SERVER_PORT:8080}
+  servlet:
+    context-path: /
+
+spring:
+  application:
+    name: risherp-backend
+
+  # ---- Database Configuration ----
+  datasource:
+    url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_NAME:risherp_db}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Kolkata&createDatabaseIfNotExist=true
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:root}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+    # Connection pool settings (HikariCP is the default)
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 5
+      idle-timeout: 300000
+      connection-timeout: 20000
+
+  # ---- JPA / Hibernate Configuration ----
+  jpa:
+    hibernate:
+      ddl-auto: update # Auto-creates/updates tables from entities
+    show-sql: true # Show SQL queries in console (useful for learning)
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+        format_sql: true # Pretty-print SQL queries
+        use_sql_comments: true # Add comments showing which method generated the query
+
+  # ---- Jackson (JSON) Configuration ----
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false # ISO 8601 date format instead of timestamps
+    default-property-inclusion: non_null # Don't include null fields in JSON
+
+# ---- Logging Configuration ----
+logging:
+  level:
+    root: INFO
+    com.risherp: DEBUG # Our application logs at DEBUG level
+    org.springframework.web: INFO
+    org.hibernate.SQL: DEBUG # Show SQL queries
+    org.hibernate.type.descriptor.sql: TRACE # Show SQL parameter values
+
+# ---- Custom Application Properties ----
+app:
+  version: 1.0.0
+  name: RISHERP
+  cors:
+    allowed-origins: ${CORS_ORIGINS:http://localhost:5173}
+  jwt:
+    # 256-bit secret key for HMAC-SHA256
+    secret: ${JWT_SECRET:404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970}
+    # 24 hours in milliseconds: 86400000
+    expiration-ms: ${JWT_EXPIRATION_MS:86400000}
+
+# ---- Actuator Configuration ----
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: when_authorized
