@@ -182,7 +182,7 @@ const StockLedger = ({ prefilterItemId = null }) => {
         }}
       >
         <Grid container spacing={2} alignItems="center">
-          <Grid item xs={12} sm={6} md={3}>
+          <Grid item xs={12} sm={6} md={4} lg={3}>
             <TextField
               size="small"
               fullWidth
@@ -198,7 +198,7 @@ const StockLedger = ({ prefilterItemId = null }) => {
               }}
             />
           </Grid>
-          <Grid item xs={12} sm={6} md={2.5}>
+          <Grid item xs={12} sm={6} md={4} lg={2.5}>
             <TextField
               size="small"
               fullWidth
@@ -209,7 +209,7 @@ const StockLedger = ({ prefilterItemId = null }) => {
               slotProps={{ inputLabel: { shrink: true } }}
             />
           </Grid>
-          <Grid item xs={12} sm={6} md={2.5}>
+          <Grid item xs={12} sm={6} md={4} lg={2.5}>
             <TextField
               size="small"
               fullWidth
@@ -220,7 +220,7 @@ const StockLedger = ({ prefilterItemId = null }) => {
               slotProps={{ inputLabel: { shrink: true } }}
             />
           </Grid>
-          <Grid item xs={12} sm={6} md={2}>
+          <Grid item xs={12} sm={6} md={4} lg={2}>
             <TextField
               select
               size="small"
@@ -234,7 +234,7 @@ const StockLedger = ({ prefilterItemId = null }) => {
               ))}
             </TextField>
           </Grid>
-          <Grid item xs={12} sm={6} md={2}>
+          <Grid item xs={12} sm={6} md={4} lg={2}>
             <Stack direction="row" spacing={1}>
               <Tooltip title="Reset filters">
                 <Button

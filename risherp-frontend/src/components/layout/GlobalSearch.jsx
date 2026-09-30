@@ -4,7 +4,6 @@ import {
   InputBase,
   IconButton,
   Tooltip,
-  Typography,
   useTheme
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
@@ -46,25 +45,26 @@ const GlobalSearch = () => {
         border: '1px solid',
         borderColor: isFocused ? theme.palette.info.main : theme.palette.divider,
         borderRadius: '9999px',
-        px: 1.75,
+        px: { xs: 1, sm: 1.75 },
         py: 0.5,
-        width: { xs: 170, sm: 260, md: isFocused ? 380 : 300 },
+        width: { xs: 130, sm: 220, md: isFocused ? 360 : 280 },
+        maxWidth: '100%',
         transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
         boxShadow: isFocused ? '0 0 0 3px rgba(37, 99, 235, 0.12), 0 2px 4px rgba(0, 0, 0, 0.04)' : 'none',
       }}
     >
-      <SearchIcon sx={{ color: isFocused ? 'primary.main' : theme.palette.text.secondary, fontSize: 19, mr: 1 }} />
+      <SearchIcon sx={{ color: isFocused ? 'primary.main' : theme.palette.text.secondary, fontSize: 18, mr: { xs: 0.5, sm: 1 } }} />
       <InputBase
         inputRef={inputRef}
         value={query}
         onChange={(e) => setQuery(e.target.value)}
         onFocus={() => setIsFocused(true)}
         onBlur={() => setIsFocused(false)}
-        placeholder="Search... (Ctrl+K)"
+        placeholder="Search..."
         inputProps={{ 'aria-label': 'global search' }}
         sx={{
           flex: 1,
-          fontSize: '0.8125rem',
+          fontSize: { xs: '0.75rem', sm: '0.8125rem' },
           fontWeight: 500,
           '& input': {
             p: 0,

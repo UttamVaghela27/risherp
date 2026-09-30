@@ -175,33 +175,39 @@ const Customers = () => {
       />
 
       {/* Metric Cards Row */}
-      <Grid container spacing={2.5} sx={{ mb: 3 }}>
-        <Grid item xs={12} sm={4}>
-          <StatCard
-            title="Total Customers"
-            value={summary?.totalCustomers ?? 0}
-            icon={<PersonOutlinedIcon fontSize="small" />}
-            color="primary"
-          />
-        </Grid>
-        <Grid item xs={12} sm={4}>
-          <StatCard
-            title="Active Customers"
-            value={summary ? summary.totalCustomers - summary.inactiveParties : 0}
-            icon={<CheckCircleOutlineOutlinedIcon fontSize="small" />}
-            color="success"
-          />
-        </Grid>
-        <Grid item xs={12} sm={4}>
-          <StatCard
-            title="Customer Receivables"
-            value={summary?.totalReceivables ?? 0}
-            icon={<TrendingUpOutlinedIcon fontSize="small" />}
-            color="success"
-            isCurrency
-          />
-        </Grid>
-      </Grid>
+      <Box
+        sx={{
+          display: 'grid',
+          gridTemplateColumns: {
+            xs: '1fr',
+            sm: 'repeat(2, 1fr)',
+            md: 'repeat(3, 1fr)',
+            lg: 'repeat(3, 1fr)',
+          },
+          gap: 2.5,
+          mb: 3,
+        }}
+      >
+        <StatCard
+          title="Total Customers"
+          value={summary?.totalCustomers ?? 0}
+          icon={<PersonOutlinedIcon />}
+          color="primary"
+        />
+        <StatCard
+          title="Active Customers"
+          value={summary ? summary.totalCustomers - summary.inactiveParties : 0}
+          icon={<CheckCircleOutlineOutlinedIcon />}
+          color="success"
+        />
+        <StatCard
+          title="Customer Receivables"
+          value={summary?.totalReceivables ?? 0}
+          icon={<TrendingUpOutlinedIcon />}
+          color="info"
+          isCurrency
+        />
+      </Box>
 
       {/* Filter Toolbar (Type filter hidden because locked to Customer) */}
       <PartyFilters

@@ -1,10 +1,9 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Box, Card, Grid, Typography, TextField, MenuItem, Button, Stack,
-  CircularProgress, Divider, Alert, alpha,
+  CircularProgress, Divider, Alert,
 } from '@mui/material';
-import AssignmentReturnOutlinedIcon from '@mui/icons-material/AssignmentReturnOutlined';
 import SaveOutlinedIcon from '@mui/icons-material/SaveOutlined';
 import toast from 'react-hot-toast';
 
@@ -96,7 +95,7 @@ const SalesReturnCreate = ({ isModal = false, onClose, onSuccess } = {}) => {
     }));
   };
 
-  // Preview return amount calculation (informational only — backend recalculates)
+  // Preview return amount calculation
   const previewReturnAmount = returnableItems.reduce((sum, item) => {
     const sel = selectedItems[item.saleItemId];
     if (!sel?.selected || !sel.returnQty || isNaN(Number(sel.returnQty))) return sum;
@@ -166,11 +165,11 @@ const SalesReturnCreate = ({ isModal = false, onClose, onSuccess } = {}) => {
         <PageHeader
           title="Create Sales Return"
           description="Process a return against an existing sale invoice."
-          breadcrumbs={[
-            { label: 'Sales', href: '/sales' },
-            { label: 'Sales Returns', href: '/sales/returns' },
-            { label: 'New Return', active: true },
-          ]}
+          secondaryAction={{
+            label: 'Back to Returns',
+            onClick: () => navigate('/sales/returns'),
+            variant: 'outlined',
+          }}
         />
       )}
 
@@ -203,12 +202,12 @@ const SalesReturnCreate = ({ isModal = false, onClose, onSuccess } = {}) => {
 
           {/* Step 4: Return Details */}
           {!loadingItems && returnableItems.length > 0 && (
-            <Card sx={{ p: 3, border: 1, borderColor: 'divider', borderRadius: 2, mb: 2.5 }}>
+            <Card sx={{ p: { xs: 2, sm: 3 }, border: 1, borderColor: 'divider', borderRadius: 2, mb: 2.5 }}>
               <Typography variant="subtitle1" fontWeight={700} sx={{ mb: 2 }}>
                 Step 4 — Return Details
               </Typography>
               <Grid container spacing={2.5}>
-                <Grid item xs={12} sm={6} md={3}>
+                <Grid xs={12} sm={6} md={6} lg={3}>
                   <TextField
                     size="small"
                     fullWidth
@@ -217,11 +216,10 @@ const SalesReturnCreate = ({ isModal = false, onClose, onSuccess } = {}) => {
                     value={returnDate}
                     onChange={(e) => setReturnDate(e.target.value)}
                     slotProps={{ inputLabel: { shrink: true } }}
-                    InputLabelProps={{ shrink: true }}
                     required
                   />
                 </Grid>
-                <Grid item xs={12} sm={6} md={3}>
+                <Grid xs={12} sm={6} md={6} lg={3}>
                   <TextField
                     select
                     size="small"
@@ -235,7 +233,7 @@ const SalesReturnCreate = ({ isModal = false, onClose, onSuccess } = {}) => {
                     ))}
                   </TextField>
                 </Grid>
-                <Grid item xs={12} sm={6} md={3}>
+                <Grid xs={12} sm={6} md={6} lg={3}>
                   <TextField
                     size="small"
                     fullWidth
@@ -245,7 +243,7 @@ const SalesReturnCreate = ({ isModal = false, onClose, onSuccess } = {}) => {
                     inputProps={{ maxLength: 500 }}
                   />
                 </Grid>
-                <Grid item xs={12} sm={6} md={3}>
+                <Grid xs={12} sm={6} md={6} lg={3}>
                   <TextField
                     size="small"
                     fullWidth
@@ -261,7 +259,7 @@ const SalesReturnCreate = ({ isModal = false, onClose, onSuccess } = {}) => {
 
               {/* Return Amount Preview */}
               <Stack direction={{ xs: 'column', sm: 'row' }} justifyContent="space-between" alignItems="center" spacing={2}>
-                <Box>
+                <Box sx={{ width: { xs: '100%', sm: 'auto' }, textAlign: { xs: 'left', sm: 'left' } }}>
                   <Typography variant="caption" color="text.secondary">ESTIMATED RETURN AMOUNT</Typography>
                   <Typography variant="h5" fontWeight={800} color="warning.dark">
                     ₹ {previewReturnAmount.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
@@ -270,7 +268,7 @@ const SalesReturnCreate = ({ isModal = false, onClose, onSuccess } = {}) => {
                     * Final amount calculated by server
                   </Typography>
                 </Box>
-                <Stack direction="row" spacing={1.5}>
+                <Stack direction={{ xs: 'column-reverse', sm: 'row' }} spacing={1.5} sx={{ width: { xs: '100%', sm: 'auto' }, '& > button': { width: { xs: '100%', sm: 'auto' } } }}>
                   <Button
                     variant="outlined"
                     onClick={isModal ? onClose : () => navigate('/sales/returns')}

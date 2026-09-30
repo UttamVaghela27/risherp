@@ -176,7 +176,8 @@ const Sales = () => {
         gridTemplateColumns: {
           xs: '1fr',
           sm: 'repeat(2, 1fr)',
-          md: 'repeat(4, 1fr)',
+          md: 'repeat(2, 1fr)',
+          lg: 'repeat(4, 1fr)',
         },
         gap: 2.5,
         mb: 3,
@@ -184,26 +185,30 @@ const Sales = () => {
         <StatCard
           title="Total Invoices"
           value={summary?.totalInvoices != null ? summary.totalInvoices : '—'}
-          icon={<ReceiptLongOutlinedIcon sx={{ color: 'primary.main', fontSize: 28 }} />}
+          icon={<ReceiptLongOutlinedIcon />}
           subtitle={`${summary?.paidCount || 0} Paid · ${summary?.partialCount || 0} Partial`}
+          color="primary"
         />
         <StatCard
           title="Total Sales"
           value={summary?.totalRevenue != null ? formatCurrency(summary.totalRevenue) : '—'}
-          icon={<CurrencyRupeeIcon sx={{ color: 'info.main', fontSize: 28 }} />}
+          icon={<CurrencyRupeeIcon />}
           subtitle={`Filtered across ${summary?.totalInvoices || 0} bills`}
+          color="info"
         />
         <StatCard
           title="Total Paid"
           value={summary?.totalCollected != null ? formatCurrency(summary.totalCollected) : '—'}
-          icon={<CheckCircleOutlinedIcon sx={{ color: 'success.main', fontSize: 28 }} />}
+          icon={<CheckCircleOutlinedIcon />}
           subtitle="Collections received"
+          color="success"
         />
         <StatCard
           title="Total Outstanding"
           value={summary?.totalOutstanding != null ? formatCurrency(summary.totalOutstanding) : '—'}
-          icon={<HourglassEmptyOutlinedIcon sx={{ color: 'warning.main', fontSize: 28 }} />}
+          icon={<HourglassEmptyOutlinedIcon />}
           subtitle={`${(summary?.partialCount || 0) + (summary?.pendingCount || 0)} invoices pending`}
+          color="warning"
         />
       </Box>
 

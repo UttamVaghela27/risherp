@@ -105,7 +105,7 @@ const CategoryForm = ({
             justifyContent: 'space-between',
             pb: 1,
             pt: 2.5,
-            px: 3,
+            px: { xs: 2, sm: 3 },
           }}
         >
           <Stack direction="row" spacing={1.5} alignItems="center">
@@ -119,7 +119,7 @@ const CategoryForm = ({
           </IconButton>
         </DialogTitle>
 
-        <DialogContent sx={{ px: 3, pt: 2, pb: 1 }}>
+        <DialogContent sx={{ px: { xs: 2, sm: 3 }, pt: 2, pb: 1 }}>
           <Stack spacing={2.5} sx={{ mt: 1 }}>
             <TextField
               label="Category Name *"
@@ -164,7 +164,7 @@ const CategoryForm = ({
           </Stack>
         </DialogContent>
 
-        <DialogActions sx={{ px: 3, py: 2.5, borderTop: 1, borderColor: 'divider', gap: 1 }}>
+        <DialogActions sx={{ px: { xs: 2, sm: 3 }, py: 2.5, borderTop: 1, borderColor: 'divider', gap: 1, flexDirection: { xs: 'column-reverse', sm: 'row' }, '& > button': { width: { xs: '100%', sm: 'auto' } } }}>
           <Button onClick={onClose} disabled={loading} variant="outlined" color="inherit">
             Cancel
           </Button>

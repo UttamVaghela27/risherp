@@ -81,7 +81,7 @@ const PartyForm = ({
     setFormData((prev) => {
       const updated = { ...prev, [field]: value };
 
-      // Automatic balance type default according to party type (only if user hasn't explicitly set to NONE or non-zero)
+      // Automatic balance type default according to party type
       if (field === 'partyType') {
         if (value === 'CUSTOMER' && updated.openingBalanceType === 'PAYABLE') {
           updated.openingBalanceType = 'RECEIVABLE';
@@ -223,7 +223,7 @@ const PartyForm = ({
             </Stack>
 
             <Grid container spacing={2.5}>
-              <Grid item xs={12} sm={8}>
+              <Grid xs={12} sm={8}>
                 <TextField
                   fullWidth
                   required
@@ -238,7 +238,7 @@ const PartyForm = ({
                 />
               </Grid>
 
-              <Grid item xs={12} sm={4}>
+              <Grid xs={12} sm={4}>
                 <TextField
                   select
                   fullWidth
@@ -268,7 +268,7 @@ const PartyForm = ({
             </Stack>
 
             <Grid container spacing={2.5}>
-              <Grid item xs={12} sm={6}>
+              <Grid xs={12} sm={6}>
                 <TextField
                   fullWidth
                   id="contactPerson"
@@ -282,7 +282,7 @@ const PartyForm = ({
                 />
               </Grid>
 
-              <Grid item xs={12} sm={6}>
+              <Grid xs={12} sm={6}>
                 <TextField
                   fullWidth
                   required
@@ -297,7 +297,7 @@ const PartyForm = ({
                 />
               </Grid>
 
-              <Grid item xs={12} sm={6}>
+              <Grid xs={12} sm={6}>
                 <TextField
                   fullWidth
                   id="alternateMobile"
@@ -311,7 +311,7 @@ const PartyForm = ({
                 />
               </Grid>
 
-              <Grid item xs={12} sm={6}>
+              <Grid xs={12} sm={6}>
                 <TextField
                   fullWidth
                   id="email"
@@ -340,7 +340,7 @@ const PartyForm = ({
             </Stack>
 
             <Grid container spacing={2.5}>
-              <Grid item xs={12}>
+              <Grid xs={12}>
                 <TextField
                   fullWidth
                   id="address"
@@ -354,7 +354,7 @@ const PartyForm = ({
                 />
               </Grid>
 
-              <Grid item xs={12} sm={4}>
+              <Grid xs={12} sm={4}>
                 <TextField
                   fullWidth
                   id="city"
@@ -368,7 +368,7 @@ const PartyForm = ({
                 />
               </Grid>
 
-              <Grid item xs={12} sm={4}>
+              <Grid xs={12} sm={4}>
                 <TextField
                   fullWidth
                   id="state"
@@ -382,7 +382,7 @@ const PartyForm = ({
                 />
               </Grid>
 
-              <Grid item xs={12} sm={4}>
+              <Grid xs={12} sm={4}>
                 <TextField
                   fullWidth
                   id="pincode"
@@ -410,7 +410,7 @@ const PartyForm = ({
             </Stack>
 
             <Grid container spacing={2.5}>
-              <Grid item xs={12} sm={4}>
+              <Grid xs={12} sm={4}>
                 <TextField
                   fullWidth
                   required
@@ -426,7 +426,7 @@ const PartyForm = ({
                 />
               </Grid>
 
-              <Grid item xs={12} sm={4}>
+              <Grid xs={12} sm={4}>
                 <TextField
                   select
                   fullWidth
@@ -451,7 +451,7 @@ const PartyForm = ({
                 )}
               </Grid>
 
-              <Grid item xs={12} sm={4}>
+              <Grid xs={12} sm={4}>
                 <TextField
                   fullWidth
                   required
@@ -468,7 +468,7 @@ const PartyForm = ({
               </Grid>
 
               {/* Financial guidance alert */}
-              <Grid item xs={12}>
+              <Grid xs={12}>
                 <Alert severity="info" sx={{ fontSize: '0.8125rem', py: 0.5, borderRadius: 1.5 }}>
                   <strong>Receivable:</strong> Customer owes money to your business. &nbsp;|&nbsp;{' '}
                   <strong>Payable:</strong> Your business owes money to this vendor/party.
@@ -489,7 +489,7 @@ const PartyForm = ({
             </Stack>
 
             <Grid container spacing={2.5}>
-              <Grid item xs={12} sm={8}>
+              <Grid xs={12} sm={8}>
                 <TextField
                   fullWidth
                   multiline
@@ -502,7 +502,7 @@ const PartyForm = ({
                 />
               </Grid>
 
-              <Grid item xs={12} sm={4}>
+              <Grid xs={12} sm={4}>
                 <TextField
                   select
                   fullWidth
@@ -521,7 +521,7 @@ const PartyForm = ({
         </Card>
 
         {/* Form Action Buttons */}
-        <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, pt: 1, pb: 4 }}>
+        <Box sx={{ display: 'flex', flexDirection: { xs: 'column-reverse', sm: 'row' }, justifyContent: 'flex-end', gap: 2, pt: 1, pb: 4, '& > button': { width: { xs: '100%', sm: 'auto' } } }}>
           <Button
             variant="outlined"
             color="inherit"

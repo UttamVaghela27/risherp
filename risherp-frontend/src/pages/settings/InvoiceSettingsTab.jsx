@@ -355,6 +355,7 @@ const InvoiceSettingsTab = () => {
                     borderRadius: 2,
                     fontWeight: 700,
                     boxShadow: '0 4px 14px rgba(37, 99, 235, 0.25)',
+                    width: { xs: '100%', sm: 'auto' },
                   }}
                 >
                   {saving ? 'Saving...' : 'Save Invoice Settings'}

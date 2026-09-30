@@ -187,7 +187,8 @@ const BusinessSettingsTab = () => {
         <Box
           sx={{
             display: 'flex',
-            alignItems: 'center',
+            alignItems: { xs: 'flex-start', sm: 'center' },
+            flexDirection: { xs: 'column', sm: 'row' },
             gap: 3,
             p: 2.5,
             mb: 4,
@@ -343,7 +344,7 @@ const BusinessSettingsTab = () => {
               />
             </Grid>
 
-            <Grid item xs={12} sm={6} md={3}>
+            <Grid item xs={12} sm={6} md={6} lg={3}>
               <TextField
                 fullWidth
                 label="City"
@@ -355,7 +356,7 @@ const BusinessSettingsTab = () => {
               />
             </Grid>
 
-            <Grid item xs={12} sm={6} md={3}>
+            <Grid item xs={12} sm={6} md={6} lg={3}>
               <TextField
                 fullWidth
                 label="State"
@@ -367,7 +368,7 @@ const BusinessSettingsTab = () => {
               />
             </Grid>
 
-            <Grid item xs={12} sm={6} md={3}>
+            <Grid item xs={12} sm={6} md={6} lg={3}>
               <TextField
                 fullWidth
                 label="Postal / PIN Code"
@@ -379,7 +380,7 @@ const BusinessSettingsTab = () => {
               />
             </Grid>
 
-            <Grid item xs={12} sm={6} md={3}>
+            <Grid item xs={12} sm={6} md={6} lg={3}>
               <TextField
                 fullWidth
                 label="Country"
@@ -412,7 +413,7 @@ const BusinessSettingsTab = () => {
                   color="primary"
                   startIcon={<SaveIcon />}
                   disabled={saving}
-                  sx={{ px: 3.5, py: 1, height: 42, borderRadius: 2 }}
+                  sx={{ px: 3.5, py: 1, height: 42, borderRadius: 2, width: { xs: '100%', sm: 'auto' } }}
                 >
                   {saving ? 'Saving...' : 'Save Profile Changes'}
                 </Button>

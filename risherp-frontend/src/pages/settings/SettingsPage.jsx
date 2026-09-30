@@ -121,7 +121,7 @@ const SettingsPage = () => {
   }, [location.pathname, accessibleTabs, navigate]);
 
   return (
-    <Container maxWidth="xl" sx={{ py: 3 }}>
+    <Box sx={{ width: '100%' }}>
       {/* Header */}
       <Box sx={{ mb: 3 }}>
         <Typography variant="h5" fontWeight={800} color="text.primary">
@@ -142,7 +142,7 @@ const SettingsPage = () => {
           textColor="primary"
           indicatorColor="primary"
           sx={{
-            px: 2,
+            px: { xs: 1, sm: 2 },
             minHeight: 52,
             '& .MuiTabs-indicator': {
               height: 3,
@@ -172,7 +172,7 @@ const SettingsPage = () => {
       <Box>
         {accessibleTabs[activeTabIdx]?.component}
       </Box>
-    </Container>
+    </Box>
   );
 };
 

@@ -2,7 +2,6 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Box,
-  Typography,
   IconButton,
   Tooltip,
 } from '@mui/material';
@@ -14,6 +13,7 @@ import TuneOutlinedIcon from '@mui/icons-material/TuneOutlined';
 
 import reportService from '../../services/reportService';
 import partyService from '../../services/partyService';
+import PageHeader from '../../components/common/PageHeader';
 import ReportFilters from '../../components/reports/ReportFilters';
 import ReportSummaryCards from '../../components/reports/ReportSummaryCards';
 import ReportTable from '../../components/reports/ReportTable';
@@ -47,7 +47,8 @@ const SalesReturnReport = () => {
 
   useEffect(() => {
     partyService.getParties({ type: 'CUSTOMER', size: 100 }).then((res) => {
-      setParties(res.content || []);
+      const list = res?.data?.content || res?.content || res?.data || (Array.isArray(res) ? res : []);
+      setParties(list);
     }).catch(console.error);
   }, []);
 
@@ -123,15 +124,15 @@ const SalesReturnReport = () => {
     setCsvLoading(true);
     try {
       let csvContent = 'data:text/csv;charset=utf-8,';
-      csvContent += 'Return Number,Return Date,Original Invoice,Customer,Return Amount,Refund Amount,Adjustment Amount,Reason,Status,Created By\n';
+      csvContent += 'Return Number,Date,Customer,Total Amount,Refund Amount,Adjusted Amount,Status\n';
       returns.forEach((r) => {
-        csvContent += `"${r.returnNumber}","${r.returnDate}","${r.invoiceNumber}","${r.partyName}","${r.returnAmount}","${r.refundAmount}","${r.adjustmentAmount}","${r.reason || ''}","${r.status}","${r.createdBy}"\n`;
+        csvContent += `"${r.returnNumber}","${r.returnDate}","${r.partyName}","${r.totalAmount}","${r.refundAmount}","${r.adjustedAmount}","${r.status}"\n`;
       });
 
       const encodedUri = encodeURI(csvContent);
       const link = document.createElement('a');
       link.setAttribute('href', encodedUri);
-      link.setAttribute('download', 'Sales_Return_Report.csv');
+      link.setAttribute('download', `Sales_Return_Report_${dateFrom}_to_${dateTo}.csv`);
       document.body.appendChild(link);
       link.click();
       link.remove();
@@ -150,26 +151,26 @@ const SalesReturnReport = () => {
   const kpiCards = summary
     ? [
         {
-          title: 'Total Sales Returns',
+          title: 'Total Returns',
           value: summary.totalReturns,
           icon: <AssignmentReturnOutlinedIcon />,
           color: 'primary',
         },
         {
-          title: 'Total Return Value',
-          value: fmt(summary.totalReturnAmount),
+          title: 'Total Returned Value',
+          value: fmt(summary.totalAmount),
           icon: <AttachMoneyOutlinedIcon />,
           color: 'error',
         },
         {
-          title: 'Total Refund Cash Out',
-          value: fmt(summary.totalRefundAmount),
+          title: 'Cash Refunded',
+          value: fmt(summary.refundAmount),
           icon: <CurrencyExchangeOutlinedIcon />,
           color: 'warning',
         },
         {
-          title: 'Total Invoice Adjustments',
-          value: fmt(summary.totalAdjustmentAmount),
+          title: 'Credit Adjusted',
+          value: fmt(summary.adjustedAmount),
           icon: <TuneOutlinedIcon />,
           color: 'info',
         },
@@ -179,12 +180,10 @@ const SalesReturnReport = () => {
   const columns = [
     { id: 'returnNumber', label: 'Return #', bold: true, minWidth: 120 },
     { id: 'returnDate', label: 'Date', format: 'date', minWidth: 100 },
-    { id: 'invoiceNumber', label: 'Invoice #', minWidth: 120 },
     { id: 'partyName', label: 'Customer Name', minWidth: 160 },
-    { id: 'returnAmount', label: 'Return Amount', format: 'currency', align: 'right', bold: true, minWidth: 120 },
-    { id: 'refundAmount', label: 'Refund', format: 'currency', align: 'right', minWidth: 110 },
-    { id: 'adjustmentAmount', label: 'Adjustment', format: 'currency', align: 'right', minWidth: 110 },
-    { id: 'reason', label: 'Reason', minWidth: 140 },
+    { id: 'totalAmount', label: 'Return Value', format: 'currency', align: 'right', bold: true, minWidth: 120 },
+    { id: 'refundAmount', label: 'Refund Amount', format: 'currency', align: 'right', minWidth: 120 },
+    { id: 'adjustedAmount', label: 'Credit Adjusted', format: 'currency', align: 'right', minWidth: 120 },
     { id: 'status', label: 'Status', format: 'status', align: 'center', minWidth: 100 },
     {
       id: 'actions',
@@ -202,25 +201,24 @@ const SalesReturnReport = () => {
 
   return (
     <Box sx={{ p: { xs: 2, md: 3 } }}>
-      {/* Header */}
-      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2, flexWrap: 'wrap', gap: 1 }}>
-        <Box>
-          <Typography variant="h5" fontWeight={800} color="text.primary">
-            Sales Returns Report
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            Credit notes and customer goods returned, cash refunds, invoice credit adjustments, and reason tracking.
-          </Typography>
-        </Box>
-        <ExportButtons
-          onPdf={handleExportPdf}
-          onCsv={handleExportCsv}
-          pdfLoading={pdfLoading}
-          csvLoading={csvLoading}
-        />
-      </Box>
+      {/* Standard Header with Export Actions */}
+      <PageHeader
+        title="Sales Returns Report"
+        subtitle="Credit notes and customer goods returned, cash refunds, invoice credit adjustments, and reason tracking."
+        actions={
+          <ExportButtons
+            onPdf={handleExportPdf}
+            onCsv={handleExportCsv}
+            pdfLoading={pdfLoading}
+            csvLoading={csvLoading}
+          />
+        }
+      />
 
-      {/* Filters */}
+      {/* Stats Cards */}
+      <ReportSummaryCards cards={kpiCards} loading={loading} />
+
+      {/* FilterBar with Search and Relevant Filters */}
       <ReportFilters
         datePreset={datePreset}
         onPresetChange={handlePresetChange}
@@ -244,9 +242,6 @@ const SalesReturnReport = () => {
         showStatus={true}
         onReset={handleResetFilters}
       />
-
-      {/* KPI Cards */}
-      <ReportSummaryCards cards={kpiCards} loading={loading} />
 
       {/* Table */}
       <ReportTable

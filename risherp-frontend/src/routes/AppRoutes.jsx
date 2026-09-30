@@ -79,6 +79,7 @@ import ProfilePage from '../pages/profile/ProfilePage';
 // Administration: Settings, Audit Logs & Backup (Phase 18)
 import SettingsPage from '../pages/settings/SettingsPage';
 import AuditLogsPage from '../pages/audit/AuditLogsPage';
+import ScrollToTop from '../components/common/ScrollToTop';
 
 /**
  * Application Routes
@@ -87,6 +88,7 @@ import AuditLogsPage from '../pages/audit/AuditLogsPage';
 const AppRoutes = () => {
   return (
     <BrowserRouter>
+      <ScrollToTop />
       <Routes>
         {/* Public standalone pages */}
         <Route path="/login" element={<Login />} />

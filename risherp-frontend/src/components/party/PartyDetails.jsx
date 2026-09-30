@@ -23,7 +23,6 @@ import PhoneOutlinedIcon from '@mui/icons-material/PhoneOutlined';
 import EmailOutlinedIcon from '@mui/icons-material/EmailOutlined';
 import PlaceOutlinedIcon from '@mui/icons-material/PlaceOutlined';
 import AccountBalanceWalletOutlinedIcon from '@mui/icons-material/AccountBalanceWalletOutlined';
-import HistoryOutlinedIcon from '@mui/icons-material/HistoryOutlined';
 import NotesOutlinedIcon from '@mui/icons-material/NotesOutlined';
 import PersonOutlinedIcon from '@mui/icons-material/PersonOutlined';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
@@ -74,25 +73,25 @@ const PartyDetails = ({
   return (
     <Box>
       {/* Top Navigation Bar */}
-      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 3 }}>
+      <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, alignItems: { xs: 'flex-start', sm: 'center' }, justifyContent: 'space-between', gap: 2, mb: 3 }}>
         <Button
           variant="outlined"
           color="inherit"
           startIcon={<ArrowBackOutlinedIcon />}
           onClick={onBack}
-          sx={{ borderRadius: 1.5, borderColor: 'divider' }}
+          sx={{ borderRadius: 1.5, borderColor: 'divider', width: { xs: '100%', sm: 'auto' } }}
         >
           Back to List
         </Button>
 
-        <Stack direction="row" spacing={1.5}>
+        <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1.5} sx={{ width: { xs: '100%', sm: 'auto' } }}>
           <Button
             variant="outlined"
             color={isActive ? 'error' : 'success'}
             startIcon={isActive ? <BlockOutlinedIcon /> : <CheckCircleOutlineOutlinedIcon />}
             onClick={handleStatusClick}
             disabled={statusUpdating}
-            sx={{ borderRadius: 1.5 }}
+            sx={{ borderRadius: 1.5, width: { xs: '100%', sm: 'auto' } }}
           >
             {isActive ? 'Deactivate Party' : 'Activate Party'}
           </Button>
@@ -102,7 +101,7 @@ const PartyDetails = ({
             color="primary"
             startIcon={<EditOutlinedIcon />}
             onClick={() => onEdit && onEdit(party)}
-            sx={{ borderRadius: 1.5, px: 2.5 }}
+            sx={{ borderRadius: 1.5, px: 2.5, width: { xs: '100%', sm: 'auto' } }}
           >
             Edit Profile
           </Button>
@@ -110,7 +109,7 @@ const PartyDetails = ({
       </Box>
 
       {/* Header Profile Card */}
-      <Card sx={{ border: 1, borderColor: 'divider', borderRadius: 2.5, mb: 3, p: { xs: 2.5, sm: 3.5 } }}>
+      <Card sx={{ border: 1, borderColor: 'divider', borderRadius: 2.5, mb: 3, p: { xs: 2, sm: 3.5 } }}>
         <Box
           sx={{
             display: 'flex',
@@ -122,7 +121,7 @@ const PartyDetails = ({
         >
           <Box>
             <Stack direction="row" spacing={1.5} alignItems="center" sx={{ mb: 1, flexWrap: 'wrap', gap: 1 }}>
-              <Typography variant="h4" fontWeight={800} color="text.primary">
+              <Typography variant="h4" fontWeight={800} color="text.primary" sx={{ fontSize: { xs: '1.4rem', sm: '2.125rem' } }}>
                 {party.partyName}
               </Typography>
 
@@ -180,7 +179,8 @@ const PartyDetails = ({
               borderRadius: 2,
               bgcolor: 'background.default',
               border: 1, borderColor: 'divider',
-              minWidth: 220,
+              minWidth: { xs: '100%', sm: 220 },
+              width: { xs: '100%', sm: 'auto' },
               textAlign: { xs: 'left', md: 'right' },
             }}
           >
@@ -231,7 +231,7 @@ const PartyDetails = ({
           }}
         >
           <Tab label="Profile Overview" />
-          {futureTabs.map((tab, idx) => (
+          {futureTabs.map((tab) => (
             <Tab key={tab.label} label={tab.label} />
           ))}
         </Tabs>
@@ -241,9 +241,9 @@ const PartyDetails = ({
       {currentTab === 0 && (
         <Grid container spacing={3}>
           {/* Contact Details Card */}
-          <Grid item xs={12} md={6}>
+          <Grid xs={12} md={6}>
             <Card sx={{ border: 1, borderColor: 'divider', borderRadius: 2, height: '100%' }}>
-              <CardContent sx={{ p: 3 }}>
+              <CardContent sx={{ p: { xs: 2, sm: 3 } }}>
                 <Typography variant="subtitle1" fontWeight={750} color="text.primary" sx={{ mb: 2.5 }}>
                   Contact Information
                 </Typography>
@@ -274,7 +274,7 @@ const PartyDetails = ({
                     <Typography variant="caption" color="text.secondary">
                       Email Address
                     </Typography>
-                    <Typography variant="body2" fontWeight={500} sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 0.25 }}>
+                    <Typography variant="body2" fontWeight={500} sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 0.25, wordBreak: 'break-all' }}>
                       <EmailOutlinedIcon fontSize="small" color="action" />
                       {party.email || 'Not specified'}
                     </Typography>
@@ -285,9 +285,9 @@ const PartyDetails = ({
           </Grid>
 
           {/* Address Details Card */}
-          <Grid item xs={12} md={6}>
+          <Grid xs={12} md={6}>
             <Card sx={{ border: 1, borderColor: 'divider', borderRadius: 2, height: '100%' }}>
-              <CardContent sx={{ p: 3 }}>
+              <CardContent sx={{ p: { xs: 2, sm: 3 } }}>
                 <Typography variant="subtitle1" fontWeight={750} color="text.primary" sx={{ mb: 2.5 }}>
                   Address Details
                 </Typography>
@@ -304,7 +304,7 @@ const PartyDetails = ({
                   </Box>
 
                   <Grid container spacing={2}>
-                    <Grid item xs={4}>
+                    <Grid xs={4}>
                       <Typography variant="caption" color="text.secondary">
                         City
                       </Typography>
@@ -313,7 +313,7 @@ const PartyDetails = ({
                       </Typography>
                     </Grid>
 
-                    <Grid item xs={4}>
+                    <Grid xs={4}>
                       <Typography variant="caption" color="text.secondary">
                         State
                       </Typography>
@@ -322,7 +322,7 @@ const PartyDetails = ({
                       </Typography>
                     </Grid>
 
-                    <Grid item xs={4}>
+                    <Grid xs={4}>
                       <Typography variant="caption" color="text.secondary">
                         PIN Code
                       </Typography>
@@ -337,15 +337,15 @@ const PartyDetails = ({
           </Grid>
 
           {/* Financial Details Card */}
-          <Grid item xs={12} md={6}>
+          <Grid xs={12} md={6}>
             <Card sx={{ border: 1, borderColor: 'divider', borderRadius: 2, height: '100%' }}>
-              <CardContent sx={{ p: 3 }}>
+              <CardContent sx={{ p: { xs: 2, sm: 3 } }}>
                 <Typography variant="subtitle1" fontWeight={750} color="text.primary" sx={{ mb: 2.5 }}>
                   Financial Information
                 </Typography>
 
                 <Grid container spacing={2.5}>
-                  <Grid item xs={6}>
+                  <Grid xs={6}>
                     <Typography variant="caption" color="text.secondary">
                       Opening Balance
                     </Typography>
@@ -362,7 +362,7 @@ const PartyDetails = ({
                     </Typography>
                   </Grid>
 
-                  <Grid item xs={6}>
+                  <Grid xs={6}>
                     <Typography variant="caption" color="text.secondary">
                       Credit Limit
                     </Typography>
@@ -384,9 +384,9 @@ const PartyDetails = ({
           </Grid>
 
           {/* Notes & Audit Info Card */}
-          <Grid item xs={12} md={6}>
+          <Grid xs={12} md={6}>
             <Card sx={{ border: 1, borderColor: 'divider', borderRadius: 2, height: '100%' }}>
-              <CardContent sx={{ p: 3 }}>
+              <CardContent sx={{ p: { xs: 2, sm: 3 } }}>
                 <Typography variant="subtitle1" fontWeight={750} color="text.primary" sx={{ mb: 2.5 }}>
                   Notes & Audit Information
                 </Typography>
@@ -404,7 +404,7 @@ const PartyDetails = ({
                   <Divider sx={{ my: 1 }} />
 
                   <Grid container spacing={2}>
-                    <Grid item xs={6}>
+                    <Grid xs={6}>
                       <Typography variant="caption" color="text.secondary">
                         Registered On
                       </Typography>
@@ -413,7 +413,7 @@ const PartyDetails = ({
                       </Box>
                     </Grid>
 
-                    <Grid item xs={6}>
+                    <Grid xs={6}>
                       <Typography variant="caption" color="text.secondary">
                         Last Updated
                       </Typography>

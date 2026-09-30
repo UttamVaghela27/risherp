@@ -54,8 +54,8 @@ const SalesCart = ({ items, onUpdateItem, onRemoveItem }) => {
 
   return (
     <Paper variant="outlined" sx={{ borderRadius: '12px', border: 1, borderColor: 'divider', overflow: 'hidden', boxShadow: '0 1px 3px rgba(0,0,0,0.02)' }}>
-      <TableContainer>
-        <Table size="small" stickyHeader>
+      <TableContainer sx={{ overflowX: 'auto', maxWidth: '100%' }}>
+        <Table size="small" stickyHeader sx={{ minWidth: 650 }}>
           <TableHead>
             <TableRow sx={{ bgcolor: 'background.default' }}>
               <TableCell sx={{ width: 36, fontWeight: 700, fontSize: 11, color: theme.palette.text.secondary, letterSpacing: '0.05em', bgcolor: 'background.default' }}>#</TableCell>

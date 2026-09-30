@@ -2,12 +2,10 @@ import React, { useState, useEffect, useCallback } from 'react';
 import {
   Box,
   Typography,
-  Card,
-  CardContent,
   Alert,
   AlertTitle,
   useTheme,
-  alpha
+  alpha,
 } from '@mui/material';
 import TrendingUpOutlinedIcon from '@mui/icons-material/TrendingUpOutlined';
 import AttachMoneyOutlinedIcon from '@mui/icons-material/AttachMoneyOutlined';
@@ -18,6 +16,7 @@ import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 
 import reportService from '../../services/reportService';
 import categoryService from '../../services/categoryService';
+import PageHeader from '../../components/common/PageHeader';
 import ReportFilters from '../../components/reports/ReportFilters';
 import ReportSummaryCards from '../../components/reports/ReportSummaryCards';
 import ReportTable from '../../components/reports/ReportTable';
@@ -42,7 +41,10 @@ const ProfitReport = () => {
   const [csvLoading, setCsvLoading] = useState(false);
 
   useEffect(() => {
-    categoryService.getCategories().then((res) => setCategories(res || [])).catch(console.error);
+    categoryService.getAllActiveCategories().then((res) => {
+      const catList = res?.data || res?.content || (Array.isArray(res) ? res : []);
+      setCategories(catList);
+    }).catch(console.error);
   }, []);
 
   const fetchProfitData = useCallback(async () => {
@@ -124,7 +126,7 @@ const ProfitReport = () => {
       const encodedUri = encodeURI(csvContent);
       const link = document.createElement('a');
       link.setAttribute('href', encodedUri);
-      link.setAttribute('download', `Profit_Report.csv`);
+      link.setAttribute('download', `Profit_Report_${dateFrom}_to_${dateTo}.csv`);
       document.body.appendChild(link);
       link.click();
       link.remove();
@@ -143,40 +145,34 @@ const ProfitReport = () => {
   const kpiCards = summary
     ? [
         {
-          title: 'Gross Sales',
-          value: fmt(summary.grossSales),
+          title: 'Gross Revenue',
+          value: fmt(summary.totalRevenue),
           icon: <AttachMoneyOutlinedIcon />,
           color: 'primary',
         },
         {
-          title: 'Sales Discount',
-          value: fmt(summary.salesDiscount),
-          icon: <PercentOutlinedIcon />,
-          color: 'warning',
-        },
-        {
-          title: 'Net Sales',
-          value: fmt(summary.netSales),
-          icon: <AccountBalanceWalletOutlinedIcon />,
-          color: 'info',
-        },
-        {
-          title: 'COGS (Cost of Goods)',
-          value: fmt(summary.costOfGoodsSold),
+          title: 'COGS (Total Cost)',
+          value: fmt(summary.totalCost),
           icon: <ShoppingBagOutlinedIcon />,
-          color: 'secondary',
+          color: 'warning',
         },
         {
           title: 'Gross Profit',
           value: fmt(summary.grossProfit),
           icon: <TrendingUpOutlinedIcon />,
-          color: 'success',
+          color: summary.grossProfit >= 0 ? 'success' : 'error',
         },
         {
-          title: 'Gross Margin %',
-          value: `${summary.grossMarginPercentage ?? '0.00'}%`,
+          title: 'Overall Margin %',
+          value: `${summary.overallMarginPercentage ?? '0.00'}%`,
           icon: <PercentOutlinedIcon />,
-          color: summary.grossMarginPercentage >= 0 ? 'success' : 'error',
+          color: summary.overallMarginPercentage >= 0 ? 'success' : 'error',
+        },
+        {
+          title: 'Total Invoices',
+          value: summary.invoiceCount,
+          icon: <AccountBalanceWalletOutlinedIcon />,
+          color: 'info',
         },
       ]
     : [];
@@ -184,7 +180,7 @@ const ProfitReport = () => {
   const columns = [
     { id: 'itemCode', label: 'Item Code', bold: true, minWidth: 110 },
     { id: 'itemName', label: 'Item Name', minWidth: 180 },
-    { id: 'categoryName', label: 'Category', minWidth: 130 },
+    { id: 'categoryName', label: 'Category', minWidth: 120 },
     { id: 'quantitySold', label: 'Qty Sold', format: 'qty', align: 'right', minWidth: 100 },
     { id: 'grossSales', label: 'Gross Sales', format: 'currency', align: 'right', minWidth: 110 },
     { id: 'discount', label: 'Discount', format: 'currency', align: 'right', minWidth: 90 },
@@ -212,35 +208,39 @@ const ProfitReport = () => {
 
   return (
     <Box sx={{ p: { xs: 2, md: 3 } }}>
-      {/* Header */}
-      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2, flexWrap: 'wrap', gap: 1 }}>
-        <Box>
-          <Typography variant="h5" fontWeight={800} color="text.primary">
-            Profit & Margin Report
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            Gross profit, cost of goods sold, and profitability margin analysis across sales transactions.
-          </Typography>
-        </Box>
-        <ExportButtons
-          onPdf={handleExportPdf}
-          onCsv={handleExportCsv}
-          pdfLoading={pdfLoading}
-          csvLoading={csvLoading}
-        />
-      </Box>
+      {/* Standard Header with Export Actions */}
+      <PageHeader
+        title="Profit & Margin Report"
+        subtitle="Gross profit, cost of goods sold, and profitability margin analysis across sales transactions."
+        actions={
+          <ExportButtons
+            onPdf={handleExportPdf}
+            onCsv={handleExportCsv}
+            pdfLoading={pdfLoading}
+            csvLoading={csvLoading}
+          />
+        }
+      />
 
       {/* Methodology Alert Note */}
       <Alert
         severity="info"
         icon={<InfoOutlinedIcon />}
-        sx={{ mb: 3, borderRadius: 2, border: '1px solid #bfdbfe', bgcolor: alpha(theme.palette.info.main, 0.1) }}
+        sx={{
+          mb: 3,
+          borderRadius: 2,
+          border: '1px solid #bfdbfe',
+          bgcolor: alpha(theme.palette.info.main, 0.1),
+        }}
       >
         <AlertTitle sx={{ fontWeight: 700, fontSize: '0.88rem' }}>Calculation Methodology</AlertTitle>
         Gross Profit is calculated as <strong>Net Sales - Cost of Goods Sold (COGS)</strong>. Item cost basis is derived from historical purchase prices at line item level. Operating expenses and overhead costs are excluded as there is no expense module in scope.
       </Alert>
 
-      {/* Filters */}
+      {/* Stats Cards */}
+      <ReportSummaryCards cards={kpiCards} loading={loading} />
+
+      {/* FilterBar with Search and Relevant Filters */}
       <ReportFilters
         datePreset={datePreset}
         onPresetChange={handlePresetChange}
@@ -256,9 +256,6 @@ const ProfitReport = () => {
         onSearchChange={setSearch}
         onReset={handleResetFilters}
       />
-
-      {/* KPI Cards */}
-      <ReportSummaryCards cards={kpiCards} loading={loading} />
 
       {/* Table */}
       <ReportTable

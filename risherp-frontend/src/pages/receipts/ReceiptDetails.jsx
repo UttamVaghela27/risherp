@@ -150,7 +150,7 @@ export default function ReceiptDetails() {
 
   return (
     <Box>
-      <Box className="no-print" sx={{ p: { xs: 2, sm: 3 } }}>
+      <Box className="no-print" sx={{ p: 0 }}>
         {/* Header */}
       <PageHeader
         title={

@@ -11,8 +11,6 @@ import {
   Stack,
   CircularProgress,
   InputAdornment,
-  Alert,
-  Autocomplete,
   useTheme,
   alpha
 } from '@mui/material';
@@ -162,7 +160,7 @@ const ItemForm = ({
       <Stack spacing={3}>
         {/* IDENTIFICATION CARD */}
         <Card sx={{ border: 1, borderColor: 'divider', borderRadius: 2 }}>
-          <CardContent sx={{ p: 3 }}>
+          <CardContent sx={{ p: { xs: 2, sm: 3 } }}>
             <Stack direction="row" spacing={1.5} alignItems="center" sx={{ mb: 2 }}>
               <QrCodeScannerIcon color="primary" />
               <Typography variant="subtitle1" fontWeight={700}>
@@ -171,7 +169,7 @@ const ItemForm = ({
             </Stack>
 
             <Grid container spacing={2.5}>
-              <Grid item xs={12} sm={6}>
+              <Grid xs={12} sm={6}>
                 <TextField
                   label="Item Code"
                   value={isEdit ? formData.itemCode : 'Auto-generated upon save (e.g. ITM-000001)'}
@@ -189,7 +187,7 @@ const ItemForm = ({
                 />
               </Grid>
 
-              <Grid item xs={12} sm={6}>
+              <Grid xs={12} sm={6}>
                 <TextField
                   label="Barcode / SKU"
                   placeholder="e.g. 8901234567890"
@@ -215,7 +213,7 @@ const ItemForm = ({
 
         {/* ITEM INFORMATION CARD */}
         <Card sx={{ border: 1, borderColor: 'divider', borderRadius: 2 }}>
-          <CardContent sx={{ p: 3 }}>
+          <CardContent sx={{ p: { xs: 2, sm: 3 } }}>
             <Stack direction="row" spacing={1.5} alignItems="center" sx={{ mb: 2 }}>
               <Inventory2OutlinedIcon color="primary" />
               <Typography variant="subtitle1" fontWeight={700}>
@@ -224,7 +222,7 @@ const ItemForm = ({
             </Stack>
 
             <Grid container spacing={2.5}>
-              <Grid item xs={12} sm={6}>
+              <Grid xs={12} sm={6}>
                 <TextField
                   label="Item Name *"
                   placeholder="e.g. Wireless Keyboard K380"
@@ -238,7 +236,7 @@ const ItemForm = ({
                 />
               </Grid>
 
-              <Grid item xs={12} sm={6}>
+              <Grid xs={12} sm={6}>
                 <TextField
                   select
                   label="Category *"
@@ -261,7 +259,7 @@ const ItemForm = ({
                 </TextField>
               </Grid>
 
-              <Grid item xs={12} sm={6}>
+              <Grid xs={12} sm={6}>
                 <TextField
                   label="Company / Brand"
                   placeholder="e.g. Logitech, Samsung, HP"
@@ -274,7 +272,7 @@ const ItemForm = ({
                 />
               </Grid>
 
-              <Grid item xs={12} sm={6}>
+              <Grid xs={12} sm={6}>
                 <TextField
                   select
                   label="Unit of Measurement *"
@@ -299,7 +297,7 @@ const ItemForm = ({
 
         {/* PRICING CARD */}
         <Card sx={{ border: 1, borderColor: 'divider', borderRadius: 2 }}>
-          <CardContent sx={{ p: 3 }}>
+          <CardContent sx={{ p: { xs: 2, sm: 3 } }}>
             <Stack direction="row" spacing={1.5} alignItems="center" sx={{ mb: 2 }}>
               <AttachMoneyOutlinedIcon color="primary" />
               <Typography variant="subtitle1" fontWeight={700}>
@@ -308,7 +306,7 @@ const ItemForm = ({
             </Stack>
 
             <Grid container spacing={2.5}>
-              <Grid item xs={12} sm={5}>
+              <Grid xs={12} sm={5}>
                 <TextField
                   label="Purchase Rate *"
                   type="number"
@@ -326,7 +324,7 @@ const ItemForm = ({
                 />
               </Grid>
 
-              <Grid item xs={12} sm={5}>
+              <Grid xs={12} sm={5}>
                 <TextField
                   label="Sale Rate *"
                   type="number"
@@ -344,7 +342,7 @@ const ItemForm = ({
                 />
               </Grid>
 
-              <Grid item xs={12} sm={2}>
+              <Grid xs={12} sm={2}>
                 <Box
                   sx={{
                     p: 1.5,
@@ -377,7 +375,7 @@ const ItemForm = ({
 
         {/* INVENTORY CARD */}
         <Card sx={{ border: 1, borderColor: 'divider', borderRadius: 2 }}>
-          <CardContent sx={{ p: 3 }}>
+          <CardContent sx={{ p: { xs: 2, sm: 3 } }}>
             <Stack direction="row" spacing={1.5} alignItems="center" sx={{ mb: 2 }}>
               <WarehouseOutlinedIcon color="primary" />
               <Typography variant="subtitle1" fontWeight={700}>
@@ -386,7 +384,7 @@ const ItemForm = ({
             </Stack>
 
             <Grid container spacing={2.5}>
-              <Grid item xs={12} sm={6}>
+              <Grid xs={12} sm={6}>
                 {isEdit ? (
                   <TextField
                     label="Current Stock"
@@ -402,7 +400,7 @@ const ItemForm = ({
                       ),
                       sx: { bgcolor: 'background.default' },
                     }}
-                    helperText="Stock can only be modified through Sales, Purchases, or Stock Adjustments (Phase 12)."
+                    helperText="Stock can only be modified through Sales, Purchases, or Stock Adjustments."
                   />
                 ) : (
                   <TextField
@@ -425,7 +423,7 @@ const ItemForm = ({
                 )}
               </Grid>
 
-              <Grid item xs={12} sm={6}>
+              <Grid xs={12} sm={6}>
                 <TextField
                   label="Minimum Stock (Safety Threshold)"
                   type="number"
@@ -452,7 +450,7 @@ const ItemForm = ({
 
         {/* OTHER CARD */}
         <Card sx={{ border: 1, borderColor: 'divider', borderRadius: 2 }}>
-          <CardContent sx={{ p: 3 }}>
+          <CardContent sx={{ p: { xs: 2, sm: 3 } }}>
             <Stack direction="row" spacing={1.5} alignItems="center" sx={{ mb: 2 }}>
               <NotesOutlinedIcon color="primary" />
               <Typography variant="subtitle1" fontWeight={700}>
@@ -461,7 +459,7 @@ const ItemForm = ({
             </Stack>
 
             <Grid container spacing={2.5}>
-              <Grid item xs={12}>
+              <Grid xs={12}>
                 <TextField
                   label="Description / Specifications"
                   placeholder="Detailed product specifications, notes, model numbers..."
@@ -479,7 +477,7 @@ const ItemForm = ({
         </Card>
 
         {/* FORM ACTIONS */}
-        <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, pt: 1, pb: 4 }}>
+        <Box sx={{ display: 'flex', flexDirection: { xs: 'column-reverse', sm: 'row' }, justifyContent: 'flex-end', gap: 2, pt: 1, pb: 4, '& > button': { width: { xs: '100%', sm: 'auto' } } }}>
           <Button
             variant="outlined"
             color="inherit"

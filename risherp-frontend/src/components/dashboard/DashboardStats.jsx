@@ -1,4 +1,5 @@
-import { Grid } from '@mui/material';
+import React from 'react';
+import { Box } from '@mui/material';
 import PointOfSaleOutlinedIcon from '@mui/icons-material/PointOfSaleOutlined';
 import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined';
 import ReceiptLongOutlinedIcon from '@mui/icons-material/ReceiptLongOutlined';
@@ -9,22 +10,37 @@ import WarehouseOutlinedIcon from '@mui/icons-material/WarehouseOutlined';
 import WarningAmberOutlinedIcon from '@mui/icons-material/WarningAmberOutlined';
 
 import StatCard from '../common/StatCard';
-import { CardSkeleton } from '../common/Loading';
 
 /**
  * DashboardStats Component
- * Renders the 8 primary operational and financial KPI metric cards.
+ * Renders the 8 primary operational and financial KPI metric cards using uniform CSS Grid.
  */
 const DashboardStats = ({ summary, loading = false, periodLabel = 'Today' }) => {
+  const rowGridStyle = {
+    display: 'grid',
+    gridTemplateColumns: {
+      xs: '1fr',
+      sm: 'repeat(2, 1fr)',
+      md: 'repeat(2, 1fr)',
+      lg: 'repeat(4, 1fr)',
+    },
+    gap: 2.5,
+  };
+
   if (loading) {
     return (
-      <Grid container spacing={2.5} sx={{ mb: 3 }}>
-        {Array.from({ length: 8 }).map((_, index) => (
-          <Grid size={{ xs: 12, sm: 6, md: 3 }} key={index}>
-            <CardSkeleton />
-          </Grid>
-        ))}
-      </Grid>
+      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5, mb: 3 }}>
+        <Box sx={rowGridStyle}>
+          {Array.from({ length: 4 }).map((_, index) => (
+            <StatCard key={index} title="Loading..." value={null} loading={true} />
+          ))}
+        </Box>
+        <Box sx={rowGridStyle}>
+          {Array.from({ length: 4 }).map((_, index) => (
+            <StatCard key={index + 4} title="Loading..." value={null} loading={true} />
+          ))}
+        </Box>
+      </Box>
     );
   }
 
@@ -35,120 +51,101 @@ const DashboardStats = ({ summary, loading = false, periodLabel = 'Today' }) => 
   const lowStockCount = summary?.lowStockCount ?? 0;
 
   return (
-    <BoxWrapper>
+    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5, mb: 3 }}>
       {/* Row 1: Operational Inflow & Outflow */}
-      <Grid container spacing={2.5} sx={{ mb: 2.5 }}>
-        <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-          <StatCard
-            title={`${periodLabel}'s Sales`}
-            value={summary?.todaySales ?? 0}
-            isCurrency
-            icon={<PointOfSaleOutlinedIcon />}
-            trend={salesGrowth != null ? `${salesGrowth > 0 ? '+' : ''}${salesGrowth}%` : undefined}
-            trendType={salesGrowth >= 0 ? 'up' : 'down'}
-            subtitle="vs previous period"
-            color="primary"
-          />
-        </Grid>
+      <Box sx={rowGridStyle}>
+        <StatCard
+          title={`${periodLabel}'s Sales`}
+          value={summary?.todaySales ?? 0}
+          isCurrency
+          icon={<PointOfSaleOutlinedIcon />}
+          trend={salesGrowth != null ? `${salesGrowth > 0 ? '+' : ''}${salesGrowth}%` : undefined}
+          trendType={salesGrowth >= 0 ? 'up' : 'down'}
+          subtitle="vs previous period"
+          color="primary"
+        />
 
-        <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-          <StatCard
-            title={`${periodLabel}'s Purchase`}
-            value={summary?.todayPurchase ?? 0}
-            isCurrency
-            icon={<ShoppingCartOutlinedIcon />}
-            trend={purchaseGrowth != null ? `${purchaseGrowth > 0 ? '+' : ''}${purchaseGrowth}%` : undefined}
-            trendType={purchaseGrowth >= 0 ? 'up' : 'down'}
-            subtitle="vs previous period"
-            color="info"
-          />
-        </Grid>
+        <StatCard
+          title={`${periodLabel}'s Purchase`}
+          value={summary?.todayPurchase ?? 0}
+          isCurrency
+          icon={<ShoppingCartOutlinedIcon />}
+          trend={purchaseGrowth != null ? `${purchaseGrowth > 0 ? '+' : ''}${purchaseGrowth}%` : undefined}
+          trendType={purchaseGrowth >= 0 ? 'up' : 'down'}
+          subtitle="vs previous period"
+          color="info"
+        />
 
-        <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-          <StatCard
-            title={`${periodLabel}'s Receipts`}
-            value={summary?.todayReceipts ?? 0}
-            isCurrency
-            icon={<ReceiptLongOutlinedIcon />}
-            trend={receiptsGrowth != null ? `${receiptsGrowth > 0 ? '+' : ''}${receiptsGrowth}%` : undefined}
-            trendType={receiptsGrowth >= 0 ? 'up' : 'down'}
-            subtitle="inward cash flow"
-            color="success"
-          />
-        </Grid>
+        <StatCard
+          title={`${periodLabel}'s Receipts`}
+          value={summary?.todayReceipts ?? 0}
+          isCurrency
+          icon={<ReceiptLongOutlinedIcon />}
+          trend={receiptsGrowth != null ? `${receiptsGrowth > 0 ? '+' : ''}${receiptsGrowth}%` : undefined}
+          trendType={receiptsGrowth >= 0 ? 'up' : 'down'}
+          subtitle="inward cash flow"
+          color="success"
+        />
 
-        <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-          <StatCard
-            title={`${periodLabel}'s Payments`}
-            value={summary?.todayPayments ?? 0}
-            isCurrency
-            icon={<PaymentsOutlinedIcon />}
-            trend={paymentsGrowth != null ? `${paymentsGrowth > 0 ? '+' : ''}${paymentsGrowth}%` : undefined}
-            trendType={paymentsGrowth >= 0 ? 'up' : 'down'}
-            subtitle="outward cash flow"
-            color="warning"
-          />
-        </Grid>
-      </Grid>
+        <StatCard
+          title={`${periodLabel}'s Payments`}
+          value={summary?.todayPayments ?? 0}
+          isCurrency
+          icon={<PaymentsOutlinedIcon />}
+          trend={paymentsGrowth != null ? `${paymentsGrowth > 0 ? '+' : ''}${paymentsGrowth}%` : undefined}
+          trendType={paymentsGrowth >= 0 ? 'up' : 'down'}
+          subtitle="outward cash flow"
+          color="warning"
+        />
+      </Box>
 
       {/* Row 2: Balances, Stock & Alerts */}
-      <Grid container spacing={2.5} sx={{ mb: 3 }}>
-        <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-          <StatCard
-            title="Total Receivable"
-            value={summary?.totalReceivable ?? 0}
-            isCurrency
-            icon={<AccountBalanceWalletOutlinedIcon />}
-            trend="Customer Balance"
-            trendType="neutral"
-            subtitle="Unsettled customer dues"
-            color="error"
-          />
-        </Grid>
+      <Box sx={rowGridStyle}>
+        <StatCard
+          title="Total Receivable"
+          value={summary?.totalReceivable ?? 0}
+          isCurrency
+          icon={<AccountBalanceWalletOutlinedIcon />}
+          trend="Customer Balance"
+          trendType="neutral"
+          subtitle="Unsettled customer dues"
+          color="error"
+        />
 
-        <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-          <StatCard
-            title="Total Payable"
-            value={summary?.totalPayable ?? 0}
-            isCurrency
-            icon={<PendingActionsOutlinedIcon />}
-            trend="Supplier Balance"
-            trendType="neutral"
-            subtitle="Unsettled vendor dues"
-            color="warning"
-          />
-        </Grid>
+        <StatCard
+          title="Total Payable"
+          value={summary?.totalPayable ?? 0}
+          isCurrency
+          icon={<PendingActionsOutlinedIcon />}
+          trend="Supplier Balance"
+          trendType="neutral"
+          subtitle="Unsettled vendor dues"
+          color="warning"
+        />
 
-        <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-          <StatCard
-            title="Stock Valuation"
-            value={summary?.stockValue ?? 0}
-            isCurrency
-            icon={<WarehouseOutlinedIcon />}
-            trend="Inventory Asset"
-            trendType="up"
-            subtitle="Valuation at cost price"
-            color="secondary"
-          />
-        </Grid>
+        <StatCard
+          title="Stock Valuation"
+          value={summary?.stockValue ?? 0}
+          isCurrency
+          icon={<WarehouseOutlinedIcon />}
+          trend="Inventory Asset"
+          trendType="up"
+          subtitle="Valuation at cost price"
+          color="secondary"
+        />
 
-        <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-          <StatCard
-            title="Low Stock Items"
-            value={`${lowStockCount} Items`}
-            icon={<WarningAmberOutlinedIcon />}
-            trend={lowStockCount > 0 ? 'Reorder needed' : 'All optimal'}
-            trendType={lowStockCount > 0 ? 'down' : 'up'}
-            subtitle={lowStockCount > 0 ? 'Below safety threshold' : 'Stock levels healthy'}
-            color={lowStockCount > 0 ? 'error' : 'success'}
-          />
-        </Grid>
-      </Grid>
-    </BoxWrapper>
+        <StatCard
+          title="Low Stock Items"
+          value={`${lowStockCount} Items`}
+          icon={<WarningAmberOutlinedIcon />}
+          trend={lowStockCount > 0 ? 'Reorder needed' : 'All optimal'}
+          trendType={lowStockCount > 0 ? 'down' : 'up'}
+          subtitle={lowStockCount > 0 ? 'Below safety threshold' : 'Stock levels healthy'}
+          color={lowStockCount > 0 ? 'error' : 'success'}
+        />
+      </Box>
+    </Box>
   );
 };
-
-// Simple fragment wrapper
-const BoxWrapper = ({ children }) => <>{children}</>;
 
 export default DashboardStats;

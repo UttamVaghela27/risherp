@@ -1,4 +1,5 @@
-import { Grid, Skeleton, Card, CardContent, Box } from '@mui/material';
+import React from 'react';
+import { Box } from '@mui/material';
 import ReceiptLongOutlinedIcon from '@mui/icons-material/ReceiptLongOutlined';
 import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined';
 import CheckCircleOutlinedIcon from '@mui/icons-material/CheckCircleOutlined';
@@ -14,24 +15,25 @@ import StatCard from '../common/StatCard';
  * - Total Outstanding
  */
 const PurchaseSummaryCards = ({ summary, loading }) => {
+  const gridStyle = {
+    display: 'grid',
+    gridTemplateColumns: {
+      xs: '1fr',
+      sm: 'repeat(2, 1fr)',
+      md: 'repeat(2, 1fr)',
+      lg: 'repeat(4, 1fr)',
+    },
+    gap: 2.5,
+    mb: 3,
+  };
+
   if (loading) {
     return (
-      <Grid container spacing={2.5} sx={{ mb: 3 }}>
+      <Box sx={gridStyle}>
         {[...Array(4)].map((_, i) => (
-          <Grid key={i} size={{ xs: 12, sm: 6, md: 3 }}>
-            <Card sx={{ height: '100%', p: 0.5 }}>
-              <CardContent sx={{ p: 2.25 }}>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1.5 }}>
-                  <Skeleton variant="text" width={100} height={20} />
-                  <Skeleton variant="circular" width={36} height={36} />
-                </Box>
-                <Skeleton variant="text" width={120} height={40} sx={{ mb: 1 }} />
-                <Skeleton variant="text" width={80} height={16} />
-              </CardContent>
-            </Card>
-          </Grid>
+          <StatCard key={i} title="Loading..." value={null} loading={true} />
         ))}
-      </Grid>
+      </Box>
     );
   }
 
@@ -41,47 +43,39 @@ const PurchaseSummaryCards = ({ summary, loading }) => {
   const totalOutstanding = summary?.totalOutstanding ?? summary?.totalBalance ?? 0;
 
   return (
-    <Grid container spacing={2.5} sx={{ mb: 3 }}>
-      <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-        <StatCard
-          title="Total Invoices"
-          value={totalInvoices}
-          icon={<ReceiptLongOutlinedIcon sx={{ color: 'primary.main', fontSize: 28 }} />}
-          color="primary"
-          subtitle={`Bills recorded`}
-        />
-      </Grid>
-      <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-        <StatCard
-          title="Total Purchases"
-          value={totalPurchases}
-          isCurrency
-          icon={<ShoppingCartOutlinedIcon sx={{ color: 'info.main', fontSize: 28 }} />}
-          color="info"
-          subtitle="Procurement expenditure"
-        />
-      </Grid>
-      <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-        <StatCard
-          title="Total Paid"
-          value={totalPaid}
-          isCurrency
-          icon={<CheckCircleOutlinedIcon sx={{ color: 'success.main', fontSize: 28 }} />}
-          color="success"
-          subtitle="Payments settled"
-        />
-      </Grid>
-      <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-        <StatCard
-          title="Total Outstanding"
-          value={totalOutstanding}
-          isCurrency
-          icon={<HourglassEmptyOutlinedIcon sx={{ color: 'warning.main', fontSize: 28 }} />}
-          color="warning"
-          subtitle="Payables balance"
-        />
-      </Grid>
-    </Grid>
+    <Box sx={gridStyle}>
+      <StatCard
+        title="Total Invoices"
+        value={totalInvoices}
+        icon={<ReceiptLongOutlinedIcon />}
+        color="primary"
+        subtitle="Bills recorded"
+      />
+      <StatCard
+        title="Total Purchases"
+        value={totalPurchases}
+        isCurrency
+        icon={<ShoppingCartOutlinedIcon />}
+        color="info"
+        subtitle="Procurement expenditure"
+      />
+      <StatCard
+        title="Total Paid"
+        value={totalPaid}
+        isCurrency
+        icon={<CheckCircleOutlinedIcon />}
+        color="success"
+        subtitle="Payments settled"
+      />
+      <StatCard
+        title="Total Outstanding"
+        value={totalOutstanding}
+        isCurrency
+        icon={<HourglassEmptyOutlinedIcon />}
+        color="warning"
+        subtitle="Payables balance"
+      />
+    </Box>
   );
 };
 

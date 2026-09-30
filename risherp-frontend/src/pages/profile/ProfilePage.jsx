@@ -231,7 +231,7 @@ const ProfilePage = () => {
                       type="submit"
                       variant="contained"
                       disabled={submitting}
-                      sx={{ fontWeight: 700, borderRadius: 2, px: 3, py: 1 }}
+                      sx={{ fontWeight: 700, borderRadius: 2, px: 3, py: 1, width: { xs: '100%', sm: 'auto' } }}
                     >
                       {submitting ? 'Updating...' : 'Update Password'}
                     </Button>

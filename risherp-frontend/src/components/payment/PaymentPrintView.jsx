@@ -16,7 +16,7 @@ const PaymentPrintView = ({ payment }) => {
       className="printable-payment"
       sx={{
         fontFamily: '"Helvetica Neue", Helvetica, Arial, sans-serif',
-        p: { xs: 2, sm: 4 },
+        p: { xs: 1.5, sm: 3, md: 4 },
         maxWidth: 800,
         mx: 'auto',
         bgcolor: 'background.paper',
@@ -25,7 +25,7 @@ const PaymentPrintView = ({ payment }) => {
       }}
     >
       {/* Header */}
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1 }}>
+      <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, justifyContent: 'space-between', alignItems: { xs: 'flex-start', sm: 'flex-start' }, gap: 1.5, mb: 2 }}>
         <Box>
           <Typography variant="h5" sx={{ fontWeight: 700, color: '#1e3a8a', mb: 0.5 }}>{companyName}</Typography>
           <Typography variant="subtitle2" sx={{ color: '#1e3a8a', fontWeight: 600, textTransform: 'uppercase', mb: 0.5, fontSize: '0.9rem' }}>
@@ -35,7 +35,7 @@ const PaymentPrintView = ({ payment }) => {
             Email: {companyEmail} &nbsp; Mobile: {companyMobile}
           </Typography>
         </Box>
-        <Box sx={{ textAlign: 'right' }}>
+        <Box sx={{ textAlign: { xs: 'left', sm: 'right' } }}>
           <Typography variant="h5" sx={{ fontWeight: 700, color: '#1e3a8a', mb: 1 }}>{payment.paymentNumber}</Typography>
           <Typography variant="body2" sx={{ color: '#000', mb: 0.5, fontSize: '0.85rem' }}>
             Payment Date: {payment.paymentDate || '—'}
@@ -61,7 +61,7 @@ const PaymentPrintView = ({ payment }) => {
 
       {/* Totals Table */}
       <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 4 }}>
-        <Table sx={{ width: '50%', border: '1px solid #e5e7eb' }} size="small">
+        <Table sx={{ width: { xs: '100%', sm: '60%', md: '50%' }, border: '1px solid #e5e7eb' }} size="small">
           <TableBody>
             <TableRow sx={{ bgcolor: '#eff6ff' }}>
               <TableCell sx={{ fontWeight: 700, color: '#1e3a8a', borderBottom: '1px solid #e5e7eb', py: 1 }}>TOTAL PAID</TableCell>

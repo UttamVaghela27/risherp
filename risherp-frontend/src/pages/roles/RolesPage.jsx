@@ -336,32 +336,32 @@ const RolesPage = () => {
       />
 
       {/* KPI Cards */}
-      <Grid container spacing={2.5} sx={{ mb: 3 }}>
-        <Grid item xs={12} sm={6} md={4}>
+      <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', md: 'repeat(3, 1fr)', lg: 'repeat(3, 1fr)' }, gap: 2.5, mb: 3 }}>
+
           <StatCard
             title="Total Configured Roles"
             value={totalRoles}
             icon={AdminPanelSettingsOutlinedIcon}
             color="primary"
           />
-        </Grid>
-        <Grid item xs={12} sm={6} md={4}>
+
+
           <StatCard
             title="Active Roles"
             value={activeCount}
             icon={CheckCircleOutlineOutlinedIcon}
             color="success"
           />
-        </Grid>
-        <Grid item xs={12} sm={6} md={4}>
+
+
           <StatCard
             title="System Permission Codes"
             value={totalPermsCount}
             icon={SecurityOutlinedIcon}
             color="info"
           />
-        </Grid>
-      </Grid>
+
+      </Box>
 
       {/* Search & Filter */}
       <Card
@@ -437,7 +437,7 @@ const RolesPage = () => {
           />
         ) : (
           <>
-            <TableContainer component={Paper} elevation={0}>
+            <TableContainer component={Paper} elevation={0} sx={{ overflowX: 'auto' }}>
               <Table size="small" sx={{ minWidth: 700 }}>
                 <TableHead>
                   <TableRow sx={{ bgcolor: 'background.default' }}>
@@ -654,7 +654,7 @@ const RolesPage = () => {
             </Grid>
 
             {/* Permissions Matrix Header */}
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+            <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, justifyContent: 'space-between', alignItems: { xs: 'flex-start', sm: 'center' }, gap: { xs: 1.5, sm: 0 }, mb: 2 }}>
               <Box>
                 <Typography variant="subtitle1" fontWeight={750} color={theme.palette.text.primary}>
                   Assign Permissions
@@ -775,7 +775,7 @@ const RolesPage = () => {
               })}
             </Stack>
           </DialogContent>
-          <DialogActions sx={{ p: 2.5 }}>
+          <DialogActions sx={{ p: 2.5, flexDirection: { xs: 'column-reverse', sm: 'row' }, gap: { xs: 1, sm: 0 }, '& .MuiButton-root': { width: { xs: '100%', sm: 'auto' } } }}>
             <Button onClick={() => setCreateOpen(false)} disabled={submitting} sx={{ color: theme.palette.text.secondary }}>
               Cancel
             </Button>
@@ -826,7 +826,7 @@ const RolesPage = () => {
             </Grid>
 
             {/* Permissions Matrix Header */}
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+            <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, justifyContent: 'space-between', alignItems: { xs: 'flex-start', sm: 'center' }, gap: { xs: 1.5, sm: 0 }, mb: 2 }}>
               <Box>
                 <Typography variant="subtitle1" fontWeight={750} color={theme.palette.text.primary}>
                   Assigned Permissions
@@ -947,7 +947,7 @@ const RolesPage = () => {
               })}
             </Stack>
           </DialogContent>
-          <DialogActions sx={{ p: 2.5 }}>
+          <DialogActions sx={{ p: 2.5, flexDirection: { xs: 'column-reverse', sm: 'row' }, gap: { xs: 1, sm: 0 }, '& .MuiButton-root': { width: { xs: '100%', sm: 'auto' } } }}>
             <Button onClick={() => setEditOpen(false)} disabled={submitting} sx={{ color: theme.palette.text.secondary }}>
               Cancel
             </Button>
@@ -1018,7 +1018,7 @@ const RolesPage = () => {
             })}
           </Stack>
         </DialogContent>
-        <DialogActions sx={{ p: 2 }}>
+        <DialogActions sx={{ p: 2, '& .MuiButton-root': { width: { xs: '100%', sm: 'auto' } } }}>
           <Button onClick={() => setViewOpen(false)} variant="contained" sx={{ borderRadius: 2 }}>
             Close
           </Button>
@@ -1045,7 +1045,7 @@ const RolesPage = () => {
               : ' Users assigned to this role will regain access according to permissions.'}
           </DialogContentText>
         </DialogContent>
-        <DialogActions sx={{ p: 2 }}>
+        <DialogActions sx={{ p: 2, flexDirection: { xs: 'column-reverse', sm: 'row' }, gap: { xs: 1, sm: 0 }, '& .MuiButton-root': { width: { xs: '100%', sm: 'auto' } } }}>
           <Button onClick={() => setStatusDialogOpen(false)} disabled={submitting}>
             Cancel
           </Button>

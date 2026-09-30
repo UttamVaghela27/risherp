@@ -62,7 +62,8 @@ const LedgerFilters = ({
           gridTemplateColumns: {
             xs: '1fr',
             sm: 'repeat(2, 1fr)',
-            md: '2fr 1.5fr 1.2fr 1.2fr auto',
+            md: 'repeat(2, 1fr)',
+            lg: '2fr 1.5fr auto auto',
           },
           gap: 2,
           alignItems: 'center',

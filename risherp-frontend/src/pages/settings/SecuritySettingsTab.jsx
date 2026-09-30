@@ -178,6 +178,7 @@ const SecuritySettingsTab = () => {
               <Button
                 variant="outlined"
                 color="primary"
+                sx={{ width: { xs: '100%', sm: 'auto' } }}
                 onClick={() => navigate('/profile')}
               >
                 Go to Profile & Password

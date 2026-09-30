@@ -1,7 +1,8 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Box, Grid } from '@mui/material';
+import { Box, Grid, TextField, MenuItem, InputAdornment } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
+import SearchIcon from '@mui/icons-material/Search';
 import Inventory2OutlinedIcon from '@mui/icons-material/Inventory2Outlined';
 import CheckCircleOutlineOutlinedIcon from '@mui/icons-material/CheckCircleOutlineOutlined';
 import WarningAmberOutlinedIcon from '@mui/icons-material/WarningAmberOutlined';
@@ -11,8 +12,8 @@ import toast from 'react-hot-toast';
 
 import PageHeader from '../../components/common/PageHeader';
 import StatCard from '../../components/common/StatCard';
+import FilterBar from '../../components/common/FilterBar';
 import ConfirmDialog from '../../components/common/ConfirmDialog';
-import FilterDrawer from '../../components/common/FilterDrawer';
 import ItemTable from '../../components/item/ItemTable';
 import ItemDialog from '../../components/item/ItemDialog';
 import itemService from '../../services/itemService';
@@ -230,76 +231,109 @@ const Items = () => {
       />
 
       {/* KPI Metric Cards */}
-      <Grid container spacing={2.5} sx={{ mb: 3 }}>
-        <Grid item xs={12} sm={6} md={2.4}>
-          <StatCard
-            title="Total Catalog"
-            value={summary?.totalItems != null ? summary.totalItems : '—'}
-            icon={<Inventory2OutlinedIcon sx={{ color: 'primary.main', fontSize: 28 }} />}
-            subtitle={`${summary?.activeItems || 0} active`}
-          />
-        </Grid>
-
-        <Grid item xs={12} sm={6} md={2.4}>
-          <StatCard
-            title="In Stock"
-            value={summary?.inStockCount != null ? summary.inStockCount : '—'}
-            icon={<CheckCircleOutlineOutlinedIcon sx={{ color: 'success.main', fontSize: 28 }} />}
-            subtitle="Optimal levels"
-          />
-        </Grid>
-
-        <Grid item xs={12} sm={6} md={2.4}>
-          <StatCard
-            title="Low Stock"
-            value={summary?.lowStockCount != null ? summary.lowStockCount : '—'}
-            icon={<WarningAmberOutlinedIcon sx={{ color: 'warning.main', fontSize: 28 }} />}
-            subtitle="Needs reordering"
-          />
-        </Grid>
-
-        <Grid item xs={12} sm={6} md={2.4}>
-          <StatCard
-            title="Out of Stock"
-            value={summary?.outOfStockCount != null ? summary.outOfStockCount : '—'}
-            icon={<RemoveCircleOutlineOutlinedIcon sx={{ color: 'error.main', fontSize: 28 }} />}
-            subtitle="Zero inventory"
-          />
-        </Grid>
-
-        <Grid item xs={12} sm={6} md={2.4}>
-          <StatCard
-            title="Stock Value"
-            value={
-              summary?.totalStockValue != null
-                ? `₹ ${(summary.totalStockValue).toLocaleString('en-IN', { maximumFractionDigits: 0 })}`
-                : '—'
-            }
-            icon={<AccountBalanceWalletOutlinedIcon sx={{ color: 'secondary.main', fontSize: 28 }} />}
-            subtitle="Cost valuation"
-          />
-        </Grid>
-      </Grid>
+      <Box
+        sx={{
+          display: 'grid',
+          gridTemplateColumns: {
+            xs: '1fr',
+            sm: 'repeat(2, 1fr)',
+            md: 'repeat(3, 1fr)',
+            lg: 'repeat(5, 1fr)',
+          },
+          gap: 2.5,
+          mb: 3,
+        }}
+      >
+        <StatCard
+          title="Total Catalog"
+          value={summary?.totalItems != null ? summary.totalItems : '—'}
+          icon={<Inventory2OutlinedIcon />}
+          subtitle={`${summary?.activeItems || 0} active`}
+          color="primary"
+        />
+        <StatCard
+          title="In Stock"
+          value={summary?.inStockCount != null ? summary.inStockCount : '—'}
+          icon={<CheckCircleOutlineOutlinedIcon />}
+          subtitle="Optimal levels"
+          color="success"
+        />
+        <StatCard
+          title="Low Stock"
+          value={summary?.lowStockCount != null ? summary.lowStockCount : '—'}
+          icon={<WarningAmberOutlinedIcon />}
+          subtitle="Needs reordering"
+          color="warning"
+        />
+        <StatCard
+          title="Out of Stock"
+          value={summary?.outOfStockCount != null ? summary.outOfStockCount : '—'}
+          icon={<RemoveCircleOutlineOutlinedIcon />}
+          subtitle="Zero inventory"
+          color="error"
+        />
+        <StatCard
+          title="Stock Value"
+          value={
+            summary?.totalStockValue != null
+              ? `₹ ${(summary.totalStockValue).toLocaleString('en-IN', { maximumFractionDigits: 0 })}`
+              : '—'
+          }
+          icon={<AccountBalanceWalletOutlinedIcon />}
+          subtitle="Cost valuation"
+          color="secondary"
+        />
+      </Box>
 
       {/* Filters Toolbar */}
-      <FilterDrawer
-        search={search}
-        onSearchChange={handleSearchChange}
-        searchPlaceholder="Search by item name, code or barcode..."
-        filterType="item"
-        filterState={{ categoryId, stockStatus, status }}
-        onFilterChange={(key, val) => {
-          if (key === 'categoryId') handleCategoryChange(val);
-          if (key === 'stockStatus') handleStockStatusChange(val);
-          if (key === 'status') handleStatusChange(val);
-        }}
-        filterOptions={{ categories }}
+      <FilterBar
         isFiltered={search.trim() !== '' || categoryId !== 'ALL' || stockStatus !== 'ALL' || status !== 'ALL'}
         onReset={handleResetFilters}
-        resultCount={totalElements}
-        totalCount={summary?.totalItems}
-        itemName="Items"
-      />
+      >
+        <TextField
+          size="small"
+          placeholder="Search by item name, code or barcode..."
+          value={search}
+          onChange={(e) => handleSearchChange(e.target.value)}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <SearchIcon fontSize="small" color="action" />
+              </InputAdornment>
+            ),
+          }}
+          sx={{ flex: 2, minWidth: { xs: '100%', sm: 240 } }}
+        />
+        <TextField
+          select size="small" label="Category" value={categoryId}
+          onChange={(e) => handleCategoryChange(e.target.value)}
+          sx={{ minWidth: 160 }}
+        >
+          <MenuItem value="ALL">All Categories</MenuItem>
+          {categories.map((c) => (
+            <MenuItem key={c.id} value={String(c.id)}>{c.categoryName}</MenuItem>
+          ))}
+        </TextField>
+        <TextField
+          select size="small" label="Stock Status" value={stockStatus}
+          onChange={(e) => handleStockStatusChange(e.target.value)}
+          sx={{ minWidth: 140 }}
+        >
+          <MenuItem value="ALL">All Stock</MenuItem>
+          <MenuItem value="IN_STOCK">In Stock</MenuItem>
+          <MenuItem value="LOW_STOCK">Low Stock</MenuItem>
+          <MenuItem value="OUT_OF_STOCK">Out of Stock</MenuItem>
+        </TextField>
+        <TextField
+          select size="small" label="Status" value={status}
+          onChange={(e) => handleStatusChange(e.target.value)}
+          sx={{ minWidth: 130 }}
+        >
+          <MenuItem value="ALL">All Status</MenuItem>
+          <MenuItem value="ACTIVE">Active</MenuItem>
+          <MenuItem value="INACTIVE">Inactive</MenuItem>
+        </TextField>
+      </FilterBar>
 
       {/* Enterprise Data Table */}
       <ItemTable

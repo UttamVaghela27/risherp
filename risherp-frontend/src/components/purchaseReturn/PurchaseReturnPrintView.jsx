@@ -1,4 +1,4 @@
-import { Box, Typography, Table, TableBody, TableCell, TableHead, TableRow } from '@mui/material';
+import { Box, Typography, Table, TableBody, TableCell, TableHead, TableRow, TableContainer } from '@mui/material';
 import { formatCurrency, formatQuantity } from '../../utils/formatters';
 
 const PurchaseReturnPrintView = ({ ret }) => {
@@ -13,7 +13,7 @@ const PurchaseReturnPrintView = ({ ret }) => {
       className="printable-return"
       sx={{
         fontFamily: '"Helvetica Neue", Helvetica, Arial, sans-serif',
-        p: { xs: 2, sm: 4 },
+        p: { xs: 1.5, sm: 3, md: 4 },
         maxWidth: 800,
         mx: 'auto',
         bgcolor: 'background.paper',
@@ -22,7 +22,7 @@ const PurchaseReturnPrintView = ({ ret }) => {
       }}
     >
       {/* Header */}
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1 }}>
+      <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, justifyContent: 'space-between', alignItems: { xs: 'flex-start', sm: 'flex-start' }, gap: 1.5, mb: 2 }}>
         <Box>
           <Typography variant="h5" sx={{ fontWeight: 700, color: '#1e3a8a', mb: 0.5 }}>{companyName}</Typography>
           <Typography variant="subtitle2" sx={{ color: '#dc2626', fontWeight: 600, textTransform: 'uppercase', mb: 0.5, fontSize: '0.9rem' }}>
@@ -32,7 +32,7 @@ const PurchaseReturnPrintView = ({ ret }) => {
             Email: {companyEmail} &nbsp; Mobile: {companyMobile}
           </Typography>
         </Box>
-        <Box sx={{ textAlign: 'right' }}>
+        <Box sx={{ textAlign: { xs: 'left', sm: 'right' } }}>
           <Typography variant="h5" sx={{ fontWeight: 700, color: '#dc2626', mb: 1 }}>{ret.returnNumber}</Typography>
           <Typography variant="body2" sx={{ color: '#000', mb: 0.5, fontSize: '0.85rem' }}>
             Return Date: {ret.returnDate || '—'}
@@ -57,41 +57,43 @@ const PurchaseReturnPrintView = ({ ret }) => {
       </Box>
 
       {/* Items Table */}
-      <Table sx={{ mb: 2, border: '1px solid #e5e7eb' }} size="small">
-        <TableHead sx={{ bgcolor: '#f0f4f8' }}>
-          <TableRow>
-            <TableCell sx={{ fontWeight: 700, color: '#1e3a8a', py: 1 }}>#</TableCell>
-            <TableCell sx={{ fontWeight: 700, color: '#1e3a8a', py: 1 }}>Item</TableCell>
-            <TableCell align="center" sx={{ fontWeight: 700, color: '#1e3a8a', py: 1 }}>Orig. Qty</TableCell>
-            <TableCell align="center" sx={{ fontWeight: 700, color: '#1e3a8a', py: 1 }}>Return Qty</TableCell>
-            <TableCell align="right" sx={{ fontWeight: 700, color: '#1e3a8a', py: 1 }}>Rate</TableCell>
-            <TableCell align="right" sx={{ fontWeight: 700, color: '#1e3a8a', py: 1 }}>Amount</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {(ret.items || []).map((item, idx) => (
-            <TableRow key={item.id || idx}>
-              <TableCell sx={{ color: '#000', py: 1, borderBottom: '1px solid #e5e7eb' }}>{idx + 1}</TableCell>
-              <TableCell sx={{ color: '#000', py: 1, borderBottom: '1px solid #e5e7eb' }}>
-                {item.itemNameSnapshot}
-                {item.itemCodeSnapshot && <div style={{ fontSize: '0.75rem', color: '#666' }}>{item.itemCodeSnapshot}</div>}
-              </TableCell>
-              <TableCell align="center" sx={{ color: '#000', py: 1, borderBottom: '1px solid #e5e7eb' }}>
-                {formatQuantity(item.originalQuantity)} {item.unitSnapshot}
-              </TableCell>
-              <TableCell align="center" sx={{ color: '#000', fontWeight: 700, py: 1, borderBottom: '1px solid #e5e7eb' }}>
-                {formatQuantity(item.returnQuantity)} {item.unitSnapshot}
-              </TableCell>
-              <TableCell align="right" sx={{ color: '#000', py: 1, borderBottom: '1px solid #e5e7eb' }}>{formatCurrency(item.rate)}</TableCell>
-              <TableCell align="right" sx={{ color: '#000', fontWeight: 700, py: 1, borderBottom: '1px solid #e5e7eb' }}>{formatCurrency(item.lineTotal)}</TableCell>
+      <TableContainer sx={{ overflowX: 'auto', maxWidth: '100%', mb: 2 }}>
+        <Table sx={{ minWidth: 550, border: '1px solid #e5e7eb' }} size="small">
+          <TableHead sx={{ bgcolor: '#f0f4f8' }}>
+            <TableRow>
+              <TableCell sx={{ fontWeight: 700, color: '#1e3a8a', py: 1 }}>#</TableCell>
+              <TableCell sx={{ fontWeight: 700, color: '#1e3a8a', py: 1 }}>Item</TableCell>
+              <TableCell align="center" sx={{ fontWeight: 700, color: '#1e3a8a', py: 1 }}>Orig. Qty</TableCell>
+              <TableCell align="center" sx={{ fontWeight: 700, color: '#1e3a8a', py: 1 }}>Return Qty</TableCell>
+              <TableCell align="right" sx={{ fontWeight: 700, color: '#1e3a8a', py: 1 }}>Rate</TableCell>
+              <TableCell align="right" sx={{ fontWeight: 700, color: '#1e3a8a', py: 1 }}>Amount</TableCell>
             </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+          </TableHead>
+          <TableBody>
+            {(ret.items || []).map((item, idx) => (
+              <TableRow key={item.id || idx}>
+                <TableCell sx={{ color: '#000', py: 1, borderBottom: '1px solid #e5e7eb' }}>{idx + 1}</TableCell>
+                <TableCell sx={{ color: '#000', py: 1, borderBottom: '1px solid #e5e7eb' }}>
+                  {item.itemNameSnapshot}
+                  {item.itemCodeSnapshot && <div style={{ fontSize: '0.75rem', color: '#666' }}>{item.itemCodeSnapshot}</div>}
+                </TableCell>
+                <TableCell align="center" sx={{ color: '#000', py: 1, borderBottom: '1px solid #e5e7eb' }}>
+                  {formatQuantity(item.originalQuantity)} {item.unitSnapshot}
+                </TableCell>
+                <TableCell align="center" sx={{ color: '#000', fontWeight: 700, py: 1, borderBottom: '1px solid #e5e7eb' }}>
+                  {formatQuantity(item.returnQuantity)} {item.unitSnapshot}
+                </TableCell>
+                <TableCell align="right" sx={{ color: '#000', py: 1, borderBottom: '1px solid #e5e7eb' }}>{formatCurrency(item.rate)}</TableCell>
+                <TableCell align="right" sx={{ color: '#000', fontWeight: 700, py: 1, borderBottom: '1px solid #e5e7eb' }}>{formatCurrency(item.lineTotal)}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
 
       {/* Bottom Section */}
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 4 }}>
-        <Box sx={{ width: '50%', pt: 1 }}>
+      <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, justifyContent: 'space-between', gap: 2, mb: 4 }}>
+        <Box sx={{ width: { xs: '100%', sm: '50%' }, pt: 1 }}>
           {ret.refundMode && (
             <Typography variant="body2" sx={{ color: '#000', mb: 0.5, fontSize: '0.85rem' }}>
               Adjustment / Refund Mode: {ret.refundMode.replace('_', ' ')}
@@ -103,7 +105,7 @@ const PurchaseReturnPrintView = ({ ret }) => {
             </Typography>
           )}
         </Box>
-        <Box sx={{ width: '45%' }}>
+        <Box sx={{ width: { xs: '100%', sm: '48%' } }}>
           <Table sx={{ border: '1px solid #e5e7eb' }} size="small">
             <TableBody>
               <TableRow>

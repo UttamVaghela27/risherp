@@ -268,7 +268,7 @@ const ApplicationSettingsTab = () => {
                   color="primary"
                   startIcon={<SaveIcon />}
                   disabled={saving}
-                  sx={{ px: 3.5, py: 1, height: 42, borderRadius: 2 }}
+                  sx={{ px: 3.5, py: 1, height: 42, borderRadius: 2, width: { xs: '100%', sm: 'auto' } }}
                 >
                   {saving ? 'Saving...' : 'Save Application Settings'}
                 </Button>

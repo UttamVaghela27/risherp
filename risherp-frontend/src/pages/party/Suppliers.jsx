@@ -175,33 +175,39 @@ const Suppliers = () => {
       />
 
       {/* Metric Cards Row */}
-      <Grid container spacing={2.5} sx={{ mb: 3 }}>
-        <Grid item xs={12} sm={4}>
-          <StatCard
-            title="Total Suppliers"
-            value={summary?.totalSuppliers ?? 0}
-            icon={<BusinessOutlinedIcon fontSize="small" />}
-            color="secondary"
-          />
-        </Grid>
-        <Grid item xs={12} sm={4}>
-          <StatCard
-            title="Active Suppliers"
-            value={summary?.totalSuppliers ?? 0}
-            icon={<CheckCircleOutlineOutlinedIcon fontSize="small" />}
-            color="success"
-          />
-        </Grid>
-        <Grid item xs={12} sm={4}>
-          <StatCard
-            title="Supplier Payables"
-            value={summary?.totalPayables ?? 0}
-            icon={<TrendingDownOutlinedIcon fontSize="small" />}
-            color="error"
-            isCurrency
-          />
-        </Grid>
-      </Grid>
+      <Box
+        sx={{
+          display: 'grid',
+          gridTemplateColumns: {
+            xs: '1fr',
+            sm: 'repeat(2, 1fr)',
+            md: 'repeat(3, 1fr)',
+            lg: 'repeat(3, 1fr)',
+          },
+          gap: 2.5,
+          mb: 3,
+        }}
+      >
+        <StatCard
+          title="Total Suppliers"
+          value={summary?.totalSuppliers ?? 0}
+          icon={<BusinessOutlinedIcon />}
+          color="secondary"
+        />
+        <StatCard
+          title="Active Suppliers"
+          value={summary?.totalSuppliers ?? 0}
+          icon={<CheckCircleOutlineOutlinedIcon />}
+          color="success"
+        />
+        <StatCard
+          title="Supplier Payables"
+          value={summary?.totalPayables ?? 0}
+          icon={<TrendingDownOutlinedIcon />}
+          color="error"
+          isCurrency
+        />
+      </Box>
 
       {/* Filter Toolbar (Type filter hidden because locked to Supplier) */}
       <PartyFilters

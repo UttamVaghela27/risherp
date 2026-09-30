@@ -1,11 +1,9 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import {
   Box,
-  Typography,
   Tabs,
   Tab,
   Paper,
-  Chip,
 } from '@mui/material';
 import Inventory2OutlinedIcon from '@mui/icons-material/Inventory2Outlined';
 import LayersOutlinedIcon from '@mui/icons-material/LayersOutlined';
@@ -15,6 +13,7 @@ import ErrorOutlineOutlinedIcon from '@mui/icons-material/ErrorOutlineOutlined';
 
 import reportService from '../../services/reportService';
 import categoryService from '../../services/categoryService';
+import PageHeader from '../../components/common/PageHeader';
 import ReportFilters from '../../components/reports/ReportFilters';
 import ReportSummaryCards from '../../components/reports/ReportSummaryCards';
 import ReportTable from '../../components/reports/ReportTable';
@@ -54,7 +53,10 @@ const StockReport = () => {
   const [lowStockData, setLowStockData] = useState([]);
 
   useEffect(() => {
-    categoryService.getCategories().then((res) => setCategories(res || [])).catch(console.error);
+    categoryService.getAllActiveCategories().then((res) => {
+      const catList = res?.data || res?.content || (Array.isArray(res) ? res : []);
+      setCategories(catList);
+    }).catch(console.error);
   }, []);
 
   const fetchReportData = useCallback(async () => {
@@ -148,7 +150,7 @@ const StockReport = () => {
       } else if (activeTab === 2) {
         csvContent += 'Item Code,Item Name,Category,Unit,Current Stock,Min Stock,Shortage,Status\n';
         lowStockData.forEach((r) => {
-          csvContent += `"${r.itemCode}","${r.itemName}","${r.categoryName}","${r.unit}","${r.currentStock}","${r.minimumStock}","${r.shortage}","${r.status}"\n`;
+          csvContent += `"${r.itemCode}","${r.itemName}","${r.categoryName}","${r.unit}","${r.currentStock}","${r.minimumStock}","${r.shortageQuantity}","${r.stockStatus}"\n`;
         });
       }
 
@@ -176,20 +178,20 @@ const StockReport = () => {
         {
           title: 'Total Items',
           value: summary.totalItems,
-          icon: <Inventory2OutlinedIcon />,
+          icon: <LayersOutlinedIcon />,
           color: 'primary',
         },
         {
-          title: 'Total Stock Qty',
-          value: parseFloat(summary.totalStockQuantity || 0).toLocaleString('en-IN', { maximumFractionDigits: 2 }),
-          icon: <LayersOutlinedIcon />,
-          color: 'info',
-        },
-        {
-          title: 'Total Stock Value',
-          value: fmt(summary.totalStockValue),
+          title: 'Total Valuation',
+          value: fmt(summary.totalValuation),
           icon: <AccountBalanceWalletOutlinedIcon />,
           color: 'success',
+        },
+        {
+          title: 'In Stock Items',
+          value: summary.inStockItems,
+          icon: <Inventory2OutlinedIcon />,
+          color: 'info',
         },
         {
           title: 'Low Stock Items',
@@ -207,82 +209,60 @@ const StockReport = () => {
     : [];
 
   const stockColumns = [
-    { id: 'itemCode', label: 'Item Code', bold: true, minWidth: 110, sortable: true },
-    { id: 'itemName', label: 'Item Name', minWidth: 180, sortable: true },
-    { id: 'categoryName', label: 'Category', minWidth: 130 },
-    { id: 'unit', label: 'Unit', align: 'center', minWidth: 80 },
-    { id: 'currentStock', label: 'Current Stock', format: 'qty', align: 'right', bold: true, minWidth: 110 },
-    { id: 'minimumStock', label: 'Min Stock', format: 'qty', align: 'right', minWidth: 100 },
-    { id: 'purchaseRate', label: 'Purchase Rate', format: 'currency', align: 'right', minWidth: 110 },
-    { id: 'saleRate', label: 'Sale Rate', format: 'currency', align: 'right', minWidth: 110 },
+    { id: 'itemCode', label: 'Item Code', bold: true, minWidth: 110 },
+    { id: 'itemName', label: 'Item Name', minWidth: 180 },
+    { id: 'categoryName', label: 'Category', minWidth: 120 },
+    { id: 'unit', label: 'Unit', minWidth: 80 },
+    { id: 'currentStock', label: 'Current Qty', format: 'qty', align: 'right', bold: true, minWidth: 110 },
+    { id: 'minimumStock', label: 'Min Level', format: 'qty', align: 'right', minWidth: 100 },
+    { id: 'purchaseRate', label: 'Cost Price', format: 'currency', align: 'right', minWidth: 110 },
+    { id: 'saleRate', label: 'Sale Price', format: 'currency', align: 'right', minWidth: 110 },
     { id: 'stockValue', label: 'Stock Value', format: 'currency', align: 'right', bold: true, minWidth: 120 },
-    { id: 'stockStatus', label: 'Status', format: 'status', align: 'center', minWidth: 100 },
+    { id: 'stockStatus', label: 'Status', format: 'status', minWidth: 110 },
   ];
 
   const movementColumns = [
-    {
-      id: 'transactionDate',
-      label: 'Date & Time',
-      minWidth: 140,
-      render: (r) => (r.transactionDate ? new Date(r.transactionDate).toLocaleString('en-IN') : '-'),
-    },
-    { id: 'itemCode', label: 'Item Code', bold: true, minWidth: 100 },
-    { id: 'itemName', label: 'Item Name', minWidth: 160 },
-    {
-      id: 'transactionType',
-      label: 'Type',
-      align: 'center',
-      minWidth: 80,
-      render: (r) => (
-        <Chip
-          label={r.transactionType}
-          size="small"
-          color={r.transactionType === 'IN' ? 'success' : 'error'}
-          sx={{ fontWeight: 700, height: 20, fontSize: '0.7rem' }}
-        />
-      ),
-    },
-    { id: 'referenceType', label: 'Ref Type', minWidth: 120 },
+    { id: 'transactionDate', label: 'Date', format: 'date', bold: true, minWidth: 120 },
+    { id: 'itemCode', label: 'Item Code', minWidth: 110 },
+    { id: 'itemName', label: 'Item Name', minWidth: 180 },
+    { id: 'transactionType', label: 'Type', format: 'status', minWidth: 100 },
+    { id: 'referenceType', label: 'Ref Type', minWidth: 110 },
     { id: 'referenceNumber', label: 'Ref Number', minWidth: 120 },
     { id: 'quantity', label: 'Qty', format: 'qty', align: 'right', bold: true, minWidth: 90 },
     { id: 'stockBefore', label: 'Before', format: 'qty', align: 'right', minWidth: 90 },
     { id: 'stockAfter', label: 'After', format: 'qty', align: 'right', minWidth: 90 },
-    { id: 'stockValue', label: 'Value', format: 'currency', align: 'right', minWidth: 110 },
+    { id: 'stockValue', label: 'Total Value', format: 'currency', align: 'right', minWidth: 110 },
   ];
 
   const lowStockColumns = [
     { id: 'itemCode', label: 'Item Code', bold: true, minWidth: 110 },
     { id: 'itemName', label: 'Item Name', minWidth: 180 },
-    { id: 'categoryName', label: 'Category', minWidth: 130 },
-    { id: 'unit', label: 'Unit', align: 'center', minWidth: 80 },
-    { id: 'currentStock', label: 'Current Stock', format: 'qty', align: 'right', minWidth: 110 },
+    { id: 'categoryName', label: 'Category', minWidth: 120 },
+    { id: 'unit', label: 'Unit', minWidth: 80 },
+    { id: 'currentStock', label: 'Current Qty', format: 'qty', align: 'right', bold: true, minWidth: 110 },
     { id: 'minimumStock', label: 'Min Required', format: 'qty', align: 'right', minWidth: 110 },
-    { id: 'shortage', label: 'Shortage', format: 'qty', align: 'right', bold: true, minWidth: 110 },
-    { id: 'status', label: 'Status', format: 'status', align: 'center', minWidth: 110 },
+    { id: 'shortageQuantity', label: 'Deficit Qty', format: 'qty', align: 'right', bold: true, minWidth: 110 },
+    { id: 'stockStatus', label: 'Alert Status', format: 'status', minWidth: 120 },
   ];
 
   return (
     <Box sx={{ p: { xs: 2, md: 3 } }}>
-      {/* Header */}
-      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2, flexWrap: 'wrap', gap: 1 }}>
-        <Box>
-          <Typography variant="h5" fontWeight={800} color="text.primary">
-            Stock Report & Valuation
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            Authoritative inventory stock levels, warehouse valuation, stock ledger movements, and low stock shortage alerts.
-          </Typography>
-        </Box>
-        <ExportButtons
-          onPdf={handleExportPdf}
-          onCsv={handleExportCsv}
-          pdfLoading={pdfLoading}
-          csvLoading={csvLoading}
-        />
-      </Box>
+      {/* Standard Header with Export Actions */}
+      <PageHeader
+        title="Stock Valuation & Movement Report"
+        subtitle="Real-time stock valuation, unit costs, inventory movement ledger, and low-stock alerts."
+        actions={
+          <ExportButtons
+            onPdf={handleExportPdf}
+            onCsv={handleExportCsv}
+            pdfLoading={pdfLoading}
+            csvLoading={csvLoading}
+          />
+        }
+      />
 
       {/* Tabs */}
-      <Paper sx={{ mb: 2, borderBottom: 1, borderColor: 'divider' }} elevation={0}>
+      <Paper sx={{ mb: 2.5, borderBottom: 1, borderColor: 'divider' }} elevation={0}>
         <Tabs
           value={activeTab}
           onChange={(_, v) => { setActiveTab(v); setPage(0); }}
@@ -295,7 +275,10 @@ const StockReport = () => {
         </Tabs>
       </Paper>
 
-      {/* Filters */}
+      {/* Stats Cards */}
+      {activeTab === 0 && <ReportSummaryCards cards={kpiCards} loading={loading} />}
+
+      {/* FilterBar with Search and Relevant Filters */}
       <ReportFilters
         search={search}
         onSearchChange={(v) => { setSearch(v); setPage(0); }}
@@ -317,9 +300,6 @@ const StockReport = () => {
         onDateToChange={(v) => { setDateTo(v); setPage(0); }}
         onReset={handleResetFilters}
       />
-
-      {/* Summary Cards */}
-      {activeTab === 0 && <ReportSummaryCards cards={kpiCards} loading={loading} />}
 
       {/* Tables */}
       {activeTab === 0 && (

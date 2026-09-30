@@ -12,7 +12,7 @@ import toast from 'react-hot-toast';
 import PageHeader from '../../components/common/PageHeader';
 import StatCard from '../../components/common/StatCard';
 import ConfirmDialog from '../../components/common/ConfirmDialog';
-import FilterDrawer from '../../components/common/FilterDrawer';
+import PartyFilters from '../../components/party/PartyFilters';
 import PartyTable from '../../components/party/PartyTable';
 import PartyDialog from '../../components/party/PartyDialog';
 import partyService from '../../services/partyService';
@@ -188,67 +188,62 @@ const PartyList = () => {
       />
 
       {/* Metric Cards Row */}
-      <Grid container spacing={2.5} sx={{ mb: 3 }}>
-        <Grid item xs={12} sm={6} md={2.4}>
-          <StatCard
-            title="Total Parties"
-            value={summary?.totalParties ?? 0}
-            icon={<PeopleAltOutlinedIcon fontSize="small" />}
-            color="primary"
-          />
-        </Grid>
-        <Grid item xs={12} sm={6} md={2.4}>
-          <StatCard
-            title="Customers"
-            value={summary?.totalCustomers ?? 0}
-            icon={<PersonOutlinedIcon fontSize="small" />}
-            color="primary"
-          />
-        </Grid>
-        <Grid item xs={12} sm={6} md={2.4}>
-          <StatCard
-            title="Suppliers"
-            value={summary?.totalSuppliers ?? 0}
-            icon={<BusinessOutlinedIcon fontSize="small" />}
-            color="secondary"
-          />
-        </Grid>
-        <Grid item xs={12} sm={6} md={2.4}>
-          <StatCard
-            title="Opening Receivables"
-            value={summary?.totalReceivables ?? 0}
-            icon={<TrendingUpOutlinedIcon fontSize="small" />}
-            color="success"
-            isCurrency
-          />
-        </Grid>
-        <Grid item xs={12} sm={6} md={2.4}>
-          <StatCard
-            title="Opening Payables"
-            value={summary?.totalPayables ?? 0}
-            icon={<TrendingDownOutlinedIcon fontSize="small" />}
-            color="error"
-            isCurrency
-          />
-        </Grid>
-      </Grid>
+      <Box
+        sx={{
+          display: 'grid',
+          gridTemplateColumns: {
+            xs: '1fr',
+            sm: 'repeat(2, 1fr)',
+            md: 'repeat(3, 1fr)',
+            lg: 'repeat(5, 1fr)',
+          },
+          gap: 2.5,
+          mb: 3,
+        }}
+      >
+        <StatCard
+          title="Total Parties"
+          value={summary?.totalParties ?? 0}
+          icon={<PeopleAltOutlinedIcon />}
+          color="primary"
+        />
+        <StatCard
+          title="Customers"
+          value={summary?.totalCustomers ?? 0}
+          icon={<PersonOutlinedIcon />}
+          color="primary"
+        />
+        <StatCard
+          title="Suppliers"
+          value={summary?.totalSuppliers ?? 0}
+          icon={<BusinessOutlinedIcon />}
+          color="secondary"
+        />
+        <StatCard
+          title="Opening Receivables"
+          value={summary?.totalReceivables ?? 0}
+          icon={<TrendingUpOutlinedIcon />}
+          color="success"
+          isCurrency
+        />
+        <StatCard
+          title="Opening Payables"
+          value={summary?.totalPayables ?? 0}
+          icon={<TrendingDownOutlinedIcon />}
+          color="error"
+          isCurrency
+        />
+      </Box>
 
       {/* Filter Toolbar */}
-      <FilterDrawer
+      <PartyFilters
         search={search}
         onSearchChange={handleSearchChange}
-        searchPlaceholder="Search by party name, code, mobile, email or city..."
-        filterType="party"
-        filterState={{ partyType: type, status }}
-        onFilterChange={(key, val) => {
-          if (key === 'partyType') handleTypeChange(val);
-          if (key === 'status') handleStatusChange(val);
-        }}
-        isFiltered={search.trim() !== '' || type !== 'ALL' || status !== 'ALL'}
+        type={type}
+        onTypeChange={handleTypeChange}
+        status={status}
+        onStatusChange={handleStatusChange}
         onReset={handleResetFilters}
-        resultCount={totalElements}
-        totalCount={summary?.totalParties}
-        itemName="Parties"
       />
 
       {/* Parties Table */}

@@ -2,7 +2,6 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Box,
-  Typography,
   IconButton,
   Tooltip,
 } from '@mui/material';
@@ -16,6 +15,7 @@ import CheckCircleOutlineOutlinedIcon from '@mui/icons-material/CheckCircleOutli
 
 import reportService from '../../services/reportService';
 import partyService from '../../services/partyService';
+import PageHeader from '../../components/common/PageHeader';
 import ReportFilters from '../../components/reports/ReportFilters';
 import ReportSummaryCards from '../../components/reports/ReportSummaryCards';
 import ReportTable from '../../components/reports/ReportTable';
@@ -50,7 +50,8 @@ const ReceiptReport = () => {
 
   useEffect(() => {
     partyService.getParties({ type: 'CUSTOMER', size: 100 }).then((res) => {
-      setParties(res.content || []);
+      const list = res?.data?.content || res?.content || res?.data || (Array.isArray(res) ? res : []);
+      setParties(list);
     }).catch(console.error);
   }, []);
 
@@ -129,15 +130,15 @@ const ReceiptReport = () => {
     setCsvLoading(true);
     try {
       let csvContent = 'data:text/csv;charset=utf-8,';
-      csvContent += 'Receipt Number,Date,Customer,Amount,Payment Mode,Reference Number,Allocated Amount,Unallocated Amount,Status,Created By\n';
+      csvContent += 'Receipt Number,Date,Customer,Amount,Payment Mode,Reference / UTR,Allocated Amount,Unallocated Amount,Status\n';
       receipts.forEach((r) => {
-        csvContent += `"${r.receiptNumber}","${r.receiptDate}","${r.partyName}","${r.amount}","${r.paymentMode}","${r.referenceNumber || ''}","${r.allocatedAmount}","${r.unallocatedAmount}","${r.status}","${r.createdBy}"\n`;
+        csvContent += `"${r.receiptNumber}","${r.receiptDate}","${r.partyName}","${r.amount}","${r.paymentMode}","${r.referenceNumber || ''}","${r.allocatedAmount}","${r.unallocatedAmount}","${r.status}"\n`;
       });
 
       const encodedUri = encodeURI(csvContent);
       const link = document.createElement('a');
       link.setAttribute('href', encodedUri);
-      link.setAttribute('download', 'Receipt_Report.csv');
+      link.setAttribute('download', `Receipt_Report_${dateFrom}_to_${dateTo}.csv`);
       document.body.appendChild(link);
       link.click();
       link.remove();
@@ -163,30 +164,30 @@ const ReceiptReport = () => {
         },
         {
           title: 'Total Collected',
-          value: fmt(summary.totalAmount),
+          value: fmt(summary.totalCollected),
           icon: <AttachMoneyOutlinedIcon />,
           color: 'success',
         },
         {
-          title: 'Cash Collections',
-          value: fmt(summary.cashAmount),
-          icon: <PaymentsOutlinedIcon />,
+          title: 'Bank Collections',
+          value: fmt(summary.bankCollected),
+          icon: <AccountBalanceOutlinedIcon />,
           color: 'info',
         },
         {
-          title: 'Bank Transfers',
-          value: fmt(summary.bankAmount),
-          icon: <AccountBalanceOutlinedIcon />,
+          title: 'UPI Collections',
+          value: fmt(summary.upiCollected),
+          icon: <QrCodeScannerOutlinedIcon />,
           color: 'secondary',
         },
         {
-          title: 'UPI Collections',
-          value: fmt(summary.upiAmount),
-          icon: <QrCodeScannerOutlinedIcon />,
+          title: 'Cash Collections',
+          value: fmt(summary.cashCollected),
+          icon: <PaymentsOutlinedIcon />,
           color: 'warning',
         },
         {
-          title: 'Allocated to Invoices',
+          title: 'Allocated Amount',
           value: fmt(summary.allocatedAmount),
           icon: <CheckCircleOutlineOutlinedIcon />,
           color: 'success',
@@ -220,25 +221,24 @@ const ReceiptReport = () => {
 
   return (
     <Box sx={{ p: { xs: 2, md: 3 } }}>
-      {/* Header */}
-      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2, flexWrap: 'wrap', gap: 1 }}>
-        <Box>
-          <Typography variant="h5" fontWeight={800} color="text.primary">
-            Customer Receipts Report
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            Inflow payment collections, mode summaries (Cash, Bank, UPI, Cheque), and invoice allocation tracking.
-          </Typography>
-        </Box>
-        <ExportButtons
-          onPdf={handleExportPdf}
-          onCsv={handleExportCsv}
-          pdfLoading={pdfLoading}
-          csvLoading={csvLoading}
-        />
-      </Box>
+      {/* Standard Header with Export Actions */}
+      <PageHeader
+        title="Customer Receipts Report"
+        subtitle="Inflow payment collections, mode summaries (Cash, Bank, UPI, Cheque), and invoice allocation tracking."
+        actions={
+          <ExportButtons
+            onPdf={handleExportPdf}
+            onCsv={handleExportCsv}
+            pdfLoading={pdfLoading}
+            csvLoading={csvLoading}
+          />
+        }
+      />
 
-      {/* Filters */}
+      {/* Stats Cards */}
+      <ReportSummaryCards cards={kpiCards} loading={loading} />
+
+      {/* FilterBar with Search and Relevant Filters */}
       <ReportFilters
         datePreset={datePreset}
         onPresetChange={handlePresetChange}
@@ -265,9 +265,6 @@ const ReceiptReport = () => {
         showStatus={true}
         onReset={handleResetFilters}
       />
-
-      {/* KPI Cards */}
-      <ReportSummaryCards cards={kpiCards} loading={loading} />
 
       {/* Table */}
       <ReportTable

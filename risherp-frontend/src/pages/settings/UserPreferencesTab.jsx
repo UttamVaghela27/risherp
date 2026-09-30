@@ -131,7 +131,7 @@ const UserPreferencesTab = () => {
                 name="theme"
                 value={form.theme}
                 onChange={handleChange}
-                sx={{ gap: 2 }}
+                sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, gap: 2 }}
               >
                 <Paper
                   variant="outlined"
@@ -260,7 +260,7 @@ const UserPreferencesTab = () => {
                 color="primary"
                 startIcon={<SaveIcon />}
                 disabled={saving}
-                sx={{ px: 3, py: 1 }}
+                sx={{ px: 3, py: 1, width: { xs: '100%', sm: 'auto' } }}
               >
                 {saving ? 'Saving...' : 'Save Preferences'}
               </Button>

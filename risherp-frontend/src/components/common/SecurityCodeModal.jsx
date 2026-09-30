@@ -71,11 +71,11 @@ const SecurityCodeModal = ({ open, data, onProceed }) => {
         </Typography>
       </DialogTitle>
 
-      <DialogContent sx={{ px: 4, py: 2 }}>
+      <DialogContent sx={{ px: { xs: 2, sm: 4 }, py: 2 }}>
         <Box
           sx={{
             my: 2,
-            p: 3,
+            p: { xs: 2, sm: 3 },
             bgcolor: 'background.default',
             border: '2px dashed #0284c7',
             borderRadius: 2.5,
@@ -92,6 +92,7 @@ const SecurityCodeModal = ({ open, data, onProceed }) => {
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
+              flexWrap: 'wrap',
               gap: 1.5,
               mt: 1,
             }}
@@ -100,9 +101,11 @@ const SecurityCodeModal = ({ open, data, onProceed }) => {
               variant="h4"
               sx={{
                 fontWeight: 800,
-                letterSpacing: 3,
+                letterSpacing: { xs: 1.5, sm: 3 },
+                fontSize: { xs: '1.4rem', sm: '2rem' },
                 fontFamily: 'monospace',
                 color: '#0369a1',
+                wordBreak: 'break-all',
               }}
             >
               {data.securityCode}
@@ -137,7 +140,7 @@ const SecurityCodeModal = ({ open, data, onProceed }) => {
         </Alert>
       </DialogContent>
 
-      <DialogActions sx={{ px: 4, pb: 3, pt: 1 }}>
+      <DialogActions sx={{ px: { xs: 2, sm: 4 }, pb: 3, pt: 1 }}>
         <Button
           fullWidth
           variant="contained"

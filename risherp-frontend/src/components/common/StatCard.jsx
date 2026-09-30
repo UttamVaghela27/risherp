@@ -1,13 +1,13 @@
-import { Card, CardContent, Typography, Box, Skeleton, useTheme,
-  alpha
-} from '@mui/material';
+import React from 'react';
+import { Card, CardContent, Typography, Box, Skeleton, useTheme, alpha } from '@mui/material';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import TrendingDownIcon from '@mui/icons-material/TrendingDown';
 import CurrencyDisplay from './CurrencyDisplay';
 
 /**
  * StatCard Component
- * Executive metric summary card for ERP Dashboard and Reports.
+ * Modern executive metric summary card for ERP Dashboard, Reports, and Master Pages.
+ * Standardized with consistent width, height, aligned rows, and responsive typography.
  */
 const StatCard = ({
   title,
@@ -15,48 +15,55 @@ const StatCard = ({
   icon,
   trend,
   trendType = 'up',
-  subtitle = 'vs yesterday',
+  subtitle,
   isCurrency = false,
   color = 'primary',
+  loading = false,
 }) => {
   const theme = useTheme();
   const isDark = theme.palette.mode === 'dark';
   const isUp = trendType === 'up';
   const isDown = trendType === 'down';
 
-  // Auto-detect loading state: value is null/undefined/'—' means data not yet fetched
-  const isValueLoading = value === null || value === undefined || value === '—';
+  // Auto-detect loading state
+  const isValueLoading = loading || value === null || value === undefined || value === '—';
 
   const colorStyles = {
     primary: {
-      bg: isDark ? 'linear-gradient(135deg, rgba(37,99,235,0.2) 0%, rgba(29,78,216,0.2) 100%)' : 'linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%)',
-      iconColor: isDark ? '#60a5fa' : theme.palette.info.main,
-      glow: isDark ? 'rgba(96,165,250,0.15)' : 'rgba(37, 99, 235, 0.15)',
+      bg: isDark ? 'rgba(59, 130, 246, 0.15)' : '#eff6ff',
+      iconColor: isDark ? '#60a5fa' : '#2563eb',
+      glow: isDark ? 'rgba(96, 165, 250, 0.2)' : 'rgba(37, 99, 235, 0.15)',
+      accent: '#3b82f6',
     },
     success: {
-      bg: isDark ? 'linear-gradient(135deg, rgba(16,185,129,0.2) 0%, rgba(4,120,87,0.2) 100%)' : 'linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%)',
-      iconColor: isDark ? '#34d399' : theme.palette.success.main,
-      glow: isDark ? 'rgba(52,211,153,0.15)' : 'rgba(16, 185, 129, 0.15)',
+      bg: isDark ? 'rgba(16, 185, 129, 0.15)' : '#ecfdf5',
+      iconColor: isDark ? '#34d399' : '#059669',
+      glow: isDark ? 'rgba(52, 211, 153, 0.2)' : 'rgba(16, 185, 129, 0.15)',
+      accent: '#10b981',
     },
     warning: {
-      bg: isDark ? 'linear-gradient(135deg, rgba(245,158,11,0.2) 0%, rgba(180,83,9,0.2) 100%)' : 'linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%)',
-      iconColor: isDark ? '#fbbf24' : theme.palette.warning.main,
-      glow: isDark ? 'rgba(251,191,36,0.15)' : 'rgba(245, 158, 11, 0.15)',
+      bg: isDark ? 'rgba(245, 158, 11, 0.15)' : '#fffbeb',
+      iconColor: isDark ? '#fbbf24' : '#d97706',
+      glow: isDark ? 'rgba(251, 191, 36, 0.2)' : 'rgba(245, 158, 11, 0.15)',
+      accent: '#f59e0b',
     },
     error: {
-      bg: isDark ? 'linear-gradient(135deg, rgba(239,68,68,0.2) 0%, rgba(185,28,28,0.2) 100%)' : 'linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%)',
-      iconColor: isDark ? '#f87171' : theme.palette.error.main,
-      glow: isDark ? 'rgba(248,113,113,0.15)' : 'rgba(239, 68, 68, 0.15)',
+      bg: isDark ? 'rgba(239, 68, 68, 0.15)' : '#fef2f2',
+      iconColor: isDark ? '#f87171' : '#dc2626',
+      glow: isDark ? 'rgba(248, 113, 113, 0.2)' : 'rgba(239, 68, 68, 0.15)',
+      accent: '#ef4444',
     },
     info: {
-      bg: isDark ? 'linear-gradient(135deg, rgba(2,132,199,0.2) 0%, rgba(3,105,161,0.2) 100%)' : 'linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%)',
+      bg: isDark ? 'rgba(6, 182, 212, 0.15)' : '#ecfeff',
       iconColor: isDark ? '#38bdf8' : '#0284c7',
-      glow: isDark ? 'rgba(56,189,248,0.15)' : 'rgba(2, 132, 199, 0.15)',
+      glow: isDark ? 'rgba(56, 189, 248, 0.2)' : 'rgba(2, 132, 199, 0.15)',
+      accent: '#06b6d4',
     },
     secondary: {
-      bg: isDark ? 'linear-gradient(135deg, rgba(15,118,110,0.2) 0%, rgba(17,94,89,0.2) 100%)' : 'linear-gradient(135deg, #f0fdf4 0%, #ccfbf1 100%)',
-      iconColor: isDark ? '#2dd4bf' : '#0f766e',
-      glow: isDark ? 'rgba(45,212,191,0.15)' : 'rgba(15, 118, 110, 0.15)',
+      bg: isDark ? 'rgba(20, 184, 166, 0.15)' : '#f0fdfa',
+      iconColor: isDark ? '#2dd4bf' : '#0d9488',
+      glow: isDark ? 'rgba(45, 212, 191, 0.2)' : 'rgba(15, 118, 110, 0.15)',
+      accent: '#14b8a6',
     },
   };
 
@@ -66,138 +73,217 @@ const StatCard = ({
     <Card
       sx={{
         height: '100%',
-        borderRadius: 3,
-        border: `1px solid ${theme.palette.divider}`,
-        bgcolor: theme.palette.background.paper,
-        transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
+        minHeight: { xs: 130, sm: 140, md: 145 },
+        borderRadius: '16px',
+        border: '1px solid',
+        borderColor: isDark ? 'rgba(255, 255, 255, 0.08)' : theme.palette.divider,
+        bgcolor: isDark ? 'background.paper' : '#ffffff',
+        background: isDark
+          ? 'linear-gradient(180deg, #1e293b 0%, #0f172a 100%)'
+          : 'linear-gradient(180deg, #ffffff 0%, #f8fafc 100%)',
+        transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
         position: 'relative',
         overflow: 'hidden',
-        boxShadow: isDark ? '0 1px 3px 0 rgba(0, 0, 0, 0.4)' : '0 1px 3px 0 rgba(0, 0, 0, 0.04)',
+        boxShadow: isDark
+          ? '0 1px 3px 0 rgba(0, 0, 0, 0.35)'
+          : '0 1px 3px 0 rgba(0, 0, 0, 0.04)',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'space-between',
         '&:hover': {
-          transform: 'translateY(-2px)',
-          boxShadow: isDark ? '0 8px 20px -4px rgba(0, 0, 0, 0.6), 0 4px 6px -2px rgba(0, 0, 0, 0.4)' : '0 8px 20px -4px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.04)',
-          borderColor: isDark ? theme.palette.text.secondary : theme.palette.divider,
+          transform: 'translateY(-3px)',
+          boxShadow: isDark
+            ? '0 12px 24px -4px rgba(0, 0, 0, 0.5)'
+            : '0 12px 24px -4px rgba(0, 0, 0, 0.08)',
+          borderColor: isDark ? alpha(style.accent, 0.4) : alpha(style.accent, 0.3),
         },
       }}
     >
-      <CardContent sx={{ p: 2.5, '&:last-child': { pb: 2.5 } }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+      <CardContent
+        sx={{
+          p: { xs: 2, sm: 2.25, md: 2.5 },
+          display: 'flex',
+          flexDirection: 'column',
+          height: '100%',
+          justifyContent: 'space-between',
+          '&:last-child': { pb: { xs: 2, sm: 2.25, md: 2.5 } },
+        }}
+      >
+        {/* Top Header: Title on Left, Icon Badge on Right */}
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'flex-start',
+            justifyContent: 'space-between',
+            gap: 1.5,
+            width: '100%',
+          }}
+        >
+          <Typography
+            variant="caption"
+            sx={{
+              fontWeight: 700,
+              color: 'text.secondary',
+              textTransform: 'uppercase',
+              letterSpacing: '0.06em',
+              fontSize: '0.73rem',
+              lineHeight: 1.3,
+              minHeight: '2.6em',
+              display: '-webkit-box',
+              WebkitLineClamp: 2,
+              WebkitBoxOrient: 'vertical',
+              overflow: 'hidden',
+              wordBreak: 'break-word',
+              flex: 1,
+            }}
+          >
+            {title}
+          </Typography>
 
-          {/* Left — Icon badge */}
           {icon && (
             <Box
               sx={{
-                width: 48,
-                height: 48,
-                borderRadius: 3,
+                width: 40,
+                height: 40,
+                borderRadius: '11px',
                 background: style.bg,
                 color: style.iconColor,
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                boxShadow: `0 2px 8px ${style.glow}`,
+                boxShadow: `0 2px 6px ${style.glow}`,
                 flexShrink: 0,
               }}
             >
-              {typeof icon === 'function' || (typeof icon === 'object' && icon.$$typeof && !icon.props) ? (
+              {typeof icon === 'function' ||
+              (typeof icon === 'object' && icon.$$typeof && !icon.props) ? (
                 (() => {
                   const IconComp = icon;
-                  return <IconComp sx={{ fontSize: 24 }} />;
+                  return <IconComp sx={{ fontSize: 20, color: style.iconColor }} />;
                 })()
               ) : (
-                icon
+                React.cloneElement(icon, {
+                  sx: { fontSize: 20, color: style.iconColor, ...(icon.props?.sx || {}) },
+                })
               )}
             </Box>
           )}
+        </Box>
 
-          {/* Right — Title, Value, Trend / Subtitle */}
-          <Box sx={{ flex: 1, minWidth: 0 }}>
-            <Typography
-              variant="caption"
+        {/* Hero Value Section (Full Card Width) */}
+        <Box sx={{ my: 1.25, width: '100%' }}>
+          {isValueLoading ? (
+            <Skeleton
+              variant="text"
+              width="65%"
+              height={36}
+              sx={{ borderRadius: 1, transform: 'none' }}
+            />
+          ) : isCurrency ? (
+            <CurrencyDisplay
+              amount={value}
+              variant="h5"
+              fontWeight={800}
+              color="text.primary"
               sx={{
-                fontWeight: 700,
-                color: theme.palette.text.secondary,
-                textTransform: 'uppercase',
-                letterSpacing: 0.8,
-                fontSize: '0.72rem',
-                display: 'block',
-                mb: 0.5,
+                letterSpacing: '-0.025em',
+                fontVariantNumeric: 'tabular-nums',
+                fontSize: { xs: '1.35rem', sm: '1.5rem', md: '1.65rem' },
+                lineHeight: 1.15,
+                wordBreak: 'break-word',
+              }}
+            />
+          ) : (
+            <Typography
+              variant="h5"
+              sx={{
+                fontWeight: 800,
+                color: 'text.primary',
+                letterSpacing: '-0.025em',
+                fontVariantNumeric: 'tabular-nums',
+                fontSize: { xs: '1.35rem', sm: '1.5rem', md: '1.65rem' },
+                lineHeight: 1.15,
+                wordBreak: 'break-word',
               }}
             >
-              {title}
+              {value}
             </Typography>
+          )}
+        </Box>
 
-            <Box sx={{ mb: 0.75 }}>
-              {isValueLoading ? (
-                <Skeleton
-                  variant="text"
-                  width="70%"
-                  height={34}
-                  sx={{ borderRadius: 1, transform: 'none' }}
-                />
-              ) : isCurrency ? (
-                <CurrencyDisplay
-                  amount={value}
-                  variant="h5"
-                  fontWeight={800}
-                  color={theme.palette.text.primary}
-                  sx={{ letterSpacing: -0.5, fontVariantNumeric: 'tabular-nums' }}
-                />
-              ) : (
-                <Typography
-                  variant="h5"
+        {/* Footer: Trend Pill & Subtitle Context */}
+        <Box
+          sx={{
+            mt: 'auto',
+            pt: 0.5,
+            minHeight: '22px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 0.8,
+            flexWrap: 'wrap',
+          }}
+        >
+          {isValueLoading ? (
+            <Skeleton
+              variant="text"
+              width="45%"
+              height={18}
+              sx={{ borderRadius: 1, transform: 'none' }}
+            />
+          ) : (
+            <>
+              {trend && (
+                <Box
                   sx={{
-                    fontWeight: 800,
-                    color: theme.palette.text.primary,
-                    letterSpacing: -0.5,
-                    fontVariantNumeric: 'tabular-nums',
-                    fontSize: { xs: '1.25rem', sm: '1.4rem' },
-                    lineHeight: 1.2,
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 0.4,
+                    px: 0.9,
+                    py: 0.2,
+                    borderRadius: '6px',
+                    bgcolor: isUp
+                      ? isDark
+                        ? 'rgba(16, 185, 129, 0.12)'
+                        : alpha(theme.palette.success.main, 0.1)
+                      : isDown
+                      ? isDark
+                        ? 'rgba(239, 68, 68, 0.12)'
+                        : alpha(theme.palette.error.main, 0.1)
+                      : isDark
+                      ? 'rgba(148, 163, 184, 0.12)'
+                      : alpha(theme.palette.text.secondary, 0.08),
+                    color: isUp
+                      ? isDark
+                        ? '#34d399'
+                        : '#059669'
+                      : isDown
+                      ? isDark
+                        ? '#f87171'
+                        : '#dc2626'
+                      : 'text.secondary',
+                    fontSize: '0.72rem',
+                    fontWeight: 700,
                   }}
                 >
-                  {value}
+                  {isUp && <TrendingUpIcon sx={{ fontSize: 13 }} />}
+                  {isDown && <TrendingDownIcon sx={{ fontSize: 13 }} />}
+                  <span>{trend}</span>
+                </Box>
+              )}
+              {subtitle && (
+                <Typography
+                  variant="caption"
+                  sx={{
+                    color: 'text.secondary',
+                    fontSize: '0.73rem',
+                    fontWeight: 500,
+                  }}
+                >
+                  {subtitle}
                 </Typography>
               )}
-            </Box>
-
-            {isValueLoading ? (
-              <Skeleton
-                variant="text"
-                width="50%"
-                height={16}
-                sx={{ borderRadius: 1, transform: 'none' }}
-              />
-            ) : (trend || subtitle) && (
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.8, flexWrap: 'wrap' }}>
-                {trend && (
-                  <Box
-                    sx={{
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      gap: 0.3,
-                      px: 0.85,
-                      py: 0.25,
-                      borderRadius: '9999px',
-                      bgcolor: isUp ? (isDark ? 'rgba(16,185,129,0.1)' : alpha(theme.palette.success.main, 0.1)) : isDown ? (isDark ? 'rgba(239,68,68,0.1)' : alpha(theme.palette.error.main, 0.1)) : (isDark ? 'rgba(148,163,184,0.1)' : theme.palette.background.default),
-                      color: isUp ? (isDark ? '#34d399' : '#065f46') : isDown ? (isDark ? '#f87171' : '#991b1b') : (isDark ? theme.palette.divider : theme.palette.text.secondary),
-                      fontSize: '0.72rem',
-                      fontWeight: 750,
-                      border: `1px solid ${isUp ? (isDark ? 'rgba(52,211,153,0.3)' : alpha(theme.palette.success.main, 0.2)) : isDown ? (isDark ? 'rgba(248,113,113,0.3)' : alpha(theme.palette.error.main, 0.2)) : (isDark ? 'rgba(148,163,184,0.2)' : theme.palette.divider)}`,
-                    }}
-                  >
-                    {isUp && <TrendingUpIcon sx={{ fontSize: 13, color: isDark ? '#34d399' : theme.palette.success.main }} />}
-                    {isDown && <TrendingDownIcon sx={{ fontSize: 13, color: isDark ? '#f87171' : theme.palette.error.main }} />}
-                    <span>{trend}</span>
-                  </Box>
-                )}
-                {subtitle && (
-                  <Typography variant="caption" sx={{ color: theme.palette.text.secondary, fontSize: '0.73rem', fontWeight: 500 }}>
-                    {subtitle}
-                  </Typography>
-                )}
-              </Box>
-            )}
-          </Box>
+            </>
+          )}
         </Box>
       </CardContent>
     </Card>

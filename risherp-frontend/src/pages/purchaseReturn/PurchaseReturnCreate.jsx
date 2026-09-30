@@ -74,7 +74,7 @@ export default function PurchaseReturnCreate({ isModal = false, onClose, onSucce
     });
   };
 
-  const handleQuantityChange = (purchaseItemId, value, maxLimit) => {
+  const handleQuantityChange = (purchaseItemId, value) => {
     setSelectedItems((prev) => ({
       ...prev,
       [purchaseItemId]: {
@@ -187,7 +187,7 @@ export default function PurchaseReturnCreate({ isModal = false, onClose, onSucce
   };
 
   return (
-    <Box sx={{ p: isModal ? 0 : 3 }}>
+    <Box sx={{ p: isModal ? 0 : { xs: 1, sm: 2, md: 3 } }}>
       {!isModal && (
         <PageHeader
           title="Create Purchase Return"
@@ -237,14 +237,14 @@ export default function PurchaseReturnCreate({ isModal = false, onClose, onSucce
 
           {/* Step 3: Form Details & Estimated Summary */}
           <Grid container spacing={3}>
-            <Grid item xs={12} md={7}>
-              <Card sx={{ p: 2.5 }}>
+            <Grid xs={12} md={7}>
+              <Card sx={{ p: { xs: 2, sm: 2.5 } }}>
                 <Typography variant="subtitle1" fontWeight={700} gutterBottom>
                   Return Details & Adjustment
                 </Typography>
 
                 <Grid container spacing={2} sx={{ mt: 0.5 }}>
-                  <Grid item xs={12} sm={6}>
+                  <Grid xs={12} sm={6}>
                     <TextField
                       type="date"
                       fullWidth
@@ -253,12 +253,11 @@ export default function PurchaseReturnCreate({ isModal = false, onClose, onSucce
                       value={returnDate}
                       onChange={(e) => setReturnDate(e.target.value)}
                       slotProps={{ inputLabel: { shrink: true } }}
-                      InputLabelProps={{ shrink: true }}
                       disabled={submitting}
                     />
                   </Grid>
 
-                  <Grid item xs={12} sm={6}>
+                  <Grid xs={12} sm={6}>
                     <TextField
                       select
                       fullWidth
@@ -276,7 +275,7 @@ export default function PurchaseReturnCreate({ isModal = false, onClose, onSucce
                     </TextField>
                   </Grid>
 
-                  <Grid item xs={12}>
+                  <Grid xs={12}>
                     <TextField
                       select
                       fullWidth
@@ -295,7 +294,7 @@ export default function PurchaseReturnCreate({ isModal = false, onClose, onSucce
                   </Grid>
 
                   {reasonPreset === 'Other' && (
-                    <Grid item xs={12}>
+                    <Grid xs={12}>
                       <TextField
                         fullWidth
                         size="small"
@@ -307,7 +306,7 @@ export default function PurchaseReturnCreate({ isModal = false, onClose, onSucce
                     </Grid>
                   )}
 
-                  <Grid item xs={12}>
+                  <Grid xs={12}>
                     <TextField
                       fullWidth
                       multiline
@@ -323,8 +322,8 @@ export default function PurchaseReturnCreate({ isModal = false, onClose, onSucce
               </Card>
             </Grid>
 
-            <Grid item xs={12} md={5}>
-              <Card sx={{ p: 2.5 }}>
+            <Grid xs={12} md={5}>
+              <Card sx={{ p: { xs: 2, sm: 2.5 } }}>
                 <Typography variant="subtitle1" fontWeight={700} gutterBottom>
                   Return Financial Summary
                 </Typography>

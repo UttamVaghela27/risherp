@@ -161,8 +161,8 @@ const NumberingSettingsTab = () => {
           and bills retain their exact original document numbers.
         </Alert>
 
-        <TableContainer component={Paper} variant="outlined" sx={{ borderRadius: 2 }}>
-          <Table size="medium">
+        <TableContainer component={Paper} variant="outlined" sx={{ borderRadius: 2, overflowX: 'auto' }}>
+          <Table size="medium" sx={{ minWidth: 650 }}>
             <TableHead sx={{ bgcolor: 'background.default' }}>
               <TableRow>
                 <TableCell sx={{ fontWeight: 700 }}>Document Type</TableCell>
@@ -273,7 +273,7 @@ const NumberingSettingsTab = () => {
               </Box>
             </Box>
           </DialogContent>
-          <DialogActions sx={{ px: 3, py: 2 }}>
+          <DialogActions sx={{ px: 3, py: 2, flexDirection: { xs: 'column-reverse', sm: 'row' }, gap: { xs: 1, sm: 0 }, '& .MuiButton-root': { width: { xs: '100%', sm: 'auto' } } }}>
             <Button onClick={handleCloseEdit} color="inherit">
               Cancel
             </Button>

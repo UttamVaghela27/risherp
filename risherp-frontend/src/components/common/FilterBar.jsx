@@ -12,7 +12,7 @@ const FilterBar = ({ children, isFiltered = false, onReset }) => {
   return (
     <Box
       sx={{
-        p: 2,
+        p: { xs: 1.5, sm: 2 },
         bgcolor: theme.palette.background.paper,
         borderRadius: 2,
         border: `1px solid ${theme.palette.divider}`,
@@ -27,7 +27,7 @@ const FilterBar = ({ children, isFiltered = false, onReset }) => {
           : '0 1px 3px 0 rgba(0, 0, 0, 0.04)',
       }}
     >
-      <Box sx={{ flex: 1, minWidth: { xs: '100%', sm: 300 }, display: 'flex', flexWrap: 'wrap', gap: 1.5 }}>
+      <Box sx={{ flex: 1, minWidth: { xs: '100%', sm: 300 }, display: 'flex', flexWrap: 'wrap', gap: 1.5, alignItems: 'center' }}>
         {children}
       </Box>
 
@@ -41,6 +41,7 @@ const FilterBar = ({ children, isFiltered = false, onReset }) => {
           sx={{ 
             textTransform: 'none', 
             borderRadius: 1.5, 
+            width: { xs: '100%', sm: 'auto' },
             color: 'text.secondary', 
             borderColor: theme.palette.divider,
             '&:hover': {

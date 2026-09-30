@@ -2,7 +2,6 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Box,
-  Typography,
   Tabs,
   Tab,
   Paper,
@@ -20,6 +19,7 @@ import TrendingUpOutlinedIcon from '@mui/icons-material/TrendingUpOutlined';
 import reportService from '../../services/reportService';
 import partyService from '../../services/partyService';
 import categoryService from '../../services/categoryService';
+import PageHeader from '../../components/common/PageHeader';
 import ReportFilters from '../../components/reports/ReportFilters';
 import ReportSummaryCards from '../../components/reports/ReportSummaryCards';
 import ReportTable from '../../components/reports/ReportTable';
@@ -73,10 +73,12 @@ const SalesReport = () => {
       try {
         const [partiesRes, categoriesRes] = await Promise.all([
           partyService.getParties({ type: 'CUSTOMER', size: 100 }),
-          categoryService.getCategories(),
+          categoryService.getAllActiveCategories(),
         ]);
-        setParties(partiesRes.content || []);
-        setCategories(categoriesRes || []);
+        const partyList = partiesRes?.data?.content || partiesRes?.content || partiesRes?.data || (Array.isArray(partiesRes) ? partiesRes : []);
+        const catList = categoriesRes?.data || categoriesRes?.content || (Array.isArray(categoriesRes) ? categoriesRes : []);
+        setParties(partyList);
+        setCategories(catList);
       } catch (err) {
         console.error('Failed to load filter dropdowns', err);
       }
@@ -333,26 +335,22 @@ const SalesReport = () => {
 
   return (
     <Box sx={{ p: { xs: 2, md: 3 } }}>
-      {/* Header with Export Actions */}
-      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2, flexWrap: 'wrap', gap: 1 }}>
-        <Box>
-          <Typography variant="h5" fontWeight={800} color="text.primary">
-            Sales Report
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            Comprehensive sales performance, customer breakdowns, and daily invoice summaries.
-          </Typography>
-        </Box>
-        <ExportButtons
-          onPdf={handleExportPdf}
-          onCsv={handleExportCsv}
-          pdfLoading={pdfLoading}
-          csvLoading={csvLoading}
-        />
-      </Box>
+      {/* Standard Header with Export Actions */}
+      <PageHeader
+        title="Sales Report"
+        subtitle="Comprehensive sales performance, customer breakdowns, and daily invoice summaries."
+        actions={
+          <ExportButtons
+            onPdf={handleExportPdf}
+            onCsv={handleExportCsv}
+            pdfLoading={pdfLoading}
+            csvLoading={csvLoading}
+          />
+        }
+      />
 
       {/* Tabs */}
-      <Paper sx={{ mb: 2, borderBottom: 1, borderColor: 'divider' }} elevation={0}>
+      <Paper sx={{ mb: 2.5, borderBottom: 1, borderColor: 'divider' }} elevation={0}>
         <Tabs
           value={activeTab}
           onChange={(_, v) => { setActiveTab(v); setPage(0); }}
@@ -366,7 +364,10 @@ const SalesReport = () => {
         </Tabs>
       </Paper>
 
-      {/* Reusable Filters */}
+      {/* Stats Cards */}
+      {activeTab === 0 && <ReportSummaryCards cards={kpiCards} loading={loading} />}
+
+      {/* FilterBar with Search and Relevant Filters */}
       <ReportFilters
         datePreset={datePreset}
         onPresetChange={handlePresetChange}
@@ -397,9 +398,6 @@ const SalesReport = () => {
         showStatus={activeTab === 0}
         onReset={handleResetFilters}
       />
-
-      {/* Summary Cards */}
-      {activeTab === 0 && <ReportSummaryCards cards={kpiCards} loading={loading} />}
 
       {/* Report Table View */}
       {activeTab === 0 && (

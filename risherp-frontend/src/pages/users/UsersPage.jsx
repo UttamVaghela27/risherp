@@ -346,7 +346,8 @@ const UsersPage = () => {
         gridTemplateColumns: {
           xs: '1fr',
           sm: 'repeat(2, 1fr)',
-          md: 'repeat(4, 1fr)',
+          md: 'repeat(2, 1fr)',
+          lg: 'repeat(4, 1fr)',
         },
         gap: 2.5,
         mb: 3,
@@ -389,7 +390,7 @@ const UsersPage = () => {
         }}
       >
         <Grid container spacing={2} alignItems="center">
-          <Grid item xs={12} md={5}>
+          <Grid xs={12} md={5}>
             <TextField
               fullWidth
               size="small"
@@ -409,7 +410,7 @@ const UsersPage = () => {
             />
           </Grid>
 
-          <Grid item xs={12} sm={6} md={3.5}>
+          <Grid xs={12} sm={6} md={3.5}>
             <FormControl fullWidth size="small">
               <InputLabel>Role</InputLabel>
               <Select
@@ -430,7 +431,7 @@ const UsersPage = () => {
             </FormControl>
           </Grid>
 
-          <Grid item xs={12} sm={6} md={3.5}>
+          <Grid xs={12} sm={6} md={3.5}>
             <FormControl fullWidth size="small">
               <InputLabel>Status</InputLabel>
               <Select
@@ -683,7 +684,7 @@ const UsersPage = () => {
           <DialogTitle sx={{ pb: 1, fontWeight: 800 }}>Create New User</DialogTitle>
           <DialogContent dividers sx={{ p: 3 }}>
             <Grid container spacing={2}>
-              <Grid item xs={12} sm={6}>
+              <Grid xs={12} sm={6}>
                 <TextField
                   label="Full Name *"
                   fullWidth
@@ -692,7 +693,7 @@ const UsersPage = () => {
                   onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
                 />
               </Grid>
-              <Grid item xs={12} sm={6}>
+              <Grid xs={12} sm={6}>
                 <TextField
                   label="Username"
                   fullWidth
@@ -702,7 +703,7 @@ const UsersPage = () => {
                   helperText="Optional login identifier"
                 />
               </Grid>
-              <Grid item xs={12} sm={6}>
+              <Grid xs={12} sm={6}>
                 <TextField
                   label="Email Address *"
                   type="email"
@@ -712,7 +713,7 @@ const UsersPage = () => {
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                 />
               </Grid>
-              <Grid item xs={12} sm={6}>
+              <Grid xs={12} sm={6}>
                 <TextField
                   label="Mobile Number"
                   fullWidth
@@ -721,7 +722,7 @@ const UsersPage = () => {
                   onChange={(e) => setFormData({ ...formData, mobile: e.target.value })}
                 />
               </Grid>
-              <Grid item xs={12} sm={6}>
+              <Grid xs={12} sm={6}>
                 <TextField
                   label="Initial Password *"
                   type="password"
@@ -732,7 +733,7 @@ const UsersPage = () => {
                   helperText="Min. 6 characters"
                 />
               </Grid>
-              <Grid item xs={12} sm={6}>
+              <Grid xs={12} sm={6}>
                 <FormControl fullWidth required>
                   <InputLabel>Role *</InputLabel>
                   <Select
@@ -750,7 +751,7 @@ const UsersPage = () => {
               </Grid>
             </Grid>
           </DialogContent>
-          <DialogActions sx={{ p: 2.5 }}>
+          <DialogActions sx={{ p: 2.5, flexDirection: { xs: 'column-reverse', sm: 'row' }, '& > button': { width: { xs: '100%', sm: 'auto' } } }}>
             <Button onClick={() => setCreateOpen(false)} disabled={submitting} sx={{ color: theme.palette.text.secondary }}>
               Cancel
             </Button>
@@ -778,7 +779,7 @@ const UsersPage = () => {
           <DialogTitle sx={{ pb: 1, fontWeight: 800 }}>Edit User Details</DialogTitle>
           <DialogContent dividers sx={{ p: 3 }}>
             <Grid container spacing={2}>
-              <Grid item xs={12} sm={6}>
+              <Grid xs={12} sm={6}>
                 <TextField
                   label="Full Name *"
                   fullWidth
@@ -787,7 +788,7 @@ const UsersPage = () => {
                   onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
                 />
               </Grid>
-              <Grid item xs={12} sm={6}>
+              <Grid xs={12} sm={6}>
                 <TextField
                   label="Username"
                   fullWidth
@@ -795,7 +796,7 @@ const UsersPage = () => {
                   onChange={(e) => setFormData({ ...formData, username: e.target.value })}
                 />
               </Grid>
-              <Grid item xs={12} sm={6}>
+              <Grid xs={12} sm={6}>
                 <TextField
                   label="Email Address *"
                   type="email"
@@ -805,7 +806,7 @@ const UsersPage = () => {
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                 />
               </Grid>
-              <Grid item xs={12} sm={6}>
+              <Grid xs={12} sm={6}>
                 <TextField
                   label="Mobile Number"
                   fullWidth
@@ -813,7 +814,7 @@ const UsersPage = () => {
                   onChange={(e) => setFormData({ ...formData, mobile: e.target.value })}
                 />
               </Grid>
-              <Grid item xs={12} sm={6}>
+              <Grid xs={12} sm={6}>
                 <FormControl fullWidth required>
                   <InputLabel>Role *</InputLabel>
                   <Select
@@ -829,7 +830,7 @@ const UsersPage = () => {
                   </Select>
                 </FormControl>
               </Grid>
-              <Grid item xs={12} sm={6}>
+              <Grid xs={12} sm={6}>
                 <FormControl fullWidth>
                   <InputLabel>Status</InputLabel>
                   <Select
@@ -844,7 +845,7 @@ const UsersPage = () => {
               </Grid>
             </Grid>
           </DialogContent>
-          <DialogActions sx={{ p: 2.5 }}>
+          <DialogActions sx={{ p: 2.5, flexDirection: { xs: 'column-reverse', sm: 'row' }, '& > button': { width: { xs: '100%', sm: 'auto' } } }}>
             <Button onClick={() => setEditOpen(false)} disabled={submitting} sx={{ color: theme.palette.text.secondary }}>
               Cancel
             </Button>
@@ -894,7 +895,7 @@ const UsersPage = () => {
               />
             </Stack>
           </DialogContent>
-          <DialogActions sx={{ p: 2.5 }}>
+          <DialogActions sx={{ p: 2.5, flexDirection: { xs: 'column-reverse', sm: 'row' }, '& > button': { width: { xs: '100%', sm: 'auto' } } }}>
             <Button onClick={() => setPasswordOpen(false)} disabled={submitting} sx={{ color: theme.palette.text.secondary }}>
               Cancel
             </Button>
@@ -931,7 +932,7 @@ const UsersPage = () => {
               : ' Activated users will be able to log in and perform actions.'}
           </DialogContentText>
         </DialogContent>
-        <DialogActions sx={{ p: 2 }}>
+        <DialogActions sx={{ p: 2, flexDirection: { xs: 'column-reverse', sm: 'row' }, '& > button': { width: { xs: '100%', sm: 'auto' } } }}>
           <Button onClick={() => setStatusDialogOpen(false)} disabled={submitting}>
             Cancel
           </Button>

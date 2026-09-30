@@ -1,81 +1,72 @@
 import React from 'react';
-import { Grid, Card, CardContent, Typography, Box, Skeleton } from '@mui/material';
+import { Box } from '@mui/material';
+import StatCard from '../common/StatCard';
+
+/**
+ * Responsive CSS Grid template columns based on total card count.
+ * Guarantees 100% mathematically equal width for all cards across all screen sizes.
+ */
+const getGridTemplateColumns = (len) => {
+  if (len === 1) return { xs: '1fr' };
+  if (len === 2) return { xs: '1fr', sm: 'repeat(2, 1fr)' };
+  if (len === 3) return { xs: '1fr', sm: 'repeat(2, 1fr)', md: 'repeat(3, 1fr)', lg: 'repeat(3, 1fr)' };
+  if (len === 4) return { xs: '1fr', sm: 'repeat(2, 1fr)', md: 'repeat(2, 1fr)', lg: 'repeat(4, 1fr)' };
+  if (len === 5) return { xs: '1fr', sm: 'repeat(2, 1fr)', md: 'repeat(3, 1fr)', lg: 'repeat(5, 1fr)' };
+  if (len === 6) return { xs: '1fr', sm: 'repeat(2, 1fr)', md: 'repeat(3, 1fr)', lg: 'repeat(3, 1fr)', xl: 'repeat(6, 1fr)' };
+  return { xs: '1fr', sm: 'repeat(2, 1fr)', md: 'repeat(3, 1fr)', lg: 'repeat(4, 1fr)' };
+};
 
 /**
  * ReportSummaryCards — Responsive top-level summary metrics for reports.
- * cards = [{ title, value, icon, subtitle, color }]
+ * Uses the standardized executive StatCard component across all reports.
+ * cards = [{ title, value, icon, subtitle, color, trend, trendType, isCurrency }]
  */
 const ReportSummaryCards = ({ cards = [], loading = false }) => {
   if (loading) {
+    const skeletonCount = cards.length > 0 ? cards.length : 4;
     return (
-      <Grid container spacing={2} sx={{ mb: 3 }}>
-        {[1, 2, 3, 4].map((n) => (
-          <Grid item xs={12} sm={6} md={3} key={n}>
-            <Skeleton variant="rounded" height={100} sx={{ borderRadius: 2 }} />
-          </Grid>
+      <Box
+        sx={{
+          display: 'grid',
+          gridTemplateColumns: getGridTemplateColumns(skeletonCount),
+          gap: 2.5,
+          mb: 3,
+        }}
+      >
+        {Array.from({ length: skeletonCount }).map((_, idx) => (
+          <StatCard key={idx} title="Loading..." value={null} loading={true} />
         ))}
-      </Grid>
+      </Box>
     );
   }
 
   if (!cards || cards.length === 0) return null;
 
+  const count = cards.length;
+
   return (
-    <Grid container spacing={2} sx={{ mb: 3 }}>
+    <Box
+      sx={{
+        display: 'grid',
+        gridTemplateColumns: getGridTemplateColumns(count),
+        gap: 2.5,
+        mb: 3,
+      }}
+    >
       {cards.map((c, idx) => (
-        <Grid item xs={12} sm={6} md={12 / Math.min(cards.length, 6)} key={idx}>
-          <Card
-            sx={{
-              height: '100%',
-              border: 1, borderColor: 'divider',
-              borderRadius: 2,
-              boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'center',
-              p: 1.5,
-              transition: 'all 0.2s ease-in-out',
-              '&:hover': {
-                boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)',
-                borderColor: c.color ? `${c.color}.main` : 'primary.main',
-              },
-            }}
-          >
-            <CardContent sx={{ p: '8px !important' }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 0.5 }}>
-                <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 600, textTransform: 'uppercase', letterSpacing: 0.5 }}>
-                  {c.title}
-                </Typography>
-                {c.icon && (
-                  <Box
-                    sx={{
-                      p: 0.8,
-                      borderRadius: 1.5,
-                      bgcolor: c.color ? `${c.color}.50` : 'primary.50',
-                      color: c.color ? `${c.color}.main` : 'primary.main',
-                      display: 'flex',
-                      alignItems: 'center',
-                    }}
-                  >
-                    {c.icon}
-                  </Box>
-                )}
-              </Box>
-
-              <Typography variant="h5" sx={{ fontWeight: 800, color: 'text.primary', my: 0.5 }}>
-                {c.value ?? '-'}
-              </Typography>
-
-              {c.subtitle && (
-                <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: '0.75rem' }}>
-                  {c.subtitle}
-                </Typography>
-              )}
-            </CardContent>
-          </Card>
-        </Grid>
+        <StatCard
+          key={c.title || idx}
+          title={c.title}
+          value={c.value ?? '-'}
+          icon={c.icon}
+          subtitle={c.subtitle}
+          color={c.color || 'primary'}
+          trend={c.trend}
+          trendType={c.trendType}
+          isCurrency={c.isCurrency}
+        />
       ))}
-    </Grid>
+    </Box>
   );
 };
 

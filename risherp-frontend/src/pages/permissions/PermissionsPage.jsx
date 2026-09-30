@@ -9,7 +9,6 @@ import {
   TextField,
   InputAdornment,
   Stack,
-  Divider,
   useTheme
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
@@ -63,31 +62,27 @@ const PermissionsPage = () => {
     .filter((g) => g.permissions.length > 0);
 
   return (
-    <Box sx={{ p: { xs: 2, md: 3 } }}>
+    <Box>
       <PageHeader
         title="Permission Catalog"
         subtitle="System-wide access rights and security authorizations matrix"
       />
 
       {/* KPI Cards */}
-      <Grid container spacing={2.5} sx={{ mb: 3 }}>
-        <Grid item xs={12} sm={6} md={6}>
-          <StatCard
-            title="Total System Permissions"
-            value={totalPerms}
-            icon={SecurityOutlinedIcon}
-            color="primary"
-          />
-        </Grid>
-        <Grid item xs={12} sm={6} md={6}>
-          <StatCard
-            title="Functional Modules"
-            value={totalModules}
-            icon={LayersOutlinedIcon}
-            color="info"
-          />
-        </Grid>
-      </Grid>
+      <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)' }, gap: 2.5, mb: 3 }}>
+        <StatCard
+          title="Total System Permissions"
+          value={totalPerms}
+          icon={SecurityOutlinedIcon}
+          color="primary"
+        />
+        <StatCard
+          title="Functional Modules"
+          value={totalModules}
+          icon={LayersOutlinedIcon}
+          color="info"
+        />
+      </Box>
 
       {/* Search */}
       <Card
@@ -159,10 +154,10 @@ const PermissionsPage = () => {
                 />
               </Box>
 
-              <Box sx={{ p: 3 }}>
+              <Box sx={{ p: { xs: 2, sm: 3 } }}>
                 <Grid container spacing={2}>
                   {group.permissions.map((p) => (
-                    <Grid item xs={12} sm={6} md={4} key={p.id || p.permissionCode}>
+                    <Grid xs={12} sm={6} md={4} key={p.id || p.permissionCode}>
                       <Paper
                         variant="outlined"
                         sx={{

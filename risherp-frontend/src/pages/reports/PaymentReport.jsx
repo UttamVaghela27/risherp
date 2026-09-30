@@ -2,7 +2,6 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Box,
-  Typography,
   IconButton,
   Tooltip,
 } from '@mui/material';
@@ -10,12 +9,12 @@ import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
 import PaymentsOutlinedIcon from '@mui/icons-material/PaymentsOutlined';
 import AttachMoneyOutlinedIcon from '@mui/icons-material/AttachMoneyOutlined';
 import AccountBalanceOutlinedIcon from '@mui/icons-material/AccountBalanceOutlined';
-import QrCodeScannerOutlinedIcon from '@mui/icons-material/QrCodeScannerOutlined';
 import MoneyOffOutlinedIcon from '@mui/icons-material/MoneyOffOutlined';
 import CheckCircleOutlineOutlinedIcon from '@mui/icons-material/CheckCircleOutlineOutlined';
 
 import reportService from '../../services/reportService';
 import partyService from '../../services/partyService';
+import PageHeader from '../../components/common/PageHeader';
 import ReportFilters from '../../components/reports/ReportFilters';
 import ReportSummaryCards from '../../components/reports/ReportSummaryCards';
 import ReportTable from '../../components/reports/ReportTable';
@@ -50,7 +49,8 @@ const PaymentReport = () => {
 
   useEffect(() => {
     partyService.getParties({ type: 'SUPPLIER', size: 100 }).then((res) => {
-      setSuppliers(res.content || []);
+      const list = res?.data?.content || res?.content || res?.data || (Array.isArray(res) ? res : []);
+      setSuppliers(list);
     }).catch(console.error);
   }, []);
 
@@ -129,15 +129,15 @@ const PaymentReport = () => {
     setCsvLoading(true);
     try {
       let csvContent = 'data:text/csv;charset=utf-8,';
-      csvContent += 'Payment Number,Date,Supplier,Amount,Payment Mode,Reference Number,Allocated Amount,Unallocated Amount,Status,Created By\n';
+      csvContent += 'Payment Number,Date,Supplier,Amount,Payment Mode,Reference / UTR,Allocated Amount,Unallocated Amount,Status\n';
       payments.forEach((r) => {
-        csvContent += `"${r.paymentNumber}","${r.paymentDate}","${r.partyName}","${r.amount}","${r.paymentMode}","${r.referenceNumber || ''}","${r.allocatedAmount}","${r.unallocatedAmount}","${r.status}","${r.createdBy}"\n`;
+        csvContent += `"${r.paymentNumber}","${r.paymentDate}","${r.partyName}","${r.amount}","${r.paymentMode}","${r.referenceNumber || ''}","${r.allocatedAmount}","${r.unallocatedAmount}","${r.status}"\n`;
       });
 
       const encodedUri = encodeURI(csvContent);
       const link = document.createElement('a');
       link.setAttribute('href', encodedUri);
-      link.setAttribute('download', 'Payment_Report.csv');
+      link.setAttribute('download', `Payment_Report_${dateFrom}_to_${dateTo}.csv`);
       document.body.appendChild(link);
       link.click();
       link.remove();
@@ -163,30 +163,24 @@ const PaymentReport = () => {
         },
         {
           title: 'Total Disbursed',
-          value: fmt(summary.totalAmount),
-          icon: <MoneyOffOutlinedIcon />,
+          value: fmt(summary.totalDisbursed),
+          icon: <AttachMoneyOutlinedIcon />,
           color: 'error',
         },
         {
-          title: 'Cash Outflows',
-          value: fmt(summary.cashAmount),
-          icon: <AttachMoneyOutlinedIcon />,
+          title: 'Bank / Transfer',
+          value: fmt(summary.bankDisbursed),
+          icon: <AccountBalanceOutlinedIcon />,
           color: 'info',
         },
         {
-          title: 'Bank Transfers',
-          value: fmt(summary.bankAmount),
-          icon: <AccountBalanceOutlinedIcon />,
-          color: 'secondary',
-        },
-        {
-          title: 'UPI Payments',
-          value: fmt(summary.upiAmount),
-          icon: <QrCodeScannerOutlinedIcon />,
+          title: 'Cash Disbursed',
+          value: fmt(summary.cashDisbursed),
+          icon: <MoneyOffOutlinedIcon />,
           color: 'warning',
         },
         {
-          title: 'Allocated to Purchases',
+          title: 'Allocated Amount',
           value: fmt(summary.allocatedAmount),
           icon: <CheckCircleOutlineOutlinedIcon />,
           color: 'success',
@@ -220,25 +214,24 @@ const PaymentReport = () => {
 
   return (
     <Box sx={{ p: { xs: 2, md: 3 } }}>
-      {/* Header */}
-      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2, flexWrap: 'wrap', gap: 1 }}>
-        <Box>
-          <Typography variant="h5" fontWeight={800} color="text.primary">
-            Supplier Payments Report
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            Outflow supplier disbursements, payment mode breakdown, and invoice allocation auditing.
-          </Typography>
-        </Box>
-        <ExportButtons
-          onPdf={handleExportPdf}
-          onCsv={handleExportCsv}
-          pdfLoading={pdfLoading}
-          csvLoading={csvLoading}
-        />
-      </Box>
+      {/* Standard Header with Export Actions */}
+      <PageHeader
+        title="Supplier Payments Report"
+        subtitle="Outflow supplier disbursements, payment mode breakdown, and invoice allocation auditing."
+        actions={
+          <ExportButtons
+            onPdf={handleExportPdf}
+            onCsv={handleExportCsv}
+            pdfLoading={pdfLoading}
+            csvLoading={csvLoading}
+          />
+        }
+      />
 
-      {/* Filters */}
+      {/* Stats Cards */}
+      <ReportSummaryCards cards={kpiCards} loading={loading} />
+
+      {/* FilterBar with Search and Relevant Filters */}
       <ReportFilters
         datePreset={datePreset}
         onPresetChange={handlePresetChange}
@@ -265,9 +258,6 @@ const PaymentReport = () => {
         showStatus={true}
         onReset={handleResetFilters}
       />
-
-      {/* KPI Cards */}
-      <ReportSummaryCards cards={kpiCards} loading={loading} />
 
       {/* Table */}
       <ReportTable

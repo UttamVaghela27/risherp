@@ -2,7 +2,6 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import {
   Box,
-  Typography,
   Tabs,
   Tab,
   Paper,
@@ -16,6 +15,7 @@ import TrendingUpOutlinedIcon from '@mui/icons-material/TrendingUpOutlined';
 
 import reportService from '../../services/reportService';
 import outstandingService from '../../services/outstandingService';
+import PageHeader from '../../components/common/PageHeader';
 import ReportFilters from '../../components/reports/ReportFilters';
 import ReportSummaryCards from '../../components/reports/ReportSummaryCards';
 import ReportTable from '../../components/reports/ReportTable';
@@ -103,27 +103,17 @@ const OutstandingReport = () => {
   const handleExportPdf = async () => {
     setPdfLoading(true);
     try {
-      let blob;
-      let filename;
-      if (activeTab === 0) {
-        blob = await reportService.downloadCustomerOutstandingPdf({
-          search: search || undefined,
-          dateFrom: dateFrom || undefined,
-          dateTo: dateTo || undefined,
-        });
-        filename = `CustomerOutstanding_${new Date().toISOString().split('T')[0]}.pdf`;
-      } else {
-        blob = await reportService.downloadSupplierOutstandingPdf({
-          search: search || undefined,
-          dateFrom: dateFrom || undefined,
-          dateTo: dateTo || undefined,
-        });
-        filename = `SupplierOutstanding_${new Date().toISOString().split('T')[0]}.pdf`;
-      }
+      const type = activeTab === 0 ? 'CUSTOMER' : 'SUPPLIER';
+      const blob = await reportService.downloadOutstandingReportPdf({
+        type,
+        search: search || undefined,
+        dateFrom: dateFrom || undefined,
+        dateTo: dateTo || undefined,
+      });
       const url = window.URL.createObjectURL(new Blob([blob], { type: 'application/pdf' }));
       const link = document.createElement('a');
       link.href = url;
-      link.setAttribute('download', filename);
+      link.setAttribute('download', `OutstandingReport_${type}_${new Date().toISOString().split('T')[0]}.pdf`);
       document.body.appendChild(link);
       link.click();
       link.remove();
@@ -139,12 +129,12 @@ const OutstandingReport = () => {
     try {
       let csvContent = 'data:text/csv;charset=utf-8,';
       if (activeTab === 0) {
-        csvContent += 'Customer Name,Phone,Opening Balance,Sales,Receipts,Returns,Net Outstanding\n';
+        csvContent += 'Customer Name,Phone,Opening Balance,Total Sales (+),Total Receipts (-),Total Returns (-),Net Outstanding\n';
         customers.forEach((r) => {
           csvContent += `"${r.partyName}","${r.phone || ''}","${r.openingBalance}","${r.totalSales}","${r.totalReceipts}","${r.totalSalesReturns}","${r.netOutstanding}"\n`;
         });
       } else {
-        csvContent += 'Supplier Name,Phone,Opening Balance,Purchases,Payments,Returns,Net Outstanding\n';
+        csvContent += 'Supplier Name,Phone,Opening Balance,Total Purchases (+),Total Payments (-),Total Returns (-),Net Outstanding\n';
         suppliers.forEach((r) => {
           csvContent += `"${r.partyName}","${r.phone || ''}","${r.openingBalance}","${r.totalPurchases}","${r.totalPayments}","${r.totalPurchaseReturns}","${r.netOutstanding}"\n`;
         });
@@ -173,24 +163,22 @@ const OutstandingReport = () => {
     ? [
         {
           title: 'Customer Receivables',
-          value: fmt(summary.totalCustomerOutstanding),
+          value: fmt(summary.totalCustomerReceivables),
           icon: <RequestQuoteOutlinedIcon />,
-          color: 'primary',
-          subtitle: `${summary.customerCountWithBalance || 0} customers with balance`,
+          color: 'warning',
         },
         {
           title: 'Supplier Payables',
-          value: fmt(summary.totalSupplierOutstanding),
+          value: fmt(summary.totalSupplierPayables),
           icon: <AccountBalanceWalletOutlinedIcon />,
           color: 'error',
-          subtitle: `${summary.supplierCountWithBalance || 0} suppliers payable`,
         },
         {
           title: 'Net Position',
           value: fmt(summary.netPosition),
           icon: <TrendingUpOutlinedIcon />,
-          color: summary.netPosition >= 0 ? 'success' : 'warning',
-          subtitle: 'Receivables - Payables',
+          color: summary.netPosition >= 0 ? 'success' : 'error',
+          subtitle: summary.netPosition >= 0 ? 'Net Asset / Surplus' : 'Net Liability / Deficit',
         },
       ]
     : [];
@@ -243,26 +231,22 @@ const OutstandingReport = () => {
 
   return (
     <Box sx={{ p: { xs: 2, md: 3 } }}>
-      {/* Header */}
-      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2, flexWrap: 'wrap', gap: 1 }}>
-        <Box>
-          <Typography variant="h5" fontWeight={800} color="text.primary">
-            Outstanding Balances Report
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            Live receivables and payables reconciliations derived from opening balances, sales, purchases, returns, and payment ledgers.
-          </Typography>
-        </Box>
-        <ExportButtons
-          onPdf={handleExportPdf}
-          onCsv={handleExportCsv}
-          pdfLoading={pdfLoading}
-          csvLoading={csvLoading}
-        />
-      </Box>
+      {/* Standard Header with Export Actions */}
+      <PageHeader
+        title="Outstanding Balances Report"
+        subtitle="Live receivables and payables reconciliations derived from opening balances, sales, purchases, returns, and payment ledgers."
+        actions={
+          <ExportButtons
+            onPdf={handleExportPdf}
+            onCsv={handleExportCsv}
+            pdfLoading={pdfLoading}
+            csvLoading={csvLoading}
+          />
+        }
+      />
 
       {/* Tabs */}
-      <Paper sx={{ mb: 2, borderBottom: 1, borderColor: 'divider' }} elevation={0}>
+      <Paper sx={{ mb: 2.5, borderBottom: 1, borderColor: 'divider' }} elevation={0}>
         <Tabs
           value={activeTab}
           onChange={handleTabChange}
@@ -274,10 +258,10 @@ const OutstandingReport = () => {
         </Tabs>
       </Paper>
 
-      {/* Summary Cards */}
+      {/* Stats Cards */}
       <ReportSummaryCards cards={kpiCards} loading={loading} />
 
-      {/* Filters */}
+      {/* FilterBar with Search and Relevant Filters */}
       <ReportFilters
         search={search}
         onSearchChange={(v) => { setSearch(v); setPage(0); }}

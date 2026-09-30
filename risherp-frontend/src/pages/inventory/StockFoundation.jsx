@@ -10,7 +10,6 @@ import {
   TableRow,
   TablePagination,
   Typography,
-  Grid,
   Alert,
   Chip,
   Stack,
@@ -133,56 +132,59 @@ const StockFoundation = () => {
       </Alert>
 
       {/* KPI Cards */}
-      <Grid container spacing={2.5} sx={{ mb: 3 }}>
-        <Grid item xs={12} sm={6} md={2.4}>
-          <StatCard
-            title="Total Products"
-            value={summary?.totalItems != null ? summary.totalItems : '—'}
-            icon={<WarehouseOutlinedIcon sx={{ color: 'primary.main', fontSize: 28 }} />}
-            subtitle="Catalog size"
-          />
-        </Grid>
-
-        <Grid item xs={12} sm={6} md={2.4}>
-          <StatCard
-            title="In Stock"
-            value={summary?.inStockCount != null ? summary.inStockCount : '—'}
-            icon={<CheckCircleOutlineOutlinedIcon sx={{ color: 'success.main', fontSize: 28 }} />}
-            subtitle="Adequate inventory"
-          />
-        </Grid>
-
-        <Grid item xs={12} sm={6} md={2.4}>
-          <StatCard
-            title="Low Stock"
-            value={summary?.lowStockCount != null ? summary.lowStockCount : '—'}
-            icon={<WarningAmberOutlinedIcon sx={{ color: 'warning.main', fontSize: 28 }} />}
-            subtitle="Reorder required"
-          />
-        </Grid>
-
-        <Grid item xs={12} sm={6} md={2.4}>
-          <StatCard
-            title="Out of Stock"
-            value={summary?.outOfStockCount != null ? summary.outOfStockCount : '—'}
-            icon={<RemoveCircleOutlineOutlinedIcon sx={{ color: 'error.main', fontSize: 28 }} />}
-            subtitle="Critical zero stock"
-          />
-        </Grid>
-
-        <Grid item xs={12} sm={6} md={2.4}>
-          <StatCard
-            title="Total Stock Value"
-            value={
-              summary?.totalStockValue != null
-                ? `₹ ${(summary.totalStockValue).toLocaleString('en-IN', { maximumFractionDigits: 0 })}`
-                : '—'
-            }
-            icon={<AccountBalanceWalletOutlinedIcon sx={{ color: 'secondary.main', fontSize: 28 }} />}
-            subtitle="Purchase cost value"
-          />
-        </Grid>
-      </Grid>
+      <Box
+        sx={{
+          display: 'grid',
+          gridTemplateColumns: {
+            xs: '1fr',
+            sm: 'repeat(2, 1fr)',
+            md: 'repeat(3, 1fr)',
+            lg: 'repeat(5, 1fr)',
+          },
+          gap: 2.5,
+          mb: 3,
+        }}
+      >
+        <StatCard
+          title="Total Products"
+          value={summary?.totalItems != null ? summary.totalItems : '—'}
+          icon={<WarehouseOutlinedIcon />}
+          subtitle="Catalog size"
+          color="primary"
+        />
+        <StatCard
+          title="In Stock"
+          value={summary?.inStockCount != null ? summary.inStockCount : '—'}
+          icon={<CheckCircleOutlineOutlinedIcon />}
+          subtitle="Adequate inventory"
+          color="success"
+        />
+        <StatCard
+          title="Low Stock"
+          value={summary?.lowStockCount != null ? summary.lowStockCount : '—'}
+          icon={<WarningAmberOutlinedIcon />}
+          subtitle="Reorder required"
+          color="warning"
+        />
+        <StatCard
+          title="Out of Stock"
+          value={summary?.outOfStockCount != null ? summary.outOfStockCount : '—'}
+          icon={<RemoveCircleOutlineOutlinedIcon />}
+          subtitle="Critical zero stock"
+          color="error"
+        />
+        <StatCard
+          title="Total Stock Value"
+          value={
+            summary?.totalStockValue != null
+              ? `₹ ${(summary.totalStockValue).toLocaleString('en-IN', { maximumFractionDigits: 0 })}`
+              : '—'
+          }
+          icon={<AccountBalanceWalletOutlinedIcon />}
+          subtitle="Purchase cost value"
+          color="secondary"
+        />
+      </Box>
 
       {/* Filters Toolbar */}
       <FilterDrawer

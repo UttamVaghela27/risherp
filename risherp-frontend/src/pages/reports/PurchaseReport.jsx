@@ -2,7 +2,6 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Box,
-  Typography,
   Tabs,
   Tab,
   Paper,
@@ -20,6 +19,7 @@ import TrendingUpOutlinedIcon from '@mui/icons-material/TrendingUpOutlined';
 import reportService from '../../services/reportService';
 import partyService from '../../services/partyService';
 import categoryService from '../../services/categoryService';
+import PageHeader from '../../components/common/PageHeader';
 import ReportFilters from '../../components/reports/ReportFilters';
 import ReportSummaryCards from '../../components/reports/ReportSummaryCards';
 import ReportTable from '../../components/reports/ReportTable';
@@ -72,10 +72,12 @@ const PurchaseReport = () => {
       try {
         const [suppliersRes, categoriesRes] = await Promise.all([
           partyService.getParties({ type: 'SUPPLIER', size: 100 }),
-          categoryService.getCategories(),
+          categoryService.getAllActiveCategories(),
         ]);
-        setSuppliers(suppliersRes.content || []);
-        setCategories(categoriesRes || []);
+        const supplierList = suppliersRes?.data?.content || suppliersRes?.content || suppliersRes?.data || (Array.isArray(suppliersRes) ? suppliersRes : []);
+        const catList = categoriesRes?.data || categoriesRes?.content || (Array.isArray(categoriesRes) ? categoriesRes : []);
+        setSuppliers(supplierList);
+        setCategories(catList);
       } catch (err) {
         console.error('Failed to load filter dropdowns', err);
       }
@@ -180,9 +182,9 @@ const PurchaseReport = () => {
     try {
       let csvContent = 'data:text/csv;charset=utf-8,';
       if (activeTab === 0) {
-        csvContent += 'Purchase Number,Supplier Invoice,Date,Supplier,Purchase Type,Subtotal,Discount,Grand Total,Paid,Balance,Payment Status,Status\n';
+        csvContent += 'Purchase Number,Date,Supplier,Subtotal,Discount,Grand Total,Paid,Balance,Payment Status,Status\n';
         purchases.forEach((r) => {
-          csvContent += `"${r.purchaseNumber}","${r.supplierInvoiceNumber || ''}","${r.purchaseDate}","${r.partyName}","${r.purchaseType}","${r.subtotal}","${r.discountAmount}","${r.grandTotal}","${r.paidAmount}","${r.balanceAmount}","${r.paymentStatus}","${r.status}"\n`;
+          csvContent += `"${r.purchaseNumber}","${r.purchaseDate}","${r.partyName}","${r.subtotal}","${r.discountAmount}","${r.grandTotal}","${r.paidAmount}","${r.balanceAmount}","${r.paymentStatus}","${r.status}"\n`;
         });
       } else if (activeTab === 1) {
         csvContent += 'Item Code,Item Name,Category,Quantity Purchased,Gross Purchases,Discount,Net Purchases,Average Rate\n';
@@ -192,7 +194,7 @@ const PurchaseReport = () => {
       } else if (activeTab === 2) {
         csvContent += 'Supplier,Phone,Invoices,Gross Purchases,Discount,Net Purchases,Paid,Outstanding\n';
         supplierWiseData.forEach((r) => {
-          csvContent += `"${r.supplierName}","${r.phone || ''}","${r.invoiceCount}","${r.grossPurchases}","${r.discount}","${r.netPurchases}","${r.paidAmount}","${r.outstandingAmount}"\n`;
+          csvContent += `"${r.partyName}","${r.phone || ''}","${r.purchaseCount}","${r.grossPurchases}","${r.discount}","${r.netPurchases}","${r.paidAmount}","${r.outstandingAmount}"\n`;
         });
       }
 
@@ -218,13 +220,13 @@ const PurchaseReport = () => {
   const kpiCards = summary
     ? [
         {
-          title: 'Total Purchases',
+          title: 'Total Invoices',
           value: summary.totalPurchases,
           icon: <ShoppingBagOutlinedIcon />,
           color: 'primary',
         },
         {
-          title: 'Total Amount',
+          title: 'Total Purchases',
           value: fmt(summary.totalAmount),
           icon: <AttachMoneyOutlinedIcon />,
           color: 'success',
@@ -242,8 +244,8 @@ const PurchaseReport = () => {
           color: 'info',
         },
         {
-          title: 'Total Payable',
-          value: fmt(summary.totalPayable),
+          title: 'Total Outstanding',
+          value: fmt(summary.totalOutstanding),
           icon: <HourglassEmptyOutlinedIcon />,
           color: 'error',
         },
@@ -260,7 +262,6 @@ const PurchaseReport = () => {
     { id: 'purchaseNumber', label: 'Purchase #', bold: true, minWidth: 120 },
     { id: 'purchaseDate', label: 'Date', format: 'date', minWidth: 100 },
     { id: 'partyName', label: 'Supplier', minWidth: 150 },
-    { id: 'purchaseType', label: 'Type', minWidth: 90 },
     { id: 'subtotal', label: 'Subtotal', format: 'currency', align: 'right', minWidth: 100 },
     { id: 'discountAmount', label: 'Discount', format: 'currency', align: 'right', minWidth: 90 },
     { id: 'grandTotal', label: 'Grand Total', format: 'currency', align: 'right', bold: true, minWidth: 110 },
@@ -294,9 +295,9 @@ const PurchaseReport = () => {
   ];
 
   const supplierColumns = [
-    { id: 'supplierName', label: 'Supplier Name', bold: true, minWidth: 160 },
+    { id: 'partyName', label: 'Supplier Name', bold: true, minWidth: 160 },
     { id: 'phone', label: 'Phone', minWidth: 120 },
-    { id: 'invoiceCount', label: 'Invoices', align: 'center', minWidth: 90 },
+    { id: 'purchaseCount', label: 'Invoices', align: 'center', minWidth: 90 },
     { id: 'grossPurchases', label: 'Gross Purchase', format: 'currency', align: 'right', minWidth: 120 },
     { id: 'discount', label: 'Discount', format: 'currency', align: 'right', minWidth: 100 },
     { id: 'netPurchases', label: 'Net Purchase', format: 'currency', align: 'right', bold: true, minWidth: 120 },
@@ -306,26 +307,22 @@ const PurchaseReport = () => {
 
   return (
     <Box sx={{ p: { xs: 2, md: 3 } }}>
-      {/* Header */}
-      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2, flexWrap: 'wrap', gap: 1 }}>
-        <Box>
-          <Typography variant="h5" fontWeight={800} color="text.primary">
-            Purchase Report
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            Procurement expenditure analysis, supplier accounts, and item-wise purchase breakdowns.
-          </Typography>
-        </Box>
-        <ExportButtons
-          onPdf={handleExportPdf}
-          onCsv={handleExportCsv}
-          pdfLoading={pdfLoading}
-          csvLoading={csvLoading}
-        />
-      </Box>
+      {/* Standard Header with Export Actions */}
+      <PageHeader
+        title="Purchase Report"
+        subtitle="Procurement expenditure analysis, supplier accounts, and item-wise purchase breakdowns."
+        actions={
+          <ExportButtons
+            onPdf={handleExportPdf}
+            onCsv={handleExportCsv}
+            pdfLoading={pdfLoading}
+            csvLoading={csvLoading}
+          />
+        }
+      />
 
       {/* Tabs */}
-      <Paper sx={{ mb: 2, borderBottom: 1, borderColor: 'divider' }} elevation={0}>
+      <Paper sx={{ mb: 2.5, borderBottom: 1, borderColor: 'divider' }} elevation={0}>
         <Tabs
           value={activeTab}
           onChange={(_, v) => { setActiveTab(v); setPage(0); }}
@@ -338,7 +335,10 @@ const PurchaseReport = () => {
         </Tabs>
       </Paper>
 
-      {/* Filters */}
+      {/* Stats Cards */}
+      {activeTab === 0 && <ReportSummaryCards cards={kpiCards} loading={loading} />}
+
+      {/* FilterBar with Search and Relevant Filters */}
       <ReportFilters
         datePreset={datePreset}
         onPresetChange={handlePresetChange}
@@ -369,9 +369,6 @@ const PurchaseReport = () => {
         showStatus={activeTab === 0}
         onReset={handleResetFilters}
       />
-
-      {/* KPI Cards */}
-      {activeTab === 0 && <ReportSummaryCards cards={kpiCards} loading={loading} />}
 
       {/* Tables */}
       {activeTab === 0 && (

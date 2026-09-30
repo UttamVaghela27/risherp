@@ -2,14 +2,12 @@ import { useState } from 'react';
 import {
   Box,
   Card,
-  CardContent,
   Grid,
   Typography,
   Tabs,
   Tab,
   Button,
   Stack,
-  Chip,
   Divider,
   Alert,
   Paper,
@@ -20,11 +18,6 @@ import CheckCircleOutlineOutlinedIcon from '@mui/icons-material/CheckCircleOutli
 import ArrowBackOutlinedIcon from '@mui/icons-material/ArrowBackOutlined';
 import QrCode2OutlinedIcon from '@mui/icons-material/QrCode2Outlined';
 import CategoryOutlinedIcon from '@mui/icons-material/CategoryOutlined';
-import WarehouseOutlinedIcon from '@mui/icons-material/WarehouseOutlined';
-import AttachMoneyOutlinedIcon from '@mui/icons-material/AttachMoneyOutlined';
-import HistoryEduOutlinedIcon from '@mui/icons-material/HistoryEduOutlined';
-import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined';
-import LocalShippingOutlinedIcon from '@mui/icons-material/LocalShippingOutlined';
 
 import StatusChip from '../common/StatusChip';
 import CurrencyDisplay from '../common/CurrencyDisplay';
@@ -68,25 +61,25 @@ const ItemDetails = ({
   return (
     <Box>
       {/* Top Action Bar */}
-      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 3 }}>
+      <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, alignItems: { xs: 'flex-start', sm: 'center' }, justifyContent: 'space-between', gap: 2, mb: 3 }}>
         <Button
           variant="outlined"
           color="inherit"
           startIcon={<ArrowBackOutlinedIcon />}
           onClick={onBack}
-          sx={{ borderRadius: 1.5, borderColor: 'divider' }}
+          sx={{ borderRadius: 1.5, borderColor: 'divider', width: { xs: '100%', sm: 'auto' } }}
         >
           Back to Items
         </Button>
 
-        <Stack direction="row" spacing={1.5}>
+        <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1.5} sx={{ width: { xs: '100%', sm: 'auto' } }}>
           <Button
             variant="outlined"
             color={isActive ? 'error' : 'success'}
             startIcon={isActive ? <BlockOutlinedIcon /> : <CheckCircleOutlineOutlinedIcon />}
             onClick={handleStatusClick}
             disabled={statusUpdating}
-            sx={{ borderRadius: 1.5 }}
+            sx={{ borderRadius: 1.5, width: { xs: '100%', sm: 'auto' } }}
           >
             {isActive ? 'Deactivate Item' : 'Activate Item'}
           </Button>
@@ -96,7 +89,7 @@ const ItemDetails = ({
             color="primary"
             startIcon={<EditOutlinedIcon />}
             onClick={() => onEdit && onEdit(item)}
-            sx={{ borderRadius: 1.5, px: 2.5 }}
+            sx={{ borderRadius: 1.5, px: 2.5, width: { xs: '100%', sm: 'auto' } }}
           >
             Edit Item
           </Button>
@@ -104,7 +97,7 @@ const ItemDetails = ({
       </Box>
 
       {/* Header Profile Card */}
-      <Card sx={{ border: 1, borderColor: 'divider', borderRadius: 2.5, mb: 3, p: { xs: 2.5, sm: 3.5 } }}>
+      <Card sx={{ border: 1, borderColor: 'divider', borderRadius: 2.5, mb: 3, p: { xs: 2, sm: 3.5 } }}>
         <Box
           sx={{
             display: 'flex',
@@ -116,7 +109,7 @@ const ItemDetails = ({
         >
           <Box>
             <Stack direction="row" spacing={1.5} alignItems="center" sx={{ mb: 1, flexWrap: 'wrap', gap: 1 }}>
-              <Typography variant="h4" fontWeight={800} color="text.primary">
+              <Typography variant="h4" fontWeight={800} color="text.primary" sx={{ fontSize: { xs: '1.4rem', sm: '2.125rem' } }}>
                 {item.itemName}
               </Typography>
 
@@ -169,7 +162,8 @@ const ItemDetails = ({
               borderRadius: 2,
               bgcolor: 'background.default',
               border: 1, borderColor: 'divider',
-              minWidth: 220,
+              minWidth: { xs: '100%', sm: 220 },
+              width: { xs: '100%', sm: 'auto' },
               textAlign: { xs: 'left', md: 'right' },
             }}
           >
@@ -200,7 +194,7 @@ const ItemDetails = ({
 
       {/* KPI Cards Row */}
       <Grid container spacing={2.5} sx={{ mb: 3 }}>
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid xs={12} sm={6} md={6} lg={3}>
           <Card sx={{ border: 1, borderColor: 'divider', borderRadius: 2, p: 2.5 }}>
             <Typography variant="caption" color="text.secondary" fontWeight={600} textTransform="uppercase">
               Purchase Rate (Cost)
@@ -214,7 +208,7 @@ const ItemDetails = ({
           </Card>
         </Grid>
 
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid xs={12} sm={6} md={6} lg={3}>
           <Card sx={{ border: 1, borderColor: 'divider', borderRadius: 2, p: 2.5 }}>
             <Typography variant="caption" color="text.secondary" fontWeight={600} textTransform="uppercase">
               Sale Rate (Price)
@@ -228,7 +222,7 @@ const ItemDetails = ({
           </Card>
         </Grid>
 
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid xs={12} sm={6} md={6} lg={3}>
           <Card sx={{ border: 1, borderColor: 'divider', borderRadius: 2, p: 2.5 }}>
             <Typography variant="caption" color="text.secondary" fontWeight={600} textTransform="uppercase">
               Gross Margin
@@ -247,7 +241,7 @@ const ItemDetails = ({
           </Card>
         </Grid>
 
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid xs={12} sm={6} md={6} lg={3}>
           <Card sx={{ border: 1, borderColor: 'divider', borderRadius: 2, p: 2.5 }}>
             <Typography variant="caption" color="text.secondary" fontWeight={600} textTransform="uppercase">
               Minimum Safety Stock
@@ -267,19 +261,21 @@ const ItemDetails = ({
         <Tabs
           value={currentTab}
           onChange={(e, val) => setCurrentTab(val)}
+          variant="scrollable"
+          scrollButtons="auto"
           sx={{ borderBottom: 1, borderColor: 'divider', px: 2 }}
         >
           <Tab label="Product Details" />
           <Tab label="Inventory & Alerts" />
-          <Tab label="Stock Movement (Phase 12)" />
-          <Tab label="Sales History (Phase 7)" />
-          <Tab label="Purchase History (Phase 9)" />
+          <Tab label="Stock Movement" />
+          <Tab label="Sales History" />
+          <Tab label="Purchase History" />
         </Tabs>
 
-        <Box sx={{ p: 3 }}>
+        <Box sx={{ p: { xs: 2, sm: 3 } }}>
           {currentTab === 0 && (
             <Grid container spacing={3}>
-              <Grid item xs={12} sm={6}>
+              <Grid xs={12} sm={6}>
                 <Typography variant="caption" color="text.secondary" fontWeight={600}>
                   Item Name
                 </Typography>
@@ -288,7 +284,7 @@ const ItemDetails = ({
                 </Typography>
               </Grid>
 
-              <Grid item xs={12} sm={6}>
+              <Grid xs={12} sm={6}>
                 <Typography variant="caption" color="text.secondary" fontWeight={600}>
                   System Code
                 </Typography>
@@ -297,7 +293,7 @@ const ItemDetails = ({
                 </Typography>
               </Grid>
 
-              <Grid item xs={12} sm={6}>
+              <Grid xs={12} sm={6}>
                 <Typography variant="caption" color="text.secondary" fontWeight={600}>
                   Category
                 </Typography>
@@ -306,7 +302,7 @@ const ItemDetails = ({
                 </Typography>
               </Grid>
 
-              <Grid item xs={12} sm={6}>
+              <Grid xs={12} sm={6}>
                 <Typography variant="caption" color="text.secondary" fontWeight={600}>
                   Brand / Manufacturer
                 </Typography>
@@ -315,7 +311,7 @@ const ItemDetails = ({
                 </Typography>
               </Grid>
 
-              <Grid item xs={12} sm={6}>
+              <Grid xs={12} sm={6}>
                 <Typography variant="caption" color="text.secondary" fontWeight={600}>
                   Barcode / SKU
                 </Typography>
@@ -324,7 +320,7 @@ const ItemDetails = ({
                 </Typography>
               </Grid>
 
-              <Grid item xs={12} sm={6}>
+              <Grid xs={12} sm={6}>
                 <Typography variant="caption" color="text.secondary" fontWeight={600}>
                   Unit of Measurement
                 </Typography>
@@ -333,7 +329,7 @@ const ItemDetails = ({
                 </Typography>
               </Grid>
 
-              <Grid item xs={12}>
+              <Grid xs={12}>
                 <Divider sx={{ my: 1 }} />
                 <Typography variant="caption" color="text.secondary" fontWeight={600}>
                   Description / Notes
@@ -343,7 +339,7 @@ const ItemDetails = ({
                 </Typography>
               </Grid>
 
-              <Grid item xs={12} sm={6}>
+              <Grid xs={12} sm={6}>
                 <Typography variant="caption" color="text.secondary" fontWeight={600}>
                   Cataloged Date
                 </Typography>
@@ -352,7 +348,7 @@ const ItemDetails = ({
                 </Box>
               </Grid>
 
-              <Grid item xs={12} sm={6}>
+              <Grid xs={12} sm={6}>
                 <Typography variant="caption" color="text.secondary" fontWeight={600}>
                   Last Updated
                 </Typography>
@@ -370,7 +366,7 @@ const ItemDetails = ({
               </Alert>
 
               <Grid container spacing={3}>
-                <Grid item xs={12} sm={4}>
+                <Grid xs={12} sm={4}>
                   <Paper sx={{ p: 2, bgcolor: 'background.default', border: 1, borderColor: 'divider' }}>
                     <Typography variant="caption" color="text.secondary" fontWeight={600}>
                       CURRENT ON-HAND STOCK
@@ -381,7 +377,7 @@ const ItemDetails = ({
                   </Paper>
                 </Grid>
 
-                <Grid item xs={12} sm={4}>
+                <Grid xs={12} sm={4}>
                   <Paper sx={{ p: 2, bgcolor: 'background.default', border: 1, borderColor: 'divider' }}>
                     <Typography variant="caption" color="text.secondary" fontWeight={600}>
                       MINIMUM REORDER LEVEL
@@ -392,7 +388,7 @@ const ItemDetails = ({
                   </Paper>
                 </Grid>
 
-                <Grid item xs={12} sm={4}>
+                <Grid xs={12} sm={4}>
                   <Paper sx={{ p: 2, bgcolor: 'background.default', border: 1, borderColor: 'divider' }}>
                     <Typography variant="caption" color="text.secondary" fontWeight={600}>
                       INVENTORY VALUATION
@@ -408,19 +404,19 @@ const ItemDetails = ({
 
           {currentTab === 2 && (
             <Alert severity="info" sx={{ mt: 1 }}>
-              <strong>Stock History & Ledger:</strong> Detailed stock movement tracking (Opening, Purchases, Sales, Returns, Audit Adjustments) will be activated in <strong>Phase 12 — Stock Management</strong>.
+              <strong>Stock History & Ledger:</strong> Detailed stock movement tracking (Opening, Purchases, Sales, Returns, Audit Adjustments) is available in reports and stock views.
             </Alert>
           )}
 
           {currentTab === 3 && (
             <Alert severity="info" sx={{ mt: 1 }}>
-              <strong>Sales History:</strong> Invoices and customer sales order links for this item will be integrated in <strong>Phase 7 / 8 — Sales Module</strong>.
+              <strong>Sales History:</strong> Invoices and customer sales order links for this item are tracked in Sales Reports and History.
             </Alert>
           )}
 
           {currentTab === 4 && (
             <Alert severity="info" sx={{ mt: 1 }}>
-              <strong>Purchase History:</strong> Supplier procurement bills and vendor order links will be integrated in <strong>Phase 9 — Purchase Module</strong>.
+              <strong>Purchase History:</strong> Supplier procurement bills and vendor order links are tracked in Purchase Reports and History.
             </Alert>
           )}
         </Box>
@@ -436,7 +432,7 @@ const ItemDetails = ({
             : `Activating "${item.itemName}" will make it available for new Sales and Purchases.`
         }
         confirmText={isActive ? 'Deactivate' : 'Activate'}
-        confirmColor={isActive ? 'error' : 'success'}
+        severity={isActive ? 'error' : 'primary'}
         onConfirm={handleConfirmStatus}
         onCancel={() => setConfirmOpen(false)}
       />

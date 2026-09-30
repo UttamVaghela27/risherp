@@ -1,37 +1,33 @@
 import { useState, useEffect, useCallback } from 'react';
 import {
-  Container,
   Box,
   Typography,
   Card,
-  CardContent,
-  Grid,
-  TextField,
-  MenuItem,
-  Button,
-  Table,
-  TableBody,
   TableCell,
+  TableRow,
+  TableBody,
   TableContainer,
   TableHead,
-  TableRow,
+  Table,
   TablePagination,
   Paper,
   Chip,
+  TextField,
+  MenuItem,
+  Button,
   IconButton,
   Tooltip,
   CircularProgress,
-  Avatar,
   InputAdornment,
 } from '@mui/material';
-import DvrIcon from '@mui/icons-material/Dvr';
 import SearchIcon from '@mui/icons-material/Search';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
-import FilterAltOffIcon from '@mui/icons-material/FilterAltOff';
 import toast from 'react-hot-toast';
 import auditService from '../../services/auditService';
 import AuditDetailsDialog from '../../components/audit/AuditDetailsDialog';
+import FilterBar from '../../components/common/FilterBar';
+import PageHeader from '../../components/common/PageHeader';
 
 const MODULES = [
   'ALL',
@@ -145,135 +141,72 @@ const AuditLogsPage = () => {
   };
 
   return (
-    <Container maxWidth="xl" sx={{ py: 3 }}>
+    <Box>
       {/* Page Header */}
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3, flexWrap: 'wrap', gap: 2 }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-          <Avatar sx={{ bgcolor: 'primary.light', color: 'primary.main', width: 44, height: 44 }}>
-            <DvrIcon />
-          </Avatar>
-          <Box>
-            <Typography variant="h5" fontWeight={800} color="text.primary">
-              System Audit Logs
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              Immutable historical security and business transaction audit trails.
-            </Typography>
-          </Box>
-        </Box>
-
-        <Button
-          variant="outlined"
-          startIcon={<RefreshIcon />}
-          onClick={fetchLogs}
-          disabled={loading}
-          size="small"
-        >
-          Refresh Logs
-        </Button>
-      </Box>
+      <PageHeader
+        title="System Audit Logs"
+        subtitle="Immutable historical security and business transaction audit trails."
+        actions={
+          <Button
+            variant="outlined"
+            startIcon={<RefreshIcon />}
+            onClick={fetchLogs}
+            disabled={loading}
+            size="small"
+          >
+            Refresh Logs
+          </Button>
+        }
+      />
 
       {/* Filter Toolbar */}
-      <Card variant="outlined" sx={{ mb: 3, borderRadius: 2 }}>
-        <CardContent sx={{ p: 2 }}>
-          <Grid container spacing={2} alignItems="center">
-            {/* Search input */}
-            <Grid item xs={12} sm={6} md={4}>
-              <TextField
-                fullWidth
-                size="small"
-                placeholder="Search reference #, user, description..."
-                value={search}
-                onChange={(e) => {
-                  setSearch(e.target.value);
-                  setPage(0);
-                }}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <SearchIcon fontSize="small" color="action" />
-                    </InputAdornment>
-                  ),
-                }}
-              />
-            </Grid>
-
-            {/* Module dropdown */}
-            <Grid item xs={12} sm={6} md={2.5}>
-              <TextField
-                select
-                fullWidth
-                size="small"
-                label="Module"
-                value={selectedModule}
-                onChange={(e) => {
-                  setSelectedModule(e.target.value);
-                  setPage(0);
-                }}
-              >
-                {MODULES.map((mod) => (
-                  <MenuItem key={mod} value={mod}>
-                    {mod}
-                  </MenuItem>
-                ))}
-              </TextField>
-            </Grid>
-
-            {/* Date From */}
-            <Grid item xs={6} sm={4} md={2}>
-              <TextField
-                fullWidth
-                size="small"
-                type="date"
-                label="From Date"
-                value={dateFrom}
-                onChange={(e) => {
-                  setDateFrom(e.target.value);
-                  setPage(0);
-                }}
-                slotProps={{ inputLabel: { shrink: true } }}
-                InputLabelProps={{ shrink: true }}
-              />
-            </Grid>
-
-            {/* Date To */}
-            <Grid item xs={6} sm={4} md={2}>
-              <TextField
-                fullWidth
-                size="small"
-                type="date"
-                label="To Date"
-                value={dateTo}
-                onChange={(e) => {
-                  setDateTo(e.target.value);
-                  setPage(0);
-                }}
-                slotProps={{ inputLabel: { shrink: true } }}
-                InputLabelProps={{ shrink: true }}
-              />
-            </Grid>
-
-            {/* Clear Filters */}
-            <Grid item xs={12} sm={4} md={1.5}>
-              <Button
-                fullWidth
-                variant="text"
-                color="inherit"
-                startIcon={<FilterAltOffIcon fontSize="small" />}
-                onClick={handleResetFilters}
-                size="small"
-              >
-                Reset
-              </Button>
-            </Grid>
-          </Grid>
-        </CardContent>
-      </Card>
+      <FilterBar
+        isFiltered={search !== '' || selectedModule !== 'ALL' || dateFrom !== '' || dateTo !== ''}
+        onReset={handleResetFilters}
+      >
+        <TextField
+          size="small"
+          placeholder="Search reference #, user, description..."
+          value={search}
+          onChange={(e) => { setSearch(e.target.value); setPage(0); }}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <SearchIcon fontSize="small" color="action" />
+              </InputAdornment>
+            ),
+          }}
+          sx={{ minWidth: { xs: '100%', sm: 240 }, flex: 2 }}
+        />
+        <TextField
+          select size="small" label="Module" value={selectedModule}
+          onChange={(e) => { setSelectedModule(e.target.value); setPage(0); }}
+          sx={{ minWidth: 160 }}
+        >
+          {MODULES.map((mod) => (
+            <MenuItem key={mod} value={mod}>{mod}</MenuItem>
+          ))}
+        </TextField>
+        <TextField
+          size="small" type="date" label="From Date" value={dateFrom}
+          onChange={(e) => { setDateFrom(e.target.value); setPage(0); }}
+          slotProps={{ inputLabel: { shrink: true } }}
+          InputLabelProps={{ shrink: true }}
+          sx={{ minWidth: 150 }}
+        />
+        <TextField
+          size="small" type="date" label="To Date" value={dateTo}
+          onChange={(e) => { setDateTo(e.target.value); setPage(0); }}
+          slotProps={{ inputLabel: { shrink: true } }}
+          InputLabelProps={{ shrink: true }}
+          sx={{ minWidth: 150 }}
+        />
+      </FilterBar>
 
       {/* Audit Logs Table */}
       <Card variant="outlined" sx={{ borderRadius: 2 }}>
-        <TableContainer component={Paper} elevation={0}>
-          <Table size="medium">
+        <TableContainer component={Paper} elevation={0} sx={{ overflowX: 'auto', maxWidth: '100%' }}>
+          <Table size="medium" sx={{ minWidth: 850 }}>
             <TableHead sx={{ bgcolor: 'background.default' }}>
               <TableRow>
                 <TableCell sx={{ fontWeight: 700 }}>Timestamp</TableCell>
@@ -380,7 +313,7 @@ const AuditLogsPage = () => {
 
       {/* Details Dialog */}
       <AuditDetailsDialog open={detailOpen} onClose={handleCloseDetail} log={selectedLog} />
-    </Container>
+    </Box>
   );
 };
 

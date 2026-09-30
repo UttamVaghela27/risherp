@@ -21,6 +21,7 @@ const AppTable = ({
   children,
   page,
   rowsPerPage,
+  rowsPerPageOptions = [5, 10, 20, 25, 50, 100],
   totalElements,
   onPageChange,
   onRowsPerPageChange,
@@ -40,7 +41,7 @@ const AppTable = ({
         ? '0 4px 6px -1px rgba(0, 0, 0, 0.5)' 
         : '0 1px 3px 0 rgba(0, 0, 0, 0.04)'
     }}>
-      <TableContainer sx={{ minHeight }}>
+      <TableContainer sx={{ minHeight, overflowX: 'auto', maxWidth: '100%' }}>
         <Table stickyHeader size="small">
           <TableHead>
             {headContent ? (
@@ -75,7 +76,7 @@ const AppTable = ({
 
       {!hidePagination && totalElements !== undefined && (
         <TablePagination
-          rowsPerPageOptions={[5, 10, 25, 50]}
+          rowsPerPageOptions={rowsPerPageOptions}
           component="div"
           count={totalElements}
           rowsPerPage={rowsPerPage}
@@ -85,9 +86,17 @@ const AppTable = ({
           sx={{
             borderTop: `1px solid ${theme.palette.divider}`,
             bgcolor: theme.palette.background.paper,
+            '& .MuiTablePagination-toolbar': {
+              flexWrap: 'wrap',
+              justifyContent: { xs: 'center', sm: 'flex-end' },
+              px: { xs: 1, sm: 2 },
+              py: { xs: 0.5, sm: 0 },
+              minHeight: { xs: 52, sm: 52 },
+            },
             '& .MuiTablePagination-selectLabel, & .MuiTablePagination-displayedRows': {
               fontSize: '0.8rem',
               color: 'text.secondary',
+              m: 0,
             },
           }}
         />

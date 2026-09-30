@@ -40,9 +40,9 @@ const AuditDetailsDialog = ({ open, onClose, log }) => {
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
-      <DialogTitle sx={{ display: 'flex', alignItems: 'center', gap: 1.5, pb: 1 }}>
+      <DialogTitle sx={{ display: 'flex', alignItems: 'center', gap: 1.5, pb: 1, flexWrap: 'wrap' }}>
         <HistoryEduIcon color="primary" />
-        <Box sx={{ flex: 1 }}>
+        <Box sx={{ flex: 1, minWidth: 200 }}>
           <Typography variant="h6" fontWeight={700}>
             Audit Log Record #{log.id}
           </Typography>
@@ -53,10 +53,10 @@ const AuditDetailsDialog = ({ open, onClose, log }) => {
         <Chip label={log.action} color={getActionColor(log.action)} size="small" sx={{ fontWeight: 700 }} />
       </DialogTitle>
 
-      <DialogContent dividers>
+      <DialogContent dividers sx={{ p: { xs: 2, sm: 3 } }}>
         <Grid container spacing={2.5}>
           {/* Metadata Grid */}
-          <Grid item xs={12} sm={6} md={4}>
+          <Grid xs={12} sm={6} md={4}>
             <Typography variant="caption" color="text.secondary" display="block">
               User
             </Typography>
@@ -70,7 +70,7 @@ const AuditDetailsDialog = ({ open, onClose, log }) => {
             )}
           </Grid>
 
-          <Grid item xs={12} sm={6} md={4}>
+          <Grid xs={12} sm={6} md={4}>
             <Typography variant="caption" color="text.secondary" display="block">
               Module
             </Typography>
@@ -79,7 +79,7 @@ const AuditDetailsDialog = ({ open, onClose, log }) => {
             </Typography>
           </Grid>
 
-          <Grid item xs={12} sm={6} md={4}>
+          <Grid xs={12} sm={6} md={4}>
             <Typography variant="caption" color="text.secondary" display="block">
               Reference / Document #
             </Typography>
@@ -88,7 +88,7 @@ const AuditDetailsDialog = ({ open, onClose, log }) => {
             </Typography>
           </Grid>
 
-          <Grid item xs={12} sm={6} md={4}>
+          <Grid xs={12} sm={6} md={4}>
             <Typography variant="caption" color="text.secondary" display="block">
               Entity Type & ID
             </Typography>
@@ -97,7 +97,7 @@ const AuditDetailsDialog = ({ open, onClose, log }) => {
             </Typography>
           </Grid>
 
-          <Grid item xs={12} sm={6} md={4}>
+          <Grid xs={12} sm={6} md={4}>
             <Typography variant="caption" color="text.secondary" display="block">
               IP Address
             </Typography>
@@ -106,7 +106,7 @@ const AuditDetailsDialog = ({ open, onClose, log }) => {
             </Typography>
           </Grid>
 
-          <Grid item xs={12} sm={6} md={4}>
+          <Grid xs={12} sm={6} md={4}>
             <Typography variant="caption" color="text.secondary" display="block">
               User Agent
             </Typography>
@@ -115,7 +115,7 @@ const AuditDetailsDialog = ({ open, onClose, log }) => {
             </Typography>
           </Grid>
 
-          <Grid item xs={12}>
+          <Grid xs={12}>
             <Divider sx={{ my: 1 }} />
             <Typography variant="caption" color="text.secondary" display="block" gutterBottom>
               Description & Activity Details
@@ -129,7 +129,7 @@ const AuditDetailsDialog = ({ open, onClose, log }) => {
 
           {/* Old vs New Value comparison if available */}
           {(log.oldValue || log.newValue) && (
-            <Grid item xs={12}>
+            <Grid xs={12}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
                 <CompareArrowsIcon fontSize="small" color="action" />
                 <Typography variant="subtitle2" fontWeight={700}>
@@ -138,7 +138,7 @@ const AuditDetailsDialog = ({ open, onClose, log }) => {
               </Box>
 
               <Grid container spacing={2}>
-                <Grid item xs={12} sm={6}>
+                <Grid xs={12} sm={6}>
                   <Typography variant="caption" color="text.secondary" display="block" gutterBottom>
                     Old Value (Previous State)
                   </Typography>
@@ -159,7 +159,7 @@ const AuditDetailsDialog = ({ open, onClose, log }) => {
                   </Paper>
                 </Grid>
 
-                <Grid item xs={12} sm={6}>
+                <Grid xs={12} sm={6}>
                   <Typography variant="caption" color="text.secondary" display="block" gutterBottom>
                     New Value (Updated State)
                   </Typography>
@@ -186,7 +186,7 @@ const AuditDetailsDialog = ({ open, onClose, log }) => {
       </DialogContent>
 
       <DialogActions sx={{ px: 3, py: 2 }}>
-        <Button onClick={onClose} variant="outlined">
+        <Button onClick={onClose} variant="outlined" sx={{ width: { xs: '100%', sm: 'auto' } }}>
           Close
         </Button>
       </DialogActions>
