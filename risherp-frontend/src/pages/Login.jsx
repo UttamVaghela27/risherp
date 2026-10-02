@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import {
   Box,
   Card,
@@ -10,8 +10,9 @@ import {
   IconButton,
   CircularProgress,
   Alert,
+  Tooltip,
   useTheme,
-  alpha
+  alpha,
 } from '@mui/material';
 import { useNavigate, useLocation, Link as RouterLink } from 'react-router-dom';
 import VpnKeyIcon from '@mui/icons-material/VpnKey';
@@ -22,15 +23,21 @@ import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import BusinessCenterIcon from '@mui/icons-material/BusinessCenter';
+import DarkModeOutlinedIcon from '@mui/icons-material/DarkModeOutlined';
+import LightModeOutlinedIcon from '@mui/icons-material/LightModeOutlined';
 import { useAuth } from '../context/AuthContext';
+import { ThemeContext } from '../context/ThemeContext';
 
 /**
  * 2-Step Login Page for RISHERP
  * Step 1: Verify Security Code (verify-login)
  * Step 2: Enter Email and Password (login)
+ * Fully supports both Dark and Light themes.
  */
 const Login = () => {
   const theme = useTheme();
+  const isDark = theme.palette.mode === 'dark';
+  const { mode, toggleColorMode } = useContext(ThemeContext);
   const navigate = useNavigate();
   const location = useLocation();
   const {
@@ -119,19 +126,62 @@ const Login = () => {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        background: 'radial-gradient(ellipse at 50% 0%, #eff6ff 0%, #f8fafc 60%, #f1f5f9 100%)',
+        position: 'relative',
+        background: isDark
+          ? 'radial-gradient(ellipse at 50% 0%, #1e293b 0%, #0f172a 60%, #020617 100%)'
+          : 'radial-gradient(ellipse at 50% 0%, #eff6ff 0%, #f8fafc 60%, #f1f5f9 100%)',
         p: { xs: 2, sm: 4 },
+        transition: 'background 0.3s ease',
       }}
     >
+      {/* Top Bar Floating Controls */}
+      <Box
+        sx={{
+          position: 'absolute',
+          top: { xs: 16, sm: 24 },
+          right: { xs: 16, sm: 24 },
+          display: 'flex',
+          alignItems: 'center',
+          gap: 1,
+          zIndex: 10,
+        }}
+      >
+        <Tooltip title={`Switch to ${mode === 'dark' ? 'Light' : 'Dark'} Mode`}>
+          <IconButton
+            onClick={toggleColorMode}
+            size="medium"
+            sx={{
+              bgcolor: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)',
+              border: 1,
+              borderColor: 'divider',
+              color: 'text.primary',
+              backdropFilter: 'blur(8px)',
+              '&:hover': {
+                bgcolor: isDark ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.08)',
+              },
+            }}
+          >
+            {mode === 'dark' ? (
+              <LightModeOutlinedIcon fontSize="small" sx={{ color: '#f59e0b' }} />
+            ) : (
+              <DarkModeOutlinedIcon fontSize="small" sx={{ color: '#64748b' }} />
+            )}
+          </IconButton>
+        </Tooltip>
+      </Box>
+
       <Card
         elevation={0}
         sx={{
           width: '100%',
           maxWidth: 450,
           borderRadius: 4,
-          border: 1, borderColor: 'divider',
+          border: 1,
+          borderColor: 'divider',
           p: { xs: 3.5, sm: 4.5 },
-          boxShadow: '0 20px 40px -15px rgba(15, 23, 42, 0.07), 0 0 1px 1px rgba(15, 23, 42, 0.04)',
+          boxShadow: isDark
+            ? '0 20px 40px -15px rgba(0, 0, 0, 0.7), 0 0 1px 1px rgba(255, 255, 255, 0.05)'
+            : '0 20px 40px -15px rgba(15, 23, 42, 0.07), 0 0 1px 1px rgba(15, 23, 42, 0.04)',
           bgcolor: 'background.paper',
         }}
       >
@@ -143,7 +193,7 @@ const Login = () => {
               height: 52,
               borderRadius: 3,
               background: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)',
-              color: theme.palette.background.paper,
+              color: '#ffffff',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -154,11 +204,11 @@ const Login = () => {
           >
             <BusinessCenterIcon sx={{ fontSize: 28 }} />
           </Box>
-          <Typography variant="h5" fontWeight={800} color={theme.palette.text.primary} sx={{ letterSpacing: -0.5 }}>
+          <Typography variant="h5" fontWeight={800} color="text.primary" sx={{ letterSpacing: -0.5 }}>
             RISHERP
           </Typography>
-          <Typography variant="body2" color={theme.palette.text.secondary} sx={{ mt: 0.5, fontSize: '0.85rem' }}>
-            Enterprise Resource Planning & Invoicing
+          <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5, fontSize: '0.85rem' }}>
+            Enterprise Resource Planning &amp; Invoicing
           </Typography>
         </Box>
 
@@ -169,8 +219,9 @@ const Login = () => {
               sx={{
                 p: 2,
                 mb: 3,
-                bgcolor: 'background.default',
-                border: 1, borderColor: 'divider',
+                bgcolor: isDark ? alpha(theme.palette.background.default, 0.7) : 'background.default',
+                border: 1,
+                borderColor: 'divider',
                 borderRadius: 2.5,
                 display: 'flex',
                 alignItems: 'center',
@@ -182,28 +233,43 @@ const Login = () => {
                   width: 36,
                   height: 36,
                   borderRadius: 2,
-                  bgcolor: alpha(theme.palette.info.main, 0.1),
-                  color: theme.palette.info.main,
+                  bgcolor: isDark
+                    ? alpha(theme.palette.primary.main, 0.2)
+                    : alpha(theme.palette.primary.main, 0.1),
+                  color: 'primary.main',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
                   flexShrink: 0,
+                  border: isDark ? `1px solid ${alpha(theme.palette.primary.main, 0.3)}` : 'none',
                 }}
               >
                 <VpnKeyIcon sx={{ fontSize: 18 }} />
               </Box>
               <Box>
-                <Typography variant="subtitle2" fontWeight={750} color={theme.palette.text.primary}>
+                <Typography variant="subtitle2" fontWeight={750} color="text.primary">
                   Step 1: Tenant Verification
                 </Typography>
-                <Typography variant="caption" color={theme.palette.text.secondary} sx={{ fontSize: '0.72rem' }}>
+                <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.72rem' }}>
                   Enter the unique business security code
                 </Typography>
               </Box>
             </Box>
 
             {codeError && (
-              <Alert severity="error" sx={{ mb: 2, borderRadius: 2 }}>
+              <Alert
+                severity="error"
+                sx={{
+                  mb: 2,
+                  borderRadius: 2,
+                  bgcolor: isDark ? alpha(theme.palette.error.main, 0.15) : undefined,
+                  color: isDark ? theme.palette.error.light : undefined,
+                  border: isDark ? `1px solid ${alpha(theme.palette.error.main, 0.3)}` : undefined,
+                  '& .MuiAlert-icon': {
+                    color: isDark ? theme.palette.error.light : undefined,
+                  },
+                }}
+              >
                 {codeError}
               </Alert>
             )}
@@ -233,7 +299,7 @@ const Login = () => {
                 },
                 startAdornment: (
                   <InputAdornment position="start">
-                    <VpnKeyIcon fontSize="small" sx={{ color: theme.palette.text.secondary }} />
+                    <VpnKeyIcon fontSize="small" sx={{ color: 'text.secondary' }} />
                   </InputAdornment>
                 ),
               }}
@@ -265,8 +331,13 @@ const Login = () => {
               sx={{
                 p: 2,
                 mb: 3,
-                bgcolor: alpha(theme.palette.success.main, 0.1),
-                border: '1px solid #a7f3d0',
+                bgcolor: isDark
+                  ? alpha(theme.palette.success.main, 0.12)
+                  : alpha(theme.palette.success.main, 0.08),
+                border: '1px solid',
+                borderColor: isDark
+                  ? alpha(theme.palette.success.main, 0.3)
+                  : '#a7f3d0',
                 borderRadius: 2.5,
                 display: 'flex',
                 alignItems: 'center',
@@ -276,10 +347,21 @@ const Login = () => {
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.25 }}>
                 <CheckCircleIcon sx={{ color: theme.palette.success.main, fontSize: 22 }} />
                 <Box>
-                  <Typography variant="subtitle2" fontWeight={750} color="#065f46">
+                  <Typography
+                    variant="subtitle2"
+                    fontWeight={750}
+                    sx={{ color: isDark ? '#4ade80' : '#065f46' }}
+                  >
                     {verifiedBusiness.businessName}
                   </Typography>
-                  <Typography variant="caption" color="#047857" sx={{ fontSize: '0.72rem', fontWeight: 600 }}>
+                  <Typography
+                    variant="caption"
+                    sx={{
+                      fontSize: '0.72rem',
+                      fontWeight: 600,
+                      color: isDark ? '#86efac' : '#047857',
+                    }}
+                  >
                     Verified Organization
                   </Typography>
                 </Box>
@@ -289,7 +371,7 @@ const Login = () => {
                 variant="text"
                 onClick={resetVerifiedBusiness}
                 sx={{
-                  color: theme.palette.success.main,
+                  color: isDark ? '#4ade80' : theme.palette.success.main,
                   fontSize: '0.75rem',
                   fontWeight: 700,
                   textTransform: 'none',
@@ -302,7 +384,19 @@ const Login = () => {
             </Box>
 
             {loginError && (
-              <Alert severity="error" sx={{ mb: 2, borderRadius: 2 }}>
+              <Alert
+                severity="error"
+                sx={{
+                  mb: 2,
+                  borderRadius: 2,
+                  bgcolor: isDark ? alpha(theme.palette.error.main, 0.15) : undefined,
+                  color: isDark ? theme.palette.error.light : undefined,
+                  border: isDark ? `1px solid ${alpha(theme.palette.error.main, 0.3)}` : undefined,
+                  '& .MuiAlert-icon': {
+                    color: isDark ? theme.palette.error.light : undefined,
+                  },
+                }}
+              >
                 {loginError}
               </Alert>
             )}
@@ -323,7 +417,7 @@ const Login = () => {
                     sx: { borderRadius: 2.5 },
                     startAdornment: (
                       <InputAdornment position="start">
-                        <EmailIcon fontSize="small" sx={{ color: theme.palette.text.secondary }} />
+                        <EmailIcon fontSize="small" sx={{ color: 'text.secondary' }} />
                       </InputAdornment>
                     ),
                   }}
@@ -343,7 +437,7 @@ const Login = () => {
                     sx: { borderRadius: 2.5 },
                     startAdornment: (
                       <InputAdornment position="start">
-                        <LockIcon fontSize="small" sx={{ color: theme.palette.text.secondary }} />
+                        <LockIcon fontSize="small" sx={{ color: 'text.secondary' }} />
                       </InputAdornment>
                     ),
                     endAdornment: (
@@ -352,7 +446,7 @@ const Login = () => {
                           size="small"
                           onClick={() => setShowPassword(!showPassword)}
                           edge="end"
-                          sx={{ color: theme.palette.text.secondary }}
+                          sx={{ color: 'text.secondary' }}
                         >
                           {showPassword ? <VisibilityOff fontSize="small" /> : <Visibility fontSize="small" />}
                         </IconButton>
@@ -384,12 +478,17 @@ const Login = () => {
 
         {/* Footer Link to Register */}
         <Box sx={{ textAlign: 'center', mt: 3.5, pt: 2.5, borderTop: 1, borderColor: 'divider' }}>
-          <Typography variant="body2" color={theme.palette.text.secondary} sx={{ fontSize: '0.825rem' }}>
+          <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.825rem' }}>
             Need a new business account?{' '}
             <Link
               component={RouterLink}
               to="/register"
-              sx={{ color: 'primary.main', fontWeight: 700, textDecoration: 'none', '&:hover': { textDecoration: 'underline' } }}
+              sx={{
+                color: isDark ? '#38bdf8' : 'primary.main',
+                fontWeight: 700,
+                textDecoration: 'none',
+                '&:hover': { textDecoration: 'underline' },
+              }}
             >
               Register Organization
             </Link>

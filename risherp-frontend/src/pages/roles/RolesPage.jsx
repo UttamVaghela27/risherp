@@ -48,6 +48,7 @@ import SecurityOutlinedIcon from '@mui/icons-material/SecurityOutlined';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import SelectAllIcon from '@mui/icons-material/SelectAll';
 import DeselectIcon from '@mui/icons-material/Deselect';
+import CloseIcon from '@mui/icons-material/Close';
 import toast from 'react-hot-toast';
 
 import PageHeader from '../../components/common/PageHeader';
@@ -59,6 +60,7 @@ import roleService from '../../services/roleService';
 
 const RolesPage = () => {
   const theme = useTheme();
+  const isDark = theme.palette.mode === 'dark';
   // Data states
   const [roles, setRoles] = useState([]);
   const [permissionGroups, setPermissionGroups] = useState([]);
@@ -625,12 +627,66 @@ const RolesPage = () => {
         onClose={() => !submitting && setCreateOpen(false)}
         maxWidth="md"
         fullWidth
-        PaperProps={{ sx: { borderRadius: 3, maxHeight: '90vh' } }}
+        PaperProps={{
+          sx: {
+            borderRadius: 4,
+            maxHeight: '90vh',
+            display: 'flex',
+            flexDirection: 'column',
+            boxShadow: isDark ? '0 24px 48px -12px rgba(0,0,0,0.8)' : '0 24px 48px -12px rgba(15,23,42,0.18)',
+            border: 1,
+            borderColor: 'divider',
+          },
+        }}
       >
-        <form onSubmit={handleCreateSubmit}>
-          <DialogTitle sx={{ pb: 1, fontWeight: 800 }}>Create New Role</DialogTitle>
-          <DialogContent dividers sx={{ p: 3 }}>
-            <Grid container spacing={2} sx={{ mb: 3 }}>
+        <form onSubmit={handleCreateSubmit} style={{ display: 'flex', flexDirection: 'column', minHeight: 0, overflow: 'hidden', flex: 1 }}>
+          <DialogTitle
+            sx={{
+              p: { xs: 2.5, sm: 3 },
+              pb: { xs: 2, sm: 2.5 },
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              borderBottom: 1,
+              borderColor: 'divider',
+            }}
+          >
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.75 }}>
+              <Box
+                sx={{
+                  width: 44,
+                  height: 44,
+                  borderRadius: 2.5,
+                  bgcolor: alpha(theme.palette.primary.main, 0.12),
+                  color: theme.palette.primary.main,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  flexShrink: 0,
+                }}
+              >
+                <AdminPanelSettingsOutlinedIcon />
+              </Box>
+              <Box>
+                <Typography variant="h6" fontWeight={800} sx={{ lineHeight: 1.25, fontSize: { xs: '1.05rem', sm: '1.2rem' } }}>
+                  Create New Role
+                </Typography>
+                <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 0.25 }}>
+                  Define role identification and configure granular module permissions
+                </Typography>
+              </Box>
+            </Box>
+            <IconButton
+              onClick={() => !submitting && setCreateOpen(false)}
+              size="small"
+              sx={{ color: 'text.secondary', '&:hover': { bgcolor: alpha(theme.palette.text.primary, 0.08) } }}
+            >
+              <CloseIcon fontSize="small" />
+            </IconButton>
+          </DialogTitle>
+
+          <DialogContent sx={{ p: { xs: 2.5, sm: 3.5 }, overflowY: 'auto', flex: 1 }}>
+            <Grid container spacing={2.5} sx={{ mb: 3.5 }}>
               <Grid item xs={12} sm={6}>
                 <TextField
                   label="Role Name *"
@@ -640,6 +696,7 @@ const RolesPage = () => {
                   value={roleForm.name}
                   onChange={(e) => setRoleForm({ ...roleForm, name: e.target.value.toUpperCase() })}
                   helperText="Use uppercase letters and underscores"
+                  InputProps={{ sx: { borderRadius: 2 } }}
                 />
               </Grid>
               <Grid item xs={12} sm={6}>
@@ -649,18 +706,33 @@ const RolesPage = () => {
                   placeholder="Brief summary of duties and access"
                   value={roleForm.description}
                   onChange={(e) => setRoleForm({ ...roleForm, description: e.target.value })}
+                  InputProps={{ sx: { borderRadius: 2 } }}
                 />
               </Grid>
             </Grid>
 
             {/* Permissions Matrix Header */}
-            <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, justifyContent: 'space-between', alignItems: { xs: 'flex-start', sm: 'center' }, gap: { xs: 1.5, sm: 0 }, mb: 2 }}>
+            <Box
+              sx={{
+                display: 'flex',
+                flexDirection: { xs: 'column', sm: 'row' },
+                justifyContent: 'space-between',
+                alignItems: { xs: 'flex-start', sm: 'center' },
+                gap: { xs: 1.5, sm: 0 },
+                p: 2,
+                mb: 2,
+                borderRadius: 2.5,
+                bgcolor: isDark ? alpha(theme.palette.primary.main, 0.08) : alpha(theme.palette.primary.main, 0.04),
+                border: 1,
+                borderColor: alpha(theme.palette.primary.main, 0.15),
+              }}
+            >
               <Box>
-                <Typography variant="subtitle1" fontWeight={750} color={theme.palette.text.primary}>
-                  Assign Permissions
+                <Typography variant="subtitle2" fontWeight={800} color="text.primary">
+                  Module Permissions
                 </Typography>
                 <Typography variant="caption" color="text.secondary">
-                  Selected: {roleForm.permissionIds.size} of {allPermissionIds.length} permissions
+                  Selected: <strong style={{ color: theme.palette.primary.main }}>{roleForm.permissionIds.size}</strong> of {allPermissionIds.length} permissions
                 </Typography>
               </Box>
 
@@ -668,19 +740,19 @@ const RolesPage = () => {
                 <Button
                   size="small"
                   variant="outlined"
-                  startIcon={<SelectAllIcon />}
+                  startIcon={<SelectAllIcon fontSize="small" />}
                   onClick={handleSelectAll}
-                  sx={{ textTransform: 'none', borderRadius: 1.5 }}
+                  sx={{ textTransform: 'none', borderRadius: 2, fontWeight: 700, fontSize: '0.75rem' }}
                 >
                   Select All
                 </Button>
                 <Button
                   size="small"
                   variant="outlined"
-                  color="secondary"
-                  startIcon={<DeselectIcon />}
+                  color="inherit"
+                  startIcon={<DeselectIcon fontSize="small" />}
                   onClick={handleDeselectAll}
-                  sx={{ textTransform: 'none', borderRadius: 1.5 }}
+                  sx={{ textTransform: 'none', borderRadius: 2, fontWeight: 700, fontSize: '0.75rem' }}
                 >
                   Deselect All
                 </Button>
@@ -700,14 +772,19 @@ const RolesPage = () => {
                     key={group.module}
                     defaultExpanded
                     sx={{
-                      border: 1, borderColor: 'divider',
-                      borderRadius: '8px !important',
+                      border: 1,
+                      borderColor: 'divider',
+                      borderRadius: '12px !important',
                       boxShadow: 'none',
+                      bgcolor: isDark ? 'background.paper' : '#ffffff',
                       '&:before': { display: 'none' },
                     }}
                   >
-                    <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, width: '100%', mr: 2 }}>
+                    <AccordionSummary
+                      expandIcon={<ExpandMoreIcon fontSize="small" />}
+                      sx={{ px: 2, py: 0.5, borderRadius: '12px' }}
+                    >
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, width: '100%', mr: 1.5 }}>
                         <FormControlLabel
                           control={
                             <Checkbox
@@ -722,7 +799,7 @@ const RolesPage = () => {
                             />
                           }
                           label={
-                            <Typography variant="subtitle2" fontWeight={750} color={theme.palette.info.dark}>
+                            <Typography variant="subtitle2" fontWeight={750} color="text.primary">
                               {group.module}
                             </Typography>
                           }
@@ -732,42 +809,57 @@ const RolesPage = () => {
                           label={`${selectedInMod} / ${modPerms.length}`}
                           size="small"
                           sx={{
-                            height: 20,
-                            fontSize: '0.68rem',
+                            height: 22,
+                            fontSize: '0.7rem',
                             fontWeight: 700,
-                            bgcolor: selectedInMod > 0 ? alpha(theme.palette.info.main, 0.1) : theme.palette.background.default,
-                            color: selectedInMod > 0 ? theme.palette.info.dark : theme.palette.text.secondary,
+                            borderRadius: '6px',
+                            bgcolor: selectedInMod > 0 ? alpha(theme.palette.primary.main, 0.12) : alpha(theme.palette.text.secondary, 0.08),
+                            color: selectedInMod > 0 ? theme.palette.primary.main : theme.palette.text.secondary,
                           }}
                         />
                       </Box>
                     </AccordionSummary>
-                    <AccordionDetails sx={{ pt: 0, pb: 2, px: 3 }}>
-                      <Divider sx={{ mb: 1.5 }} />
+                    <AccordionDetails sx={{ pt: 0, pb: 2, px: 2.5 }}>
+                      <Divider sx={{ mb: 2 }} />
                       <Grid container spacing={1.5}>
-                        {modPerms.map((p) => (
-                          <Grid item xs={12} sm={6} md={4} key={p.id}>
-                            <FormControlLabel
-                              control={
+                        {modPerms.map((p) => {
+                          const isChecked = roleForm.permissionIds.has(p.id);
+                          return (
+                            <Grid item xs={12} sm={6} md={4} key={p.id}>
+                              <Box
+                                onClick={() => handleTogglePermission(p.id)}
+                                sx={{
+                                  display: 'flex',
+                                  alignItems: 'flex-start',
+                                  p: 1,
+                                  borderRadius: 2,
+                                  cursor: 'pointer',
+                                  border: 1,
+                                  borderColor: isChecked ? alpha(theme.palette.primary.main, 0.35) : 'transparent',
+                                  bgcolor: isChecked ? alpha(theme.palette.primary.main, 0.06) : 'transparent',
+                                  transition: 'all 0.15s ease-in-out',
+                                  '&:hover': {
+                                    bgcolor: isChecked ? alpha(theme.palette.primary.main, 0.1) : alpha(theme.palette.text.primary, 0.03),
+                                  },
+                                }}
+                              >
                                 <Checkbox
-                                  checked={roleForm.permissionIds.has(p.id)}
-                                  onChange={() => handleTogglePermission(p.id)}
+                                  checked={isChecked}
                                   size="small"
+                                  sx={{ p: 0.5, mr: 0.5, mt: -0.25 }}
                                 />
-                              }
-                              label={
                                 <Box>
-                                  <Typography variant="body2" fontWeight={600} color={theme.palette.text.secondary} sx={{ fontSize: '0.8125rem' }}>
+                                  <Typography variant="body2" fontWeight={isChecked ? 700 : 500} color="text.primary" sx={{ fontSize: '0.8125rem' }}>
                                     {p.permissionName || p.name}
                                   </Typography>
                                   <Typography variant="caption" color="text.secondary" sx={{ display: 'block', fontSize: '0.7rem' }}>
                                     {p.permissionCode || p.code}
                                   </Typography>
                                 </Box>
-                              }
-                              sx={{ m: 0, alignItems: 'flex-start' }}
-                            />
-                          </Grid>
-                        ))}
+                              </Box>
+                            </Grid>
+                          );
+                        })}
                       </Grid>
                     </AccordionDetails>
                   </Accordion>
@@ -775,15 +867,33 @@ const RolesPage = () => {
               })}
             </Stack>
           </DialogContent>
-          <DialogActions sx={{ p: 2.5, flexDirection: { xs: 'column-reverse', sm: 'row' }, gap: { xs: 1, sm: 0 }, '& .MuiButton-root': { width: { xs: '100%', sm: 'auto' } } }}>
-            <Button onClick={() => setCreateOpen(false)} disabled={submitting} sx={{ color: theme.palette.text.secondary }}>
+          <DialogActions
+            sx={{
+              p: { xs: 2, sm: 2.5 },
+              px: { xs: 2.5, sm: 3.5 },
+              bgcolor: isDark ? 'rgba(15, 23, 42, 0.3)' : '#f8fafc',
+              borderTop: 1,
+              borderColor: 'divider',
+              display: 'flex',
+              justifyContent: 'flex-end',
+              gap: 1.5,
+              flexDirection: { xs: 'column-reverse', sm: 'row' },
+            }}
+          >
+            <Button
+              onClick={() => setCreateOpen(false)}
+              disabled={submitting}
+              variant="outlined"
+              color="inherit"
+              sx={{ borderRadius: 2.5, px: 3, fontWeight: 600, width: { xs: '100%', sm: 'auto' } }}
+            >
               Cancel
             </Button>
             <Button
               type="submit"
               variant="contained"
               disabled={submitting}
-              sx={{ fontWeight: 700, borderRadius: 2, px: 3 }}
+              sx={{ fontWeight: 700, borderRadius: 2.5, px: 3.5, width: { xs: '100%', sm: 'auto' } }}
             >
               {submitting ? 'Creating...' : 'Create Role'}
             </Button>
@@ -797,14 +907,66 @@ const RolesPage = () => {
         onClose={() => !submitting && setEditOpen(false)}
         maxWidth="md"
         fullWidth
-        PaperProps={{ sx: { borderRadius: 3, maxHeight: '90vh' } }}
+        PaperProps={{
+          sx: {
+            borderRadius: 4,
+            maxHeight: '90vh',
+            display: 'flex',
+            flexDirection: 'column',
+            boxShadow: isDark ? '0 24px 48px -12px rgba(0,0,0,0.8)' : '0 24px 48px -12px rgba(15,23,42,0.18)',
+            border: 1,
+            borderColor: 'divider',
+          },
+        }}
       >
-        <form onSubmit={handleEditSubmit}>
-          <DialogTitle sx={{ pb: 1, fontWeight: 800 }}>
-            Edit Role — {selectedRole?.name || selectedRole?.roleName}
+        <form onSubmit={handleEditSubmit} style={{ display: 'flex', flexDirection: 'column', minHeight: 0, overflow: 'hidden', flex: 1 }}>
+          <DialogTitle
+            sx={{
+              p: { xs: 2.5, sm: 3 },
+              pb: { xs: 2, sm: 2.5 },
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              borderBottom: 1,
+              borderColor: 'divider',
+            }}
+          >
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.75 }}>
+              <Box
+                sx={{
+                  width: 44,
+                  height: 44,
+                  borderRadius: 2.5,
+                  bgcolor: alpha(theme.palette.primary.main, 0.12),
+                  color: theme.palette.primary.main,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  flexShrink: 0,
+                }}
+              >
+                <EditOutlinedIcon />
+              </Box>
+              <Box>
+                <Typography variant="h6" fontWeight={800} sx={{ lineHeight: 1.25, fontSize: { xs: '1.05rem', sm: '1.2rem' } }}>
+                  Edit Role — {selectedRole?.name || selectedRole?.roleName}
+                </Typography>
+                <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 0.25 }}>
+                  Update role details and adjust module permissions
+                </Typography>
+              </Box>
+            </Box>
+            <IconButton
+              onClick={() => !submitting && setEditOpen(false)}
+              size="small"
+              sx={{ color: 'text.secondary', '&:hover': { bgcolor: alpha(theme.palette.text.primary, 0.08) } }}
+            >
+              <CloseIcon fontSize="small" />
+            </IconButton>
           </DialogTitle>
-          <DialogContent dividers sx={{ p: 3 }}>
-            <Grid container spacing={2} sx={{ mb: 3 }}>
+
+          <DialogContent sx={{ p: { xs: 2.5, sm: 3.5 }, overflowY: 'auto', flex: 1 }}>
+            <Grid container spacing={2.5} sx={{ mb: 3.5 }}>
               <Grid item xs={12} sm={6}>
                 <TextField
                   label="Role Name *"
@@ -813,6 +975,7 @@ const RolesPage = () => {
                   disabled={isSystemRole(selectedRole?.name)}
                   value={roleForm.name}
                   onChange={(e) => setRoleForm({ ...roleForm, name: e.target.value.toUpperCase() })}
+                  InputProps={{ sx: { borderRadius: 2 } }}
                 />
               </Grid>
               <Grid item xs={12} sm={6}>
@@ -821,18 +984,33 @@ const RolesPage = () => {
                   fullWidth
                   value={roleForm.description}
                   onChange={(e) => setRoleForm({ ...roleForm, description: e.target.value })}
+                  InputProps={{ sx: { borderRadius: 2 } }}
                 />
               </Grid>
             </Grid>
 
             {/* Permissions Matrix Header */}
-            <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, justifyContent: 'space-between', alignItems: { xs: 'flex-start', sm: 'center' }, gap: { xs: 1.5, sm: 0 }, mb: 2 }}>
+            <Box
+              sx={{
+                display: 'flex',
+                flexDirection: { xs: 'column', sm: 'row' },
+                justifyContent: 'space-between',
+                alignItems: { xs: 'flex-start', sm: 'center' },
+                gap: { xs: 1.5, sm: 0 },
+                p: 2,
+                mb: 2,
+                borderRadius: 2.5,
+                bgcolor: isDark ? alpha(theme.palette.primary.main, 0.08) : alpha(theme.palette.primary.main, 0.04),
+                border: 1,
+                borderColor: alpha(theme.palette.primary.main, 0.15),
+              }}
+            >
               <Box>
-                <Typography variant="subtitle1" fontWeight={750} color={theme.palette.text.primary}>
+                <Typography variant="subtitle2" fontWeight={800} color="text.primary">
                   Assigned Permissions
                 </Typography>
                 <Typography variant="caption" color="text.secondary">
-                  Selected: {roleForm.permissionIds.size} of {allPermissionIds.length} permissions
+                  Selected: <strong style={{ color: theme.palette.primary.main }}>{roleForm.permissionIds.size}</strong> of {allPermissionIds.length} permissions
                 </Typography>
               </Box>
 
@@ -840,19 +1018,19 @@ const RolesPage = () => {
                 <Button
                   size="small"
                   variant="outlined"
-                  startIcon={<SelectAllIcon />}
+                  startIcon={<SelectAllIcon fontSize="small" />}
                   onClick={handleSelectAll}
-                  sx={{ textTransform: 'none', borderRadius: 1.5 }}
+                  sx={{ textTransform: 'none', borderRadius: 2, fontWeight: 700, fontSize: '0.75rem' }}
                 >
                   Select All
                 </Button>
                 <Button
                   size="small"
                   variant="outlined"
-                  color="secondary"
-                  startIcon={<DeselectIcon />}
+                  color="inherit"
+                  startIcon={<DeselectIcon fontSize="small" />}
                   onClick={handleDeselectAll}
-                  sx={{ textTransform: 'none', borderRadius: 1.5 }}
+                  sx={{ textTransform: 'none', borderRadius: 2, fontWeight: 700, fontSize: '0.75rem' }}
                 >
                   Deselect All
                 </Button>
@@ -872,14 +1050,19 @@ const RolesPage = () => {
                     key={group.module}
                     defaultExpanded
                     sx={{
-                      border: 1, borderColor: 'divider',
-                      borderRadius: '8px !important',
+                      border: 1,
+                      borderColor: 'divider',
+                      borderRadius: '12px !important',
                       boxShadow: 'none',
+                      bgcolor: isDark ? 'background.paper' : '#ffffff',
                       '&:before': { display: 'none' },
                     }}
                   >
-                    <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, width: '100%', mr: 2 }}>
+                    <AccordionSummary
+                      expandIcon={<ExpandMoreIcon fontSize="small" />}
+                      sx={{ px: 2, py: 0.5, borderRadius: '12px' }}
+                    >
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, width: '100%', mr: 1.5 }}>
                         <FormControlLabel
                           control={
                             <Checkbox
@@ -894,7 +1077,7 @@ const RolesPage = () => {
                             />
                           }
                           label={
-                            <Typography variant="subtitle2" fontWeight={750} color={theme.palette.info.dark}>
+                            <Typography variant="subtitle2" fontWeight={750} color="text.primary">
                               {group.module}
                             </Typography>
                           }
@@ -904,42 +1087,57 @@ const RolesPage = () => {
                           label={`${selectedInMod} / ${modPerms.length}`}
                           size="small"
                           sx={{
-                            height: 20,
-                            fontSize: '0.68rem',
+                            height: 22,
+                            fontSize: '0.7rem',
                             fontWeight: 700,
-                            bgcolor: selectedInMod > 0 ? alpha(theme.palette.info.main, 0.1) : theme.palette.background.default,
-                            color: selectedInMod > 0 ? theme.palette.info.dark : theme.palette.text.secondary,
+                            borderRadius: '6px',
+                            bgcolor: selectedInMod > 0 ? alpha(theme.palette.primary.main, 0.12) : alpha(theme.palette.text.secondary, 0.08),
+                            color: selectedInMod > 0 ? theme.palette.primary.main : theme.palette.text.secondary,
                           }}
                         />
                       </Box>
                     </AccordionSummary>
-                    <AccordionDetails sx={{ pt: 0, pb: 2, px: 3 }}>
-                      <Divider sx={{ mb: 1.5 }} />
+                    <AccordionDetails sx={{ pt: 0, pb: 2, px: 2.5 }}>
+                      <Divider sx={{ mb: 2 }} />
                       <Grid container spacing={1.5}>
-                        {modPerms.map((p) => (
-                          <Grid item xs={12} sm={6} md={4} key={p.id}>
-                            <FormControlLabel
-                              control={
+                        {modPerms.map((p) => {
+                          const isChecked = roleForm.permissionIds.has(p.id);
+                          return (
+                            <Grid item xs={12} sm={6} md={4} key={p.id}>
+                              <Box
+                                onClick={() => handleTogglePermission(p.id)}
+                                sx={{
+                                  display: 'flex',
+                                  alignItems: 'flex-start',
+                                  p: 1,
+                                  borderRadius: 2,
+                                  cursor: 'pointer',
+                                  border: 1,
+                                  borderColor: isChecked ? alpha(theme.palette.primary.main, 0.35) : 'transparent',
+                                  bgcolor: isChecked ? alpha(theme.palette.primary.main, 0.06) : 'transparent',
+                                  transition: 'all 0.15s ease-in-out',
+                                  '&:hover': {
+                                    bgcolor: isChecked ? alpha(theme.palette.primary.main, 0.1) : alpha(theme.palette.text.primary, 0.03),
+                                  },
+                                }}
+                              >
                                 <Checkbox
-                                  checked={roleForm.permissionIds.has(p.id)}
-                                  onChange={() => handleTogglePermission(p.id)}
+                                  checked={isChecked}
                                   size="small"
+                                  sx={{ p: 0.5, mr: 0.5, mt: -0.25 }}
                                 />
-                              }
-                              label={
                                 <Box>
-                                  <Typography variant="body2" fontWeight={600} color={theme.palette.text.secondary} sx={{ fontSize: '0.8125rem' }}>
+                                  <Typography variant="body2" fontWeight={isChecked ? 700 : 500} color="text.primary" sx={{ fontSize: '0.8125rem' }}>
                                     {p.permissionName || p.name}
                                   </Typography>
                                   <Typography variant="caption" color="text.secondary" sx={{ display: 'block', fontSize: '0.7rem' }}>
                                     {p.permissionCode || p.code}
                                   </Typography>
                                 </Box>
-                              }
-                              sx={{ m: 0, alignItems: 'flex-start' }}
-                            />
-                          </Grid>
-                        ))}
+                              </Box>
+                            </Grid>
+                          );
+                        })}
                       </Grid>
                     </AccordionDetails>
                   </Accordion>
@@ -947,15 +1145,33 @@ const RolesPage = () => {
               })}
             </Stack>
           </DialogContent>
-          <DialogActions sx={{ p: 2.5, flexDirection: { xs: 'column-reverse', sm: 'row' }, gap: { xs: 1, sm: 0 }, '& .MuiButton-root': { width: { xs: '100%', sm: 'auto' } } }}>
-            <Button onClick={() => setEditOpen(false)} disabled={submitting} sx={{ color: theme.palette.text.secondary }}>
+          <DialogActions
+            sx={{
+              p: { xs: 2, sm: 2.5 },
+              px: { xs: 2.5, sm: 3.5 },
+              bgcolor: isDark ? 'rgba(15, 23, 42, 0.3)' : '#f8fafc',
+              borderTop: 1,
+              borderColor: 'divider',
+              display: 'flex',
+              justifyContent: 'flex-end',
+              gap: 1.5,
+              flexDirection: { xs: 'column-reverse', sm: 'row' },
+            }}
+          >
+            <Button
+              onClick={() => setEditOpen(false)}
+              disabled={submitting}
+              variant="outlined"
+              color="inherit"
+              sx={{ borderRadius: 2.5, px: 3, fontWeight: 600, width: { xs: '100%', sm: 'auto' } }}
+            >
               Cancel
             </Button>
             <Button
               type="submit"
               variant="contained"
               disabled={submitting}
-              sx={{ fontWeight: 700, borderRadius: 2, px: 3 }}
+              sx={{ fontWeight: 700, borderRadius: 2.5, px: 3.5, width: { xs: '100%', sm: 'auto' } }}
             >
               {submitting ? 'Saving...' : 'Save Permissions'}
             </Button>
@@ -969,15 +1185,78 @@ const RolesPage = () => {
         onClose={() => setViewOpen(false)}
         maxWidth="md"
         fullWidth
-        PaperProps={{ sx: { borderRadius: 3, maxHeight: '85vh' } }}
+        PaperProps={{
+          sx: {
+            borderRadius: 4,
+            maxHeight: '85vh',
+            boxShadow: isDark ? '0 24px 48px -12px rgba(0,0,0,0.8)' : '0 24px 48px -12px rgba(15,23,42,0.18)',
+            border: 1,
+            borderColor: 'divider',
+            overflow: 'hidden',
+          },
+        }}
       >
-        <DialogTitle sx={{ pb: 1, fontWeight: 800 }}>
-          Permissions for Role: {selectedRole?.name || selectedRole?.roleName}
+        <DialogTitle
+          sx={{
+            p: { xs: 2.5, sm: 3 },
+            pb: { xs: 2, sm: 2.5 },
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            borderBottom: 1,
+            borderColor: 'divider',
+          }}
+        >
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.75 }}>
+            <Box
+              sx={{
+                width: 44,
+                height: 44,
+                borderRadius: 2.5,
+                bgcolor: alpha(theme.palette.info.main, 0.12),
+                color: theme.palette.info.main,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                flexShrink: 0,
+              }}
+            >
+              <VisibilityOutlinedIcon />
+            </Box>
+            <Box>
+              <Typography variant="h6" fontWeight={800} sx={{ lineHeight: 1.25, fontSize: { xs: '1.05rem', sm: '1.2rem' } }}>
+                Role Permissions — {selectedRole?.name || selectedRole?.roleName}
+              </Typography>
+              <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 0.25 }}>
+                Review assigned access permissions across all modules
+              </Typography>
+            </Box>
+          </Box>
+          <IconButton
+            onClick={() => setViewOpen(false)}
+            size="small"
+            sx={{ color: 'text.secondary', '&:hover': { bgcolor: alpha(theme.palette.text.primary, 0.08) } }}
+          >
+            <CloseIcon fontSize="small" />
+          </IconButton>
         </DialogTitle>
-        <DialogContent dividers sx={{ p: 3 }}>
-          <Box sx={{ mb: 2 }}>
-            <Typography variant="body2" color={theme.palette.text.secondary}>
-              {selectedRole?.description || 'No description provided'}
+
+        <DialogContent sx={{ p: { xs: 2.5, sm: 3.5 } }}>
+          <Box
+            sx={{
+              p: 2,
+              mb: 3,
+              borderRadius: 2.5,
+              bgcolor: isDark ? alpha(theme.palette.background.default, 0.6) : alpha(theme.palette.text.primary, 0.03),
+              border: 1,
+              borderColor: 'divider',
+            }}
+          >
+            <Typography variant="caption" fontWeight={700} color="text.secondary" sx={{ textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', mb: 0.5 }}>
+              Role Description
+            </Typography>
+            <Typography variant="body2" color="text.primary">
+              {selectedRole?.description || 'No description provided for this role.'}
             </Typography>
           </Box>
 
@@ -991,25 +1270,52 @@ const RolesPage = () => {
               if (grantedInMod.length === 0) return null;
 
               return (
-                <Paper key={group.module} variant="outlined" sx={{ p: 2, borderRadius: 2 }}>
-                  <Typography variant="subtitle2" fontWeight={800} color={theme.palette.info.dark} sx={{ mb: 1.5 }}>
-                    {group.module} ({grantedInMod.length} granted)
-                  </Typography>
-                  <Grid container spacing={1}>
+                <Paper
+                  key={group.module}
+                  variant="outlined"
+                  sx={{
+                    p: 2.5,
+                    borderRadius: 3,
+                    borderColor: 'divider',
+                    bgcolor: isDark ? alpha(theme.palette.background.paper, 0.6) : '#ffffff',
+                  }}
+                >
+                  <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
+                    <Typography variant="subtitle2" fontWeight={800} color="text.primary">
+                      {group.module}
+                    </Typography>
+                    <Chip
+                      label={`${grantedInMod.length} granted`}
+                      size="small"
+                      sx={{
+                        height: 22,
+                        fontSize: '0.7rem',
+                        fontWeight: 700,
+                        bgcolor: alpha(theme.palette.success.main, 0.12),
+                        color: theme.palette.success.main,
+                        borderRadius: '6px',
+                      }}
+                    />
+                  </Box>
+                  <Grid container spacing={1.5}>
                     {grantedInMod.map((p) => (
                       <Grid item xs={12} sm={6} md={4} key={p.id}>
-                        <Chip
-                          label={p.permissionName || p.name}
-                          size="small"
+                        <Box
                           sx={{
-                            width: '100%',
-                            justifyContent: 'flex-start',
-                            fontWeight: 600,
-                            bgcolor: 'background.default',
-                            color: theme.palette.text.primary,
-                            fontSize: '0.75rem',
+                            p: 1.25,
+                            borderRadius: 2,
+                            border: 1,
+                            borderColor: 'divider',
+                            bgcolor: isDark ? alpha(theme.palette.background.default, 0.5) : alpha(theme.palette.text.primary, 0.02),
                           }}
-                        />
+                        >
+                          <Typography variant="body2" fontWeight={600} color="text.primary" sx={{ fontSize: '0.8rem' }}>
+                            {p.permissionName || p.name}
+                          </Typography>
+                          <Typography variant="caption" color="text.secondary" sx={{ display: 'block', fontSize: '0.68rem', mt: 0.25 }}>
+                            {p.permissionCode || p.code}
+                          </Typography>
+                        </Box>
                       </Grid>
                     ))}
                   </Grid>
@@ -1018,8 +1324,18 @@ const RolesPage = () => {
             })}
           </Stack>
         </DialogContent>
-        <DialogActions sx={{ p: 2, '& .MuiButton-root': { width: { xs: '100%', sm: 'auto' } } }}>
-          <Button onClick={() => setViewOpen(false)} variant="contained" sx={{ borderRadius: 2 }}>
+        <DialogActions
+          sx={{
+            p: { xs: 2, sm: 2.5 },
+            px: { xs: 2.5, sm: 3.5 },
+            bgcolor: isDark ? 'rgba(15, 23, 42, 0.3)' : '#f8fafc',
+            borderTop: 1,
+            borderColor: 'divider',
+            display: 'flex',
+            justifyContent: 'flex-end',
+          }}
+        >
+          <Button onClick={() => setViewOpen(false)} variant="contained" sx={{ borderRadius: 2.5, px: 3.5, fontWeight: 700, width: { xs: '100%', sm: 'auto' } }}>
             Close
           </Button>
         </DialogActions>
@@ -1031,22 +1347,95 @@ const RolesPage = () => {
         onClose={() => !submitting && setStatusDialogOpen(false)}
         maxWidth="xs"
         fullWidth
-        PaperProps={{ sx: { borderRadius: 3 } }}
+        PaperProps={{
+          sx: {
+            borderRadius: 4,
+            boxShadow: isDark ? '0 24px 48px -12px rgba(0,0,0,0.8)' : '0 24px 48px -12px rgba(15,23,42,0.18)',
+            border: 1,
+            borderColor: 'divider',
+            overflow: 'hidden',
+          },
+        }}
       >
-        <DialogTitle sx={{ fontWeight: 800 }}>
-          {selectedRole?.status === 'ACTIVE' ? 'Deactivate Role?' : 'Activate Role?'}
+        <DialogTitle
+          sx={{
+            p: { xs: 2.5, sm: 3 },
+            pb: 2,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            borderBottom: 1,
+            borderColor: 'divider',
+          }}
+        >
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.75 }}>
+            <Box
+              sx={{
+                width: 44,
+                height: 44,
+                borderRadius: 2.5,
+                bgcolor: selectedRole?.status === 'ACTIVE'
+                  ? alpha(theme.palette.error.main, 0.12)
+                  : alpha(theme.palette.success.main, 0.12),
+                color: selectedRole?.status === 'ACTIVE'
+                  ? theme.palette.error.main
+                  : theme.palette.success.main,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                flexShrink: 0,
+              }}
+            >
+              {selectedRole?.status === 'ACTIVE' ? <BlockOutlinedIcon /> : <CheckCircleOutlineOutlinedIcon />}
+            </Box>
+            <Box>
+              <Typography variant="h6" fontWeight={800} sx={{ lineHeight: 1.25, fontSize: { xs: '1.05rem', sm: '1.15rem' } }}>
+                {selectedRole?.status === 'ACTIVE' ? 'Deactivate Role?' : 'Activate Role?'}
+              </Typography>
+              <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 0.25 }}>
+                Role access status confirmation
+              </Typography>
+            </Box>
+          </Box>
+          <IconButton
+            onClick={() => !submitting && setStatusDialogOpen(false)}
+            size="small"
+            sx={{ color: 'text.secondary', '&:hover': { bgcolor: alpha(theme.palette.text.primary, 0.08) } }}
+          >
+            <CloseIcon fontSize="small" />
+          </IconButton>
         </DialogTitle>
-        <DialogContent>
-          <DialogContentText>
+
+        <DialogContent sx={{ px: 3, pt: 3, pb: 2 }}>
+          <DialogContentText sx={{ fontSize: '0.9rem', lineHeight: 1.6, color: 'text.secondary' }}>
             Are you sure you want to {selectedRole?.status === 'ACTIVE' ? 'deactivate' : 'activate'}{' '}
-            <strong>{selectedRole?.name || selectedRole?.roleName}</strong>?
+            <strong style={{ color: theme.palette.text.primary }}>{selectedRole?.name || selectedRole?.roleName}</strong>?
             {selectedRole?.status === 'ACTIVE'
-              ? ' Users assigned to an inactive role will lose access.'
-              : ' Users assigned to this role will regain access according to permissions.'}
+              ? ' Users assigned to this role will lose their associated module permissions.'
+              : ' Users assigned to this role will regain their associated module permissions.'}
           </DialogContentText>
         </DialogContent>
-        <DialogActions sx={{ p: 2, flexDirection: { xs: 'column-reverse', sm: 'row' }, gap: { xs: 1, sm: 0 }, '& .MuiButton-root': { width: { xs: '100%', sm: 'auto' } } }}>
-          <Button onClick={() => setStatusDialogOpen(false)} disabled={submitting}>
+
+        <DialogActions
+          sx={{
+            p: 2.5,
+            px: 3,
+            bgcolor: isDark ? 'rgba(15, 23, 42, 0.3)' : '#f8fafc',
+            borderTop: 1,
+            borderColor: 'divider',
+            display: 'flex',
+            justifyContent: 'flex-end',
+            gap: 1.5,
+            flexDirection: { xs: 'column-reverse', sm: 'row' },
+          }}
+        >
+          <Button
+            onClick={() => setStatusDialogOpen(false)}
+            disabled={submitting}
+            variant="outlined"
+            color="inherit"
+            sx={{ borderRadius: 2.5, px: 2.5, fontWeight: 600, width: { xs: '100%', sm: 'auto' } }}
+          >
             Cancel
           </Button>
           <Button
@@ -1054,7 +1443,7 @@ const RolesPage = () => {
             variant="contained"
             color={selectedRole?.status === 'ACTIVE' ? 'error' : 'success'}
             disabled={submitting}
-            sx={{ fontWeight: 700, borderRadius: 2 }}
+            sx={{ fontWeight: 700, borderRadius: 2.5, px: 3, width: { xs: '100%', sm: 'auto' } }}
           >
             {submitting ? 'Updating...' : selectedRole?.status === 'ACTIVE' ? 'Deactivate' : 'Activate'}
           </Button>

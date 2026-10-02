@@ -23,15 +23,20 @@ import {
   Avatar,
   Divider,
   Alert,
+  useTheme,
+  alpha,
 } from '@mui/material';
 import NumbersIcon from '@mui/icons-material/Numbers';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import SecurityIcon from '@mui/icons-material/Security';
+import CloseIcon from '@mui/icons-material/Close';
 import toast from 'react-hot-toast';
 import settingsService from '../../services/settingsService';
 import { useAuth } from '../../context/AuthContext';
 
 const NumberingSettingsTab = () => {
+  const theme = useTheme();
+  const isDark = theme.palette.mode === 'dark';
   const { hasPermission, isAdmin } = useAuth();
   const canUpdate = isAdmin() || hasPermission('SETTINGS_UPDATE') || hasPermission('NUMBERING_SETTINGS_UPDATE');
 
@@ -223,11 +228,67 @@ const NumberingSettingsTab = () => {
         </TableContainer>
 
         {/* Edit Dialog */}
-        <Dialog open={editDialogOpen} onClose={handleCloseEdit} maxWidth="xs" fullWidth>
-          <DialogTitle sx={{ fontWeight: 700 }}>
-            Configure {editForm.documentTypeName}
+        <Dialog
+          open={editDialogOpen}
+          onClose={handleCloseEdit}
+          maxWidth="xs"
+          fullWidth
+          PaperProps={{
+            sx: {
+              borderRadius: 4,
+              boxShadow: isDark ? '0 24px 48px -12px rgba(0,0,0,0.8)' : '0 24px 48px -12px rgba(15,23,42,0.18)',
+              border: 1,
+              borderColor: 'divider',
+              overflow: 'hidden',
+            },
+          }}
+        >
+          <DialogTitle
+            sx={{
+              p: { xs: 2.5, sm: 3 },
+              pb: 2,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              borderBottom: 1,
+              borderColor: 'divider',
+            }}
+          >
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.75 }}>
+              <Box
+                sx={{
+                  width: 44,
+                  height: 44,
+                  borderRadius: 2.5,
+                  bgcolor: alpha(theme.palette.primary.main, 0.12),
+                  color: theme.palette.primary.main,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  flexShrink: 0,
+                }}
+              >
+                <NumbersIcon />
+              </Box>
+              <Box>
+                <Typography variant="h6" fontWeight={800} sx={{ lineHeight: 1.25, fontSize: { xs: '1.05rem', sm: '1.15rem' } }}>
+                  Configure {editForm.documentTypeName}
+                </Typography>
+                <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 0.25 }}>
+                  Set document prefix and numbering sequences
+                </Typography>
+              </Box>
+            </Box>
+            <IconButton
+              onClick={handleCloseEdit}
+              size="small"
+              sx={{ color: 'text.secondary', '&:hover': { bgcolor: alpha(theme.palette.text.primary, 0.08) } }}
+            >
+              <CloseIcon fontSize="small" />
+            </IconButton>
           </DialogTitle>
-          <DialogContent dividers>
+
+          <DialogContent sx={{ p: { xs: 2.5, sm: 3.5 } }}>
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5, pt: 1 }}>
               <TextField
                 label="Document Prefix"
@@ -235,8 +296,9 @@ const NumberingSettingsTab = () => {
                 value={editForm.prefix}
                 onChange={handleEditChange}
                 fullWidth
-                size="small"
+                placeholder="e.g. INV-, PUR-"
                 helperText="E.g., INV-, PUR-, SR-, REC-"
+                InputProps={{ sx: { borderRadius: 2 } }}
               />
 
               <TextField
@@ -246,9 +308,9 @@ const NumberingSettingsTab = () => {
                 value={editForm.nextNumber}
                 onChange={handleEditChange}
                 fullWidth
-                size="small"
                 inputProps={{ min: 1 }}
                 helperText="Next sequential numeric identifier"
+                InputProps={{ sx: { borderRadius: 2 } }}
               />
 
               <TextField
@@ -258,26 +320,58 @@ const NumberingSettingsTab = () => {
                 value={editForm.numberLength}
                 onChange={handleEditChange}
                 fullWidth
-                size="small"
                 inputProps={{ min: 1, max: 12 }}
                 helperText="Between 1 and 12 digits (e.g. 6 digits = 000001)"
+                InputProps={{ sx: { borderRadius: 2 } }}
               />
 
-              <Box sx={{ p: 2, bgcolor: 'background.default', borderRadius: 1.5, textAlign: 'center' }}>
-                <Typography variant="caption" color="text.secondary" display="block" gutterBottom>
-                  Resulting Next Document Number:
+              <Box
+                sx={{
+                  p: 2.5,
+                  bgcolor: isDark ? alpha(theme.palette.primary.main, 0.08) : alpha(theme.palette.primary.main, 0.04),
+                  border: 1,
+                  borderColor: alpha(theme.palette.primary.main, 0.2),
+                  borderRadius: 2.5,
+                  textAlign: 'center',
+                }}
+              >
+                <Typography variant="caption" color="text.secondary" fontWeight={700} sx={{ textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', mb: 0.5 }}>
+                  Live Document Number Preview
                 </Typography>
-                <Typography variant="h6" fontWeight={800} color="primary.main" sx={{ fontFamily: 'monospace' }}>
+                <Typography variant="h5" fontWeight={800} color="primary.main" sx={{ fontFamily: 'monospace', letterSpacing: '0.05em' }}>
                   {formatPreview(editForm.prefix, editForm.nextNumber, editForm.numberLength)}
                 </Typography>
               </Box>
             </Box>
           </DialogContent>
-          <DialogActions sx={{ px: 3, py: 2, flexDirection: { xs: 'column-reverse', sm: 'row' }, gap: { xs: 1, sm: 0 }, '& .MuiButton-root': { width: { xs: '100%', sm: 'auto' } } }}>
-            <Button onClick={handleCloseEdit} color="inherit">
+
+          <DialogActions
+            sx={{
+              p: { xs: 2, sm: 2.5 },
+              px: { xs: 2.5, sm: 3.5 },
+              bgcolor: isDark ? 'rgba(15, 23, 42, 0.3)' : '#f8fafc',
+              borderTop: 1,
+              borderColor: 'divider',
+              display: 'flex',
+              justifyContent: 'flex-end',
+              gap: 1.5,
+              flexDirection: { xs: 'column-reverse', sm: 'row' },
+            }}
+          >
+            <Button
+              onClick={handleCloseEdit}
+              variant="outlined"
+              color="inherit"
+              sx={{ borderRadius: 2.5, px: 3, fontWeight: 600, width: { xs: '100%', sm: 'auto' } }}
+            >
               Cancel
             </Button>
-            <Button onClick={handleSaveEdit} variant="contained" disabled={saving}>
+            <Button
+              onClick={handleSaveEdit}
+              variant="contained"
+              disabled={saving}
+              sx={{ fontWeight: 700, borderRadius: 2.5, px: 3.5, width: { xs: '100%', sm: 'auto' } }}
+            >
               {saving ? 'Saving...' : 'Save Configuration'}
             </Button>
           </DialogActions>

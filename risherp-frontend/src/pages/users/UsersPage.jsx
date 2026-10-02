@@ -45,6 +45,7 @@ import CheckCircleOutlineOutlinedIcon from '@mui/icons-material/CheckCircleOutli
 import BlockOutlinedIcon from '@mui/icons-material/BlockOutlined';
 import AdminPanelSettingsOutlinedIcon from '@mui/icons-material/AdminPanelSettingsOutlined';
 import KeyOutlinedIcon from '@mui/icons-material/KeyOutlined';
+import CloseIcon from '@mui/icons-material/Close';
 import toast from 'react-hot-toast';
 
 import PageHeader from '../../components/common/PageHeader';
@@ -678,68 +679,134 @@ const UsersPage = () => {
         onClose={() => !submitting && setCreateOpen(false)}
         maxWidth="sm"
         fullWidth
-        PaperProps={{ sx: { borderRadius: 3 } }}
+        PaperProps={{
+          sx: {
+            borderRadius: 4,
+            border: 1,
+            borderColor: 'divider',
+            boxShadow: theme.palette.mode === 'dark'
+              ? '0 25px 50px -12px rgba(0, 0, 0, 0.8), 0 0 1px 1px rgba(255, 255, 255, 0.08)'
+              : '0 25px 50px -12px rgba(15, 23, 42, 0.16), 0 0 1px 1px rgba(15, 23, 42, 0.05)',
+          },
+        }}
       >
         <form onSubmit={handleCreateSubmit}>
-          <DialogTitle sx={{ pb: 1, fontWeight: 800 }}>Create New User</DialogTitle>
-          <DialogContent dividers sx={{ p: 3 }}>
-            <Grid container spacing={2}>
-              <Grid xs={12} sm={6}>
+          <DialogTitle
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              px: { xs: 2.5, sm: 3 },
+              py: 2,
+              borderBottom: 1,
+              borderColor: 'divider',
+            }}
+          >
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.75 }}>
+              <Box
+                sx={{
+                  width: 42,
+                  height: 42,
+                  borderRadius: 2.5,
+                  bgcolor: theme.palette.mode === 'dark'
+                    ? alpha(theme.palette.primary.main, 0.2)
+                    : alpha(theme.palette.primary.main, 0.1),
+                  color: 'primary.main',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                <PersonAddIcon sx={{ fontSize: 22 }} />
+              </Box>
+              <Box>
+                <Typography variant="h6" fontWeight={750} color="text.primary" sx={{ lineHeight: 1.2 }}>
+                  Create New User
+                </Typography>
+                <Typography variant="caption" color="text.secondary">
+                  Add a new staff member and assign their system role
+                </Typography>
+              </Box>
+            </Box>
+            <IconButton
+              onClick={() => setCreateOpen(false)}
+              disabled={submitting}
+              size="small"
+              sx={{ color: 'text.secondary' }}
+            >
+              <CloseIcon fontSize="small" />
+            </IconButton>
+          </DialogTitle>
+
+          <DialogContent sx={{ p: { xs: 2.5, sm: 3.5 } }}>
+            <Grid container spacing={2.5}>
+              <Grid item xs={12} sm={6}>
                 <TextField
                   label="Full Name *"
                   fullWidth
+                  size="small"
                   required
                   value={formData.fullName}
                   onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
+                  InputProps={{ sx: { borderRadius: 2 } }}
                 />
               </Grid>
-              <Grid xs={12} sm={6}>
+              <Grid item xs={12} sm={6}>
                 <TextField
                   label="Username"
                   fullWidth
+                  size="small"
                   placeholder="e.g. john_doe"
                   value={formData.username}
                   onChange={(e) => setFormData({ ...formData, username: e.target.value })}
                   helperText="Optional login identifier"
+                  InputProps={{ sx: { borderRadius: 2 } }}
                 />
               </Grid>
-              <Grid xs={12} sm={6}>
+              <Grid item xs={12} sm={6}>
                 <TextField
                   label="Email Address *"
                   type="email"
                   fullWidth
+                  size="small"
                   required
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  InputProps={{ sx: { borderRadius: 2 } }}
                 />
               </Grid>
-              <Grid xs={12} sm={6}>
+              <Grid item xs={12} sm={6}>
                 <TextField
                   label="Mobile Number"
                   fullWidth
+                  size="small"
                   placeholder="e.g. 9876543210"
                   value={formData.mobile}
                   onChange={(e) => setFormData({ ...formData, mobile: e.target.value })}
+                  InputProps={{ sx: { borderRadius: 2 } }}
                 />
               </Grid>
-              <Grid xs={12} sm={6}>
+              <Grid item xs={12} sm={6}>
                 <TextField
                   label="Initial Password *"
                   type="password"
                   fullWidth
+                  size="small"
                   required
                   value={formData.password}
                   onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                   helperText="Min. 6 characters"
+                  InputProps={{ sx: { borderRadius: 2 } }}
                 />
               </Grid>
-              <Grid xs={12} sm={6}>
-                <FormControl fullWidth required>
+              <Grid item xs={12} sm={6}>
+                <FormControl fullWidth size="small" required>
                   <InputLabel>Role *</InputLabel>
                   <Select
                     value={formData.roleId}
                     label="Role *"
                     onChange={(e) => setFormData({ ...formData, roleId: e.target.value })}
+                    sx={{ borderRadius: 2 }}
                   >
                     {roles.map((r) => (
                       <MenuItem key={r.id} value={r.id}>
@@ -751,15 +818,33 @@ const UsersPage = () => {
               </Grid>
             </Grid>
           </DialogContent>
-          <DialogActions sx={{ p: 2.5, flexDirection: { xs: 'column-reverse', sm: 'row' }, '& > button': { width: { xs: '100%', sm: 'auto' } } }}>
-            <Button onClick={() => setCreateOpen(false)} disabled={submitting} sx={{ color: theme.palette.text.secondary }}>
+
+          <DialogActions
+            sx={{
+              px: { xs: 2.5, sm: 3 },
+              py: 2,
+              borderTop: 1,
+              borderColor: 'divider',
+              bgcolor: theme.palette.mode === 'dark' ? 'rgba(15, 23, 42, 0.3)' : '#f8fafc',
+              gap: 1.25,
+              flexDirection: { xs: 'column-reverse', sm: 'row' },
+              '& > button': { width: { xs: '100%', sm: 'auto' } },
+            }}
+          >
+            <Button
+              onClick={() => setCreateOpen(false)}
+              disabled={submitting}
+              variant="outlined"
+              color="inherit"
+              sx={{ borderRadius: 2.5, px: 2.5, py: 0.85, textTransform: 'none', fontWeight: 650 }}
+            >
               Cancel
             </Button>
             <Button
               type="submit"
               variant="contained"
               disabled={submitting}
-              sx={{ fontWeight: 700, borderRadius: 2, px: 3 }}
+              sx={{ fontWeight: 700, borderRadius: 2.5, px: 3, py: 0.85, textTransform: 'none' }}
             >
               {submitting ? 'Creating...' : 'Create User'}
             </Button>
@@ -773,54 +858,118 @@ const UsersPage = () => {
         onClose={() => !submitting && setEditOpen(false)}
         maxWidth="sm"
         fullWidth
-        PaperProps={{ sx: { borderRadius: 3 } }}
+        PaperProps={{
+          sx: {
+            borderRadius: 4,
+            border: 1,
+            borderColor: 'divider',
+            boxShadow: theme.palette.mode === 'dark'
+              ? '0 25px 50px -12px rgba(0, 0, 0, 0.8), 0 0 1px 1px rgba(255, 255, 255, 0.08)'
+              : '0 25px 50px -12px rgba(15, 23, 42, 0.16), 0 0 1px 1px rgba(15, 23, 42, 0.05)',
+          },
+        }}
       >
         <form onSubmit={handleEditSubmit}>
-          <DialogTitle sx={{ pb: 1, fontWeight: 800 }}>Edit User Details</DialogTitle>
-          <DialogContent dividers sx={{ p: 3 }}>
-            <Grid container spacing={2}>
-              <Grid xs={12} sm={6}>
+          <DialogTitle
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              px: { xs: 2.5, sm: 3 },
+              py: 2,
+              borderBottom: 1,
+              borderColor: 'divider',
+            }}
+          >
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.75 }}>
+              <Box
+                sx={{
+                  width: 42,
+                  height: 42,
+                  borderRadius: 2.5,
+                  bgcolor: theme.palette.mode === 'dark'
+                    ? alpha(theme.palette.info.main, 0.2)
+                    : alpha(theme.palette.info.main, 0.1),
+                  color: 'info.main',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                <EditOutlinedIcon sx={{ fontSize: 22 }} />
+              </Box>
+              <Box>
+                <Typography variant="h6" fontWeight={750} color="text.primary" sx={{ lineHeight: 1.2 }}>
+                  Edit User Details
+                </Typography>
+                <Typography variant="caption" color="text.secondary">
+                  Update account profile, assigned role, or account status
+                </Typography>
+              </Box>
+            </Box>
+            <IconButton
+              onClick={() => setEditOpen(false)}
+              disabled={submitting}
+              size="small"
+              sx={{ color: 'text.secondary' }}
+            >
+              <CloseIcon fontSize="small" />
+            </IconButton>
+          </DialogTitle>
+
+          <DialogContent sx={{ p: { xs: 2.5, sm: 3.5 } }}>
+            <Grid container spacing={2.5}>
+              <Grid item xs={12} sm={6}>
                 <TextField
                   label="Full Name *"
                   fullWidth
+                  size="small"
                   required
                   value={formData.fullName}
                   onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
+                  InputProps={{ sx: { borderRadius: 2 } }}
                 />
               </Grid>
-              <Grid xs={12} sm={6}>
+              <Grid item xs={12} sm={6}>
                 <TextField
                   label="Username"
                   fullWidth
+                  size="small"
                   value={formData.username}
                   onChange={(e) => setFormData({ ...formData, username: e.target.value })}
+                  InputProps={{ sx: { borderRadius: 2 } }}
                 />
               </Grid>
-              <Grid xs={12} sm={6}>
+              <Grid item xs={12} sm={6}>
                 <TextField
                   label="Email Address *"
                   type="email"
                   fullWidth
+                  size="small"
                   required
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  InputProps={{ sx: { borderRadius: 2 } }}
                 />
               </Grid>
-              <Grid xs={12} sm={6}>
+              <Grid item xs={12} sm={6}>
                 <TextField
                   label="Mobile Number"
                   fullWidth
+                  size="small"
                   value={formData.mobile}
                   onChange={(e) => setFormData({ ...formData, mobile: e.target.value })}
+                  InputProps={{ sx: { borderRadius: 2 } }}
                 />
               </Grid>
-              <Grid xs={12} sm={6}>
-                <FormControl fullWidth required>
+              <Grid item xs={12} sm={6}>
+                <FormControl fullWidth size="small" required>
                   <InputLabel>Role *</InputLabel>
                   <Select
                     value={formData.roleId}
                     label="Role *"
                     onChange={(e) => setFormData({ ...formData, roleId: e.target.value })}
+                    sx={{ borderRadius: 2 }}
                   >
                     {roles.map((r) => (
                       <MenuItem key={r.id} value={r.id}>
@@ -830,13 +979,14 @@ const UsersPage = () => {
                   </Select>
                 </FormControl>
               </Grid>
-              <Grid xs={12} sm={6}>
-                <FormControl fullWidth>
+              <Grid item xs={12} sm={6}>
+                <FormControl fullWidth size="small">
                   <InputLabel>Status</InputLabel>
                   <Select
                     value={formData.status}
                     label="Status"
                     onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+                    sx={{ borderRadius: 2 }}
                   >
                     <MenuItem value="ACTIVE">Active</MenuItem>
                     <MenuItem value="INACTIVE">Inactive</MenuItem>
@@ -845,15 +995,33 @@ const UsersPage = () => {
               </Grid>
             </Grid>
           </DialogContent>
-          <DialogActions sx={{ p: 2.5, flexDirection: { xs: 'column-reverse', sm: 'row' }, '& > button': { width: { xs: '100%', sm: 'auto' } } }}>
-            <Button onClick={() => setEditOpen(false)} disabled={submitting} sx={{ color: theme.palette.text.secondary }}>
+
+          <DialogActions
+            sx={{
+              px: { xs: 2.5, sm: 3 },
+              py: 2,
+              borderTop: 1,
+              borderColor: 'divider',
+              bgcolor: theme.palette.mode === 'dark' ? 'rgba(15, 23, 42, 0.3)' : '#f8fafc',
+              gap: 1.25,
+              flexDirection: { xs: 'column-reverse', sm: 'row' },
+              '& > button': { width: { xs: '100%', sm: 'auto' } },
+            }}
+          >
+            <Button
+              onClick={() => setEditOpen(false)}
+              disabled={submitting}
+              variant="outlined"
+              color="inherit"
+              sx={{ borderRadius: 2.5, px: 2.5, py: 0.85, textTransform: 'none', fontWeight: 650 }}
+            >
               Cancel
             </Button>
             <Button
               type="submit"
               variant="contained"
               disabled={submitting}
-              sx={{ fontWeight: 700, borderRadius: 2, px: 3 }}
+              sx={{ fontWeight: 700, borderRadius: 2.5, px: 3, py: 0.85, textTransform: 'none' }}
             >
               {submitting ? 'Saving...' : 'Save Changes'}
             </Button>
@@ -867,36 +1035,114 @@ const UsersPage = () => {
         onClose={() => !submitting && setPasswordOpen(false)}
         maxWidth="xs"
         fullWidth
-        PaperProps={{ sx: { borderRadius: 3 } }}
+        PaperProps={{
+          sx: {
+            borderRadius: 4,
+            border: 1,
+            borderColor: 'divider',
+            boxShadow: theme.palette.mode === 'dark'
+              ? '0 25px 50px -12px rgba(0, 0, 0, 0.8), 0 0 1px 1px rgba(255, 255, 255, 0.08)'
+              : '0 25px 50px -12px rgba(15, 23, 42, 0.16), 0 0 1px 1px rgba(15, 23, 42, 0.05)',
+          },
+        }}
       >
         <form onSubmit={handlePasswordSubmit}>
-          <DialogTitle sx={{ pb: 1, fontWeight: 800 }}>Reset Password</DialogTitle>
-          <DialogContent dividers sx={{ p: 3 }}>
-            <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-              Set a new password for <strong>{selectedUser?.fullName || selectedUser?.email}</strong>.
+          <DialogTitle
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              px: 3,
+              pt: 2.5,
+              pb: 2,
+              borderBottom: 1,
+              borderColor: 'divider',
+            }}
+          >
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.75 }}>
+              <Box
+                sx={{
+                  width: 42,
+                  height: 42,
+                  borderRadius: 2.5,
+                  bgcolor: theme.palette.mode === 'dark'
+                    ? alpha(theme.palette.warning.main, 0.2)
+                    : alpha(theme.palette.warning.main, 0.1),
+                  color: 'warning.main',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                <LockResetOutlinedIcon sx={{ fontSize: 22 }} />
+              </Box>
+              <Box>
+                <Typography variant="h6" fontWeight={750} color="text.primary" sx={{ lineHeight: 1.2 }}>
+                  Reset Password
+                </Typography>
+                <Typography variant="caption" color="text.secondary" sx={{ display: 'block', maxWidth: 220 }} noWrap>
+                  {selectedUser?.fullName || selectedUser?.email}
+                </Typography>
+              </Box>
+            </Box>
+            <IconButton
+              onClick={() => setPasswordOpen(false)}
+              disabled={submitting}
+              size="small"
+              sx={{ color: 'text.secondary' }}
+            >
+              <CloseIcon fontSize="small" />
+            </IconButton>
+          </DialogTitle>
+
+          <DialogContent sx={{ p: 3 }}>
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 2.5, lineHeight: 1.5 }}>
+              Set a secure new password for <strong>{selectedUser?.fullName || selectedUser?.email}</strong>.
             </Typography>
-            <Stack spacing={2}>
+            <Stack spacing={2.5}>
               <TextField
                 label="New Password *"
                 type="password"
                 fullWidth
+                size="small"
                 required
                 value={passwordData.newPassword}
                 onChange={(e) => setPasswordData({ ...passwordData, newPassword: e.target.value })}
                 helperText="Minimum 6 characters"
+                InputProps={{ sx: { borderRadius: 2 } }}
               />
               <TextField
                 label="Confirm Password *"
                 type="password"
                 fullWidth
+                size="small"
                 required
                 value={passwordData.confirmPassword}
                 onChange={(e) => setPasswordData({ ...passwordData, confirmPassword: e.target.value })}
+                InputProps={{ sx: { borderRadius: 2 } }}
               />
             </Stack>
           </DialogContent>
-          <DialogActions sx={{ p: 2.5, flexDirection: { xs: 'column-reverse', sm: 'row' }, '& > button': { width: { xs: '100%', sm: 'auto' } } }}>
-            <Button onClick={() => setPasswordOpen(false)} disabled={submitting} sx={{ color: theme.palette.text.secondary }}>
+
+          <DialogActions
+            sx={{
+              px: 3,
+              py: 2,
+              borderTop: 1,
+              borderColor: 'divider',
+              bgcolor: theme.palette.mode === 'dark' ? 'rgba(15, 23, 42, 0.3)' : '#f8fafc',
+              gap: 1.25,
+              flexDirection: { xs: 'column-reverse', sm: 'row' },
+              '& > button': { width: { xs: '100%', sm: 'auto' } },
+            }}
+          >
+            <Button
+              onClick={() => setPasswordOpen(false)}
+              disabled={submitting}
+              variant="outlined"
+              color="inherit"
+              sx={{ borderRadius: 2.5, px: 2.5, py: 0.85, textTransform: 'none', fontWeight: 650 }}
+            >
               Cancel
             </Button>
             <Button
@@ -904,7 +1150,7 @@ const UsersPage = () => {
               variant="contained"
               color="warning"
               disabled={submitting}
-              sx={{ fontWeight: 700, borderRadius: 2, px: 3 }}
+              sx={{ fontWeight: 700, borderRadius: 2.5, px: 3, py: 0.85, textTransform: 'none' }}
             >
               {submitting ? 'Resetting...' : 'Update Password'}
             </Button>
@@ -918,22 +1164,95 @@ const UsersPage = () => {
         onClose={() => !submitting && setStatusDialogOpen(false)}
         maxWidth="xs"
         fullWidth
-        PaperProps={{ sx: { borderRadius: 3 } }}
+        PaperProps={{
+          sx: {
+            borderRadius: 4,
+            border: 1,
+            borderColor: 'divider',
+            boxShadow: theme.palette.mode === 'dark'
+              ? '0 25px 50px -12px rgba(0, 0, 0, 0.8), 0 0 1px 1px rgba(255, 255, 255, 0.08)'
+              : '0 25px 50px -12px rgba(15, 23, 42, 0.16), 0 0 1px 1px rgba(15, 23, 42, 0.05)',
+          },
+        }}
       >
-        <DialogTitle sx={{ fontWeight: 800 }}>
-          {selectedUser?.status === 'ACTIVE' ? 'Deactivate User?' : 'Activate User?'}
+        <DialogTitle
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            px: 3,
+            pt: 2.5,
+            pb: 1.5,
+          }}
+        >
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.75 }}>
+            <Box
+              sx={{
+                width: 42,
+                height: 42,
+                borderRadius: 2.5,
+                bgcolor: selectedUser?.status === 'ACTIVE'
+                  ? theme.palette.mode === 'dark'
+                    ? alpha(theme.palette.error.main, 0.2)
+                    : alpha(theme.palette.error.main, 0.1)
+                  : theme.palette.mode === 'dark'
+                  ? alpha(theme.palette.success.main, 0.2)
+                  : alpha(theme.palette.success.main, 0.1),
+                color: selectedUser?.status === 'ACTIVE' ? 'error.main' : 'success.main',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              {selectedUser?.status === 'ACTIVE' ? (
+                <BlockOutlinedIcon sx={{ fontSize: 22 }} />
+              ) : (
+                <CheckCircleOutlineOutlinedIcon sx={{ fontSize: 22 }} />
+              )}
+            </Box>
+            <Typography variant="h6" fontWeight={750} color="text.primary">
+              {selectedUser?.status === 'ACTIVE' ? 'Deactivate User?' : 'Activate User?'}
+            </Typography>
+          </Box>
+          <IconButton
+            onClick={() => setStatusDialogOpen(false)}
+            disabled={submitting}
+            size="small"
+            sx={{ color: 'text.secondary' }}
+          >
+            <CloseIcon fontSize="small" />
+          </IconButton>
         </DialogTitle>
-        <DialogContent>
-          <DialogContentText>
+
+        <DialogContent sx={{ px: 3, pt: 1, pb: 2 }}>
+          <DialogContentText sx={{ fontSize: '0.9rem', lineHeight: 1.6, color: 'text.secondary' }}>
             Are you sure you want to {selectedUser?.status === 'ACTIVE' ? 'deactivate' : 'activate'}{' '}
-            <strong>{selectedUser?.fullName || selectedUser?.email}</strong>?
+            <strong style={{ color: theme.palette.text.primary }}>{selectedUser?.fullName || selectedUser?.email}</strong>?
             {selectedUser?.status === 'ACTIVE'
-              ? ' Deactivated users cannot log in to the system.'
-              : ' Activated users will be able to log in and perform actions.'}
+              ? ' Deactivated users cannot log in to the ERP application.'
+              : ' Activated users will immediately be allowed to log in.'}
           </DialogContentText>
         </DialogContent>
-        <DialogActions sx={{ p: 2, flexDirection: { xs: 'column-reverse', sm: 'row' }, '& > button': { width: { xs: '100%', sm: 'auto' } } }}>
-          <Button onClick={() => setStatusDialogOpen(false)} disabled={submitting}>
+
+        <DialogActions
+          sx={{
+            px: 3,
+            py: 2,
+            borderTop: 1,
+            borderColor: 'divider',
+            bgcolor: theme.palette.mode === 'dark' ? 'rgba(15, 23, 42, 0.3)' : '#f8fafc',
+            gap: 1.25,
+            flexDirection: { xs: 'column-reverse', sm: 'row' },
+            '& > button': { width: { xs: '100%', sm: 'auto' } },
+          }}
+        >
+          <Button
+            onClick={() => setStatusDialogOpen(false)}
+            disabled={submitting}
+            variant="outlined"
+            color="inherit"
+            sx={{ borderRadius: 2.5, px: 2.5, py: 0.85, textTransform: 'none', fontWeight: 650 }}
+          >
             Cancel
           </Button>
           <Button
@@ -941,9 +1260,9 @@ const UsersPage = () => {
             variant="contained"
             color={selectedUser?.status === 'ACTIVE' ? 'error' : 'success'}
             disabled={submitting}
-            sx={{ fontWeight: 700, borderRadius: 2 }}
+            sx={{ fontWeight: 700, borderRadius: 2.5, px: 3, py: 0.85, textTransform: 'none' }}
           >
-            {submitting ? 'Updating...' : selectedUser?.status === 'ACTIVE' ? 'Deactivate' : 'Activate'}
+            {submitting ? 'Updating...' : selectedUser?.status === 'ACTIVE' ? 'Deactivate User' : 'Activate User'}
           </Button>
         </DialogActions>
       </Dialog>

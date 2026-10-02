@@ -134,6 +134,60 @@ export const getTheme = (mode) => {
           },
         },
       },
+      MuiBackdrop: {
+        styleOverrides: {
+          root: {
+            backgroundColor: isLight ? 'rgba(15, 23, 42, 0.45)' : 'rgba(0, 0, 0, 0.65)',
+            backdropFilter: 'blur(6px)',
+          },
+        },
+      },
+      MuiDialog: {
+        styleOverrides: {
+          paper: {
+            borderRadius: 20,
+            marginTop: '48px',
+            backgroundColor: isLight ? '#ffffff' : '#1e293b',
+            backgroundImage: 'none',
+            border: `1px solid ${isLight ? '#e2e8f0' : '#334155'}`,
+            boxShadow: isLight
+              ? '0 25px 50px -12px rgba(15, 23, 42, 0.18), 0 0 0 1px rgba(15, 23, 42, 0.05)'
+              : '0 25px 50px -12px rgba(0, 0, 0, 0.75), 0 0 0 1px rgba(255, 255, 255, 0.08)',
+          },
+        },
+      },
+      MuiDialogTitle: {
+        styleOverrides: {
+          root: {
+            fontSize: '1.2rem',
+            fontWeight: 750,
+            letterSpacing: '-0.015em',
+            padding: '20px 24px',
+            color: isLight ? '#0f172a' : '#f8fafc',
+          },
+        },
+      },
+      MuiDialogContent: {
+        styleOverrides: {
+          root: {
+            padding: '24px',
+            color: isLight ? '#334155' : '#cbd5e1',
+            '&.MuiDialogContent-dividers': {
+              borderColor: isLight ? '#e2e8f0' : '#334155',
+            },
+          },
+        },
+      },
+      MuiDialogActions: {
+        styleOverrides: {
+          root: {
+            padding: '16px 24px',
+            borderTop: `1px solid ${isLight ? '#f1f5f9' : '#334155'}`,
+            backgroundColor: isLight ? '#f8fafc' : 'rgba(15, 23, 42, 0.4)',
+            gap: '10px',
+          },
+        },
+      },
       MuiOutlinedInput: {
         styleOverrides: {
           sizeSmall: {

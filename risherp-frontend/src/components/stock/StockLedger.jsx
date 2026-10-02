@@ -53,7 +53,7 @@ const TxnChip = ({ txnType }) => {
         py: 0.3,
         borderRadius: '9999px',
         bgcolor: isIn ? alpha(theme.palette.success.main, 0.1) : alpha(theme.palette.error.main, 0.1),
-        color: isIn ? '#065f46' : '#991b1b',
+        color: isIn ? theme.palette.success.dark : theme.palette.error.dark,
         border: `1px solid ${isIn ? alpha(theme.palette.success.main, 0.2) : alpha(theme.palette.error.main, 0.2)}`,
         fontWeight: 750,
         fontSize: '0.7rem',
@@ -74,9 +74,9 @@ const RefTypeBadge = ({ refType }) => {
   const theme = useTheme();
   const colorMap = {
     SALE: { bg: alpha(theme.palette.info.main, 0.1), color: theme.palette.info.dark, border: alpha(theme.palette.info.main, 0.2) },
-    SALE_CANCEL: { bg: '#fdf4ff', color: '#7e22ce', border: '#e9d5ff' },
-    PURCHASE: { bg: '#f0fdf4', color: '#15803d', border: '#bbf7d0' },
-    PURCHASE_CANCEL: { bg: '#fff7ed', color: '#c2410c', border: '#fed7aa' },
+    SALE_CANCEL: { bg: alpha(theme.palette.secondary.main, 0.08), color: theme.palette.secondary.main, border: alpha(theme.palette.secondary.main, 0.2) },
+    PURCHASE: { bg: alpha(theme.palette.success.main, 0.08), color: theme.palette.success.dark, border: alpha(theme.palette.success.main, 0.2) },
+    PURCHASE_CANCEL: { bg: alpha(theme.palette.warning.main, 0.08), color: theme.palette.warning.dark, border: alpha(theme.palette.warning.main, 0.2) },
     ADJUSTMENT: { bg: theme.palette.background.default, color: theme.palette.text.secondary, border: theme.palette.divider },
   };
   const style = colorMap[refType] || colorMap.ADJUSTMENT;
@@ -178,7 +178,7 @@ const StockLedger = ({ prefilterItemId = null }) => {
           mb: 2.5,
           border: 1, borderColor: 'divider',
           borderRadius: 2,
-          background: '#fafbfc',
+          background: 'background.paper',
         }}
       >
         <Grid container spacing={2} alignItems="center">

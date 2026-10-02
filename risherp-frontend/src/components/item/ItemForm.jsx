@@ -1,8 +1,6 @@
 import { useState, useEffect } from 'react';
 import {
   Box,
-  Card,
-  CardContent,
   Grid,
   TextField,
   MenuItem,
@@ -12,7 +10,9 @@ import {
   CircularProgress,
   InputAdornment,
   useTheme,
-  alpha
+  alpha,
+  Chip,
+  Divider,
 } from '@mui/material';
 import QrCodeScannerIcon from '@mui/icons-material/QrCodeScanner';
 import Inventory2OutlinedIcon from '@mui/icons-material/Inventory2Outlined';
@@ -22,13 +22,14 @@ import NotesOutlinedIcon from '@mui/icons-material/NotesOutlined';
 import SaveOutlinedIcon from '@mui/icons-material/SaveOutlined';
 import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
+import TrendingUpIcon from '@mui/icons-material/TrendingUp';
+import TrendingDownIcon from '@mui/icons-material/TrendingDown';
 
 import { DEFAULT_UNITS } from '../../utils/constants';
 
 /**
  * ItemForm Component
- * Production-ready form for creating and updating inventory products.
- * Strictly guarantees currentStock cannot be altered during normal edits.
+ * Clean, flat, modern form for creating and updating inventory products without nested card boxes.
  */
 const ItemForm = ({
   initialValues = null,
@@ -40,6 +41,8 @@ const ItemForm = ({
   onCancel,
 }) => {
   const theme = useTheme();
+  const isDark = theme.palette.mode === 'dark';
+
   const [formData, setFormData] = useState({
     itemCode: '',
     itemName: '',
@@ -149,342 +152,456 @@ const ItemForm = ({
     onSubmit(payload);
   };
 
-  // Margin preview calculation
+  // Margin calculation
   const pRateVal = parseFloat(formData.purchaseRate) || 0;
   const sRateVal = parseFloat(formData.saleRate) || 0;
   const marginAmt = sRateVal - pRateVal;
-  const marginPct = sRateVal > 0 ? ((marginAmt / sRateVal) * 100).toFixed(1) : 0;
+  const marginPct = sRateVal > 0 ? ((marginAmt / sRateVal) * 100).toFixed(1) : '0.0';
 
   return (
     <form onSubmit={handleSubmit}>
       <Stack spacing={3}>
-        {/* IDENTIFICATION CARD */}
-        <Card sx={{ border: 1, borderColor: 'divider', borderRadius: 2 }}>
-          <CardContent sx={{ p: { xs: 2, sm: 3 } }}>
-            <Stack direction="row" spacing={1.5} alignItems="center" sx={{ mb: 2 }}>
-              <QrCodeScannerIcon color="primary" />
-              <Typography variant="subtitle1" fontWeight={700}>
-                Identification & Coding
+        {/* SECTION 1: IDENTIFICATION & BARCODE */}
+        <Box>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.25, mb: 1.75 }}>
+            <Box
+              sx={{
+                width: 30,
+                height: 30,
+                borderRadius: 1.75,
+                bgcolor: alpha(theme.palette.primary.main, 0.1),
+                color: theme.palette.primary.main,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <QrCodeScannerIcon sx={{ fontSize: 17 }} />
+            </Box>
+            <Box>
+              <Typography variant="subtitle2" fontWeight={750} color="text.primary">
+                Identification & Barcode
               </Typography>
-            </Stack>
+            </Box>
+          </Box>
 
-            <Grid container spacing={2.5}>
-              <Grid xs={12} sm={6}>
+          <Grid container spacing={2}>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                label="Item Code"
+                value={isEdit ? formData.itemCode : 'Auto-generated upon save (e.g. ITM-000001)'}
+                fullWidth
+                size="small"
+                disabled
+                helperText={
+                  isEdit
+                    ? 'Permanent system item code'
+                    : 'Auto-assigned sequential code'
+                }
+                InputProps={{
+                  sx: {
+                    borderRadius: 2,
+                    bgcolor: isDark ? alpha(theme.palette.background.default, 0.6) : alpha(theme.palette.text.primary, 0.03),
+                    fontFamily: isEdit ? 'monospace' : 'inherit',
+                  },
+                }}
+              />
+            </Grid>
+
+            <Grid item xs={12} sm={6}>
+              <TextField
+                label="Barcode / SKU"
+                placeholder="e.g. 8901234567890"
+                value={formData.barcode}
+                onChange={(e) => handleChange('barcode', e.target.value)}
+                fullWidth
+                size="small"
+                disabled={loading}
+                error={Boolean(errors.barcode)}
+                helperText="Optional. Scan with a barcode scanner"
+                InputProps={{
+                  sx: { borderRadius: 2 },
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <QrCodeScannerIcon fontSize="small" sx={{ color: 'text.secondary' }} />
+                    </InputAdornment>
+                  ),
+                }}
+              />
+            </Grid>
+          </Grid>
+        </Box>
+
+        <Divider />
+
+        {/* SECTION 2: PRODUCT DETAILS */}
+        <Box>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.25, mb: 1.75 }}>
+            <Box
+              sx={{
+                width: 30,
+                height: 30,
+                borderRadius: 1.75,
+                bgcolor: alpha(theme.palette.primary.main, 0.1),
+                color: theme.palette.primary.main,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <Inventory2OutlinedIcon sx={{ fontSize: 17 }} />
+            </Box>
+            <Box>
+              <Typography variant="subtitle2" fontWeight={750} color="text.primary">
+                Product Details
+              </Typography>
+            </Box>
+          </Box>
+
+          <Grid container spacing={2}>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                label="Item Name *"
+                placeholder="e.g. Wireless Keyboard K380"
+                value={formData.itemName}
+                onChange={(e) => handleChange('itemName', e.target.value)}
+                fullWidth
+                size="small"
+                disabled={loading}
+                error={Boolean(errors.itemName)}
+                helperText={errors.itemName || 'Primary product trade name'}
+                InputProps={{ sx: { borderRadius: 2 } }}
+              />
+            </Grid>
+
+            <Grid item xs={12} sm={6}>
+              <TextField
+                select
+                label="Category *"
+                value={formData.categoryId}
+                onChange={(e) => handleChange('categoryId', e.target.value)}
+                fullWidth
+                size="small"
+                disabled={loading}
+                error={Boolean(errors.categoryId)}
+                helperText={errors.categoryId || 'Classification master'}
+                InputProps={{ sx: { borderRadius: 2 } }}
+              >
+                <MenuItem value="" disabled>
+                  Select a Category
+                </MenuItem>
+                {categories.map((cat) => (
+                  <MenuItem key={cat.id} value={cat.id}>
+                    {cat.categoryName}
+                  </MenuItem>
+                ))}
+              </TextField>
+            </Grid>
+
+            <Grid item xs={12} sm={6}>
+              <TextField
+                label="Company / Brand"
+                placeholder="e.g. Logitech, Samsung, HP"
+                value={formData.companyName}
+                onChange={(e) => handleChange('companyName', e.target.value)}
+                fullWidth
+                size="small"
+                disabled={loading}
+                helperText="Manufacturer or brand"
+                InputProps={{ sx: { borderRadius: 2 } }}
+              />
+            </Grid>
+
+            <Grid item xs={12} sm={6}>
+              <TextField
+                select
+                label="Unit of Measurement *"
+                value={formData.unit}
+                onChange={(e) => handleChange('unit', e.target.value)}
+                fullWidth
+                size="small"
+                disabled={loading}
+                error={Boolean(errors.unit)}
+                helperText={errors.unit || 'Measurement standard for stock and billing'}
+                InputProps={{ sx: { borderRadius: 2 } }}
+              >
+                {units.map((u) => (
+                  <MenuItem key={u} value={u}>
+                    {u}
+                  </MenuItem>
+                ))}
+              </TextField>
+            </Grid>
+          </Grid>
+        </Box>
+
+        <Divider />
+
+        {/* SECTION 3: PRICING & MARGINS */}
+        <Box>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.25, mb: 1.75 }}>
+            <Box
+              sx={{
+                width: 30,
+                height: 30,
+                borderRadius: 1.75,
+                bgcolor: alpha(theme.palette.primary.main, 0.1),
+                color: theme.palette.primary.main,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <AttachMoneyOutlinedIcon sx={{ fontSize: 17 }} />
+            </Box>
+            <Box>
+              <Typography variant="subtitle2" fontWeight={750} color="text.primary">
+                Pricing & Margins
+              </Typography>
+            </Box>
+          </Box>
+
+          <Grid container spacing={2} alignItems="center">
+            <Grid item xs={12} sm={4}>
+              <TextField
+                label="Purchase Rate *"
+                type="number"
+                inputProps={{ step: '0.01', min: '0' }}
+                value={formData.purchaseRate}
+                onChange={(e) => handleChange('purchaseRate', e.target.value)}
+                fullWidth
+                size="small"
+                disabled={loading}
+                error={Boolean(errors.purchaseRate)}
+                helperText={errors.purchaseRate || 'Cost price per unit'}
+                InputProps={{
+                  sx: { borderRadius: 2 },
+                  startAdornment: <InputAdornment position="start">₹</InputAdornment>,
+                }}
+              />
+            </Grid>
+
+            <Grid item xs={12} sm={4}>
+              <TextField
+                label="Sale Rate *"
+                type="number"
+                inputProps={{ step: '0.01', min: '0' }}
+                value={formData.saleRate}
+                onChange={(e) => handleChange('saleRate', e.target.value)}
+                fullWidth
+                size="small"
+                disabled={loading}
+                error={Boolean(errors.saleRate)}
+                helperText={errors.saleRate || 'Default selling price'}
+                InputProps={{
+                  sx: { borderRadius: 2 },
+                  startAdornment: <InputAdornment position="start">₹</InputAdornment>,
+                }}
+              />
+            </Grid>
+
+            <Grid item xs={12} sm={4}>
+              <Box
+                sx={{
+                  p: 1.5,
+                  borderRadius: 2,
+                  bgcolor: marginAmt >= 0
+                    ? isDark ? alpha(theme.palette.success.main, 0.12) : alpha(theme.palette.success.main, 0.08)
+                    : isDark ? alpha(theme.palette.error.main, 0.12) : alpha(theme.palette.error.main, 0.08),
+                  border: 1,
+                  borderColor: marginAmt >= 0
+                    ? alpha(theme.palette.success.main, 0.3)
+                    : alpha(theme.palette.error.main, 0.3),
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  height: '40px',
+                  mb: { xs: 0, sm: '20px' },
+                }}
+              >
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  {marginAmt >= 0 ? (
+                    <TrendingUpIcon sx={{ fontSize: 18, color: 'success.main' }} />
+                  ) : (
+                    <TrendingDownIcon sx={{ fontSize: 18, color: 'error.main' }} />
+                  )}
+                  <Box>
+                    <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.68rem', display: 'block', lineHeight: 1 }}>
+                      Est. Profit
+                    </Typography>
+                    <Typography variant="body2" fontWeight={800} color={marginAmt >= 0 ? 'success.main' : 'error.main'} sx={{ lineHeight: 1.1 }}>
+                      ₹{marginAmt.toFixed(2)}
+                    </Typography>
+                  </Box>
+                </Box>
+                <Chip
+                  label={`${marginPct}%`}
+                  size="small"
+                  color={marginAmt >= 0 ? 'success' : 'error'}
+                  sx={{ fontWeight: 800, fontSize: '0.72rem', height: 22, borderRadius: '6px' }}
+                />
+              </Box>
+            </Grid>
+          </Grid>
+        </Box>
+
+        <Divider />
+
+        {/* SECTION 4: INVENTORY & STOCK ALERTS */}
+        <Box>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.25, mb: 1.75 }}>
+            <Box
+              sx={{
+                width: 30,
+                height: 30,
+                borderRadius: 1.75,
+                bgcolor: alpha(theme.palette.primary.main, 0.1),
+                color: theme.palette.primary.main,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <WarehouseOutlinedIcon sx={{ fontSize: 17 }} />
+            </Box>
+            <Box>
+              <Typography variant="subtitle2" fontWeight={750} color="text.primary">
+                Stock & Inventory Controls
+              </Typography>
+            </Box>
+          </Box>
+
+          <Grid container spacing={2}>
+            <Grid item xs={12} sm={6}>
+              {isEdit ? (
                 <TextField
-                  label="Item Code"
-                  value={isEdit ? formData.itemCode : 'Auto-generated upon save (e.g. ITM-000001)'}
+                  label="Current Stock"
+                  value={`${formData.initialStock} ${formData.unit}`}
                   fullWidth
                   size="small"
                   disabled
-                  helperText={
-                    isEdit
-                      ? 'Permanent unique system identifier'
-                      : 'System automatically generates a consecutive, conflict-free code'
-                  }
                   InputProps={{
-                    sx: { bgcolor: 'background.default', fontFamily: isEdit ? 'monospace' : 'inherit' },
-                  }}
-                />
-              </Grid>
-
-              <Grid xs={12} sm={6}>
-                <TextField
-                  label="Barcode / SKU"
-                  placeholder="e.g. 8901234567890"
-                  value={formData.barcode}
-                  onChange={(e) => handleChange('barcode', e.target.value)}
-                  fullWidth
-                  size="small"
-                  disabled={loading}
-                  error={Boolean(errors.barcode)}
-                  helperText="Optional. Can be scanned directly with a barcode scanner."
-                  InputProps={{
-                    endAdornment: (
-                      <InputAdornment position="end">
-                        <QrCodeScannerIcon fontSize="small" sx={{ color: 'text.secondary' }} />
+                    sx: {
+                      borderRadius: 2,
+                      bgcolor: isDark ? alpha(theme.palette.background.default, 0.6) : alpha(theme.palette.text.primary, 0.03),
+                    },
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <LockOutlinedIcon fontSize="small" sx={{ color: 'text.secondary' }} />
                       </InputAdornment>
                     ),
                   }}
+                  helperText="Adjustable via Sales, Purchases, or Adjustments"
                 />
-              </Grid>
-            </Grid>
-          </CardContent>
-        </Card>
-
-        {/* ITEM INFORMATION CARD */}
-        <Card sx={{ border: 1, borderColor: 'divider', borderRadius: 2 }}>
-          <CardContent sx={{ p: { xs: 2, sm: 3 } }}>
-            <Stack direction="row" spacing={1.5} alignItems="center" sx={{ mb: 2 }}>
-              <Inventory2OutlinedIcon color="primary" />
-              <Typography variant="subtitle1" fontWeight={700}>
-                Product Information
-              </Typography>
-            </Stack>
-
-            <Grid container spacing={2.5}>
-              <Grid xs={12} sm={6}>
+              ) : (
                 <TextField
-                  label="Item Name *"
-                  placeholder="e.g. Wireless Keyboard K380"
-                  value={formData.itemName}
-                  onChange={(e) => handleChange('itemName', e.target.value)}
-                  fullWidth
-                  size="small"
-                  disabled={loading}
-                  error={Boolean(errors.itemName)}
-                  helperText={errors.itemName || 'Primary product trade name'}
-                />
-              </Grid>
-
-              <Grid xs={12} sm={6}>
-                <TextField
-                  select
-                  label="Category *"
-                  value={formData.categoryId}
-                  onChange={(e) => handleChange('categoryId', e.target.value)}
-                  fullWidth
-                  size="small"
-                  disabled={loading}
-                  error={Boolean(errors.categoryId)}
-                  helperText={errors.categoryId || 'Select classification master'}
-                >
-                  <MenuItem value="" disabled>
-                    Select a Category
-                  </MenuItem>
-                  {categories.map((cat) => (
-                    <MenuItem key={cat.id} value={cat.id}>
-                      {cat.categoryName}
-                    </MenuItem>
-                  ))}
-                </TextField>
-              </Grid>
-
-              <Grid xs={12} sm={6}>
-                <TextField
-                  label="Company / Brand"
-                  placeholder="e.g. Logitech, Samsung, HP"
-                  value={formData.companyName}
-                  onChange={(e) => handleChange('companyName', e.target.value)}
-                  fullWidth
-                  size="small"
-                  disabled={loading}
-                  helperText="Manufacturer or brand identity"
-                />
-              </Grid>
-
-              <Grid xs={12} sm={6}>
-                <TextField
-                  select
-                  label="Unit of Measurement *"
-                  value={formData.unit}
-                  onChange={(e) => handleChange('unit', e.target.value)}
-                  fullWidth
-                  size="small"
-                  disabled={loading}
-                  error={Boolean(errors.unit)}
-                  helperText={errors.unit || 'Measurement standard for stock and billing'}
-                >
-                  {units.map((u) => (
-                    <MenuItem key={u} value={u}>
-                      {u}
-                    </MenuItem>
-                  ))}
-                </TextField>
-              </Grid>
-            </Grid>
-          </CardContent>
-        </Card>
-
-        {/* PRICING CARD */}
-        <Card sx={{ border: 1, borderColor: 'divider', borderRadius: 2 }}>
-          <CardContent sx={{ p: { xs: 2, sm: 3 } }}>
-            <Stack direction="row" spacing={1.5} alignItems="center" sx={{ mb: 2 }}>
-              <AttachMoneyOutlinedIcon color="primary" />
-              <Typography variant="subtitle1" fontWeight={700}>
-                Pricing & Margins
-              </Typography>
-            </Stack>
-
-            <Grid container spacing={2.5}>
-              <Grid xs={12} sm={5}>
-                <TextField
-                  label="Purchase Rate *"
-                  type="number"
-                  inputProps={{ step: '0.01', min: '0' }}
-                  value={formData.purchaseRate}
-                  onChange={(e) => handleChange('purchaseRate', e.target.value)}
-                  fullWidth
-                  size="small"
-                  disabled={loading}
-                  error={Boolean(errors.purchaseRate)}
-                  helperText={errors.purchaseRate || 'Cost price per unit'}
-                  InputProps={{
-                    startAdornment: <InputAdornment position="start">₹</InputAdornment>,
-                  }}
-                />
-              </Grid>
-
-              <Grid xs={12} sm={5}>
-                <TextField
-                  label="Sale Rate *"
-                  type="number"
-                  inputProps={{ step: '0.01', min: '0' }}
-                  value={formData.saleRate}
-                  onChange={(e) => handleChange('saleRate', e.target.value)}
-                  fullWidth
-                  size="small"
-                  disabled={loading}
-                  error={Boolean(errors.saleRate)}
-                  helperText={errors.saleRate || 'Default selling price per unit'}
-                  InputProps={{
-                    startAdornment: <InputAdornment position="start">₹</InputAdornment>,
-                  }}
-                />
-              </Grid>
-
-              <Grid xs={12} sm={2}>
-                <Box
-                  sx={{
-                    p: 1.5,
-                    borderRadius: 1.5,
-                    bgcolor: marginAmt >= 0 ? '#f0fdf4' : alpha(theme.palette.error.main, 0.1),
-                    border: '1px solid',
-                    borderColor: marginAmt >= 0 ? '#bbf7d0' : alpha(theme.palette.error.main, 0.2),
-                    textAlign: 'center',
-                    height: '100%',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    justifyContent: 'center',
-                  }}
-                >
-                  <Typography variant="caption" color="text.secondary" fontWeight={600}>
-                    Estimated Margin
-                  </Typography>
-                  <Typography
-                    variant="body1"
-                    fontWeight={800}
-                    color={marginAmt >= 0 ? 'success.dark' : 'error.dark'}
-                  >
-                    {marginPct}%
-                  </Typography>
-                </Box>
-              </Grid>
-            </Grid>
-          </CardContent>
-        </Card>
-
-        {/* INVENTORY CARD */}
-        <Card sx={{ border: 1, borderColor: 'divider', borderRadius: 2 }}>
-          <CardContent sx={{ p: { xs: 2, sm: 3 } }}>
-            <Stack direction="row" spacing={1.5} alignItems="center" sx={{ mb: 2 }}>
-              <WarehouseOutlinedIcon color="primary" />
-              <Typography variant="subtitle1" fontWeight={700}>
-                Inventory & Stock Alerts
-              </Typography>
-            </Stack>
-
-            <Grid container spacing={2.5}>
-              <Grid xs={12} sm={6}>
-                {isEdit ? (
-                  <TextField
-                    label="Current Stock"
-                    value={`${formData.initialStock} ${formData.unit}`}
-                    fullWidth
-                    size="small"
-                    disabled
-                    InputProps={{
-                      startAdornment: (
-                        <InputAdornment position="start">
-                          <LockOutlinedIcon fontSize="small" sx={{ color: 'text.secondary' }} />
-                        </InputAdornment>
-                      ),
-                      sx: { bgcolor: 'background.default' },
-                    }}
-                    helperText="Stock can only be modified through Sales, Purchases, or Stock Adjustments."
-                  />
-                ) : (
-                  <TextField
-                    label="Opening / Initial Stock"
-                    type="number"
-                    inputProps={{ step: '1', min: '0' }}
-                    value={formData.initialStock}
-                    onChange={(e) => handleChange('initialStock', e.target.value)}
-                    fullWidth
-                    size="small"
-                    disabled={loading}
-                    error={Boolean(errors.initialStock)}
-                    helperText={errors.initialStock || 'Opening inventory balance on creation'}
-                    InputProps={{
-                      endAdornment: (
-                        <InputAdornment position="end">{formData.unit}</InputAdornment>
-                      ),
-                    }}
-                  />
-                )}
-              </Grid>
-
-              <Grid xs={12} sm={6}>
-                <TextField
-                  label="Minimum Stock (Safety Threshold)"
+                  label="Opening / Initial Stock"
                   type="number"
                   inputProps={{ step: '1', min: '0' }}
-                  value={formData.minimumStock}
-                  onChange={(e) => handleChange('minimumStock', e.target.value)}
+                  value={formData.initialStock}
+                  onChange={(e) => handleChange('initialStock', e.target.value)}
                   fullWidth
                   size="small"
                   disabled={loading}
-                  error={Boolean(errors.minimumStock)}
-                  helperText={
-                    errors.minimumStock || 'When stock drops below or equals this, Low Stock alerts trigger.'
-                  }
+                  error={Boolean(errors.initialStock)}
+                  helperText={errors.initialStock || 'Opening inventory balance'}
                   InputProps={{
+                    sx: { borderRadius: 2 },
                     endAdornment: (
                       <InputAdornment position="end">{formData.unit}</InputAdornment>
                     ),
                   }}
                 />
-              </Grid>
+              )}
             </Grid>
-          </CardContent>
-        </Card>
 
-        {/* OTHER CARD */}
-        <Card sx={{ border: 1, borderColor: 'divider', borderRadius: 2 }}>
-          <CardContent sx={{ p: { xs: 2, sm: 3 } }}>
-            <Stack direction="row" spacing={1.5} alignItems="center" sx={{ mb: 2 }}>
-              <NotesOutlinedIcon color="primary" />
-              <Typography variant="subtitle1" fontWeight={700}>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                label="Minimum Stock (Alert Level)"
+                type="number"
+                inputProps={{ step: '1', min: '0' }}
+                value={formData.minimumStock}
+                onChange={(e) => handleChange('minimumStock', e.target.value)}
+                fullWidth
+                size="small"
+                disabled={loading}
+                error={Boolean(errors.minimumStock)}
+                helperText={errors.minimumStock || 'Low Stock warnings trigger at or below this'}
+                InputProps={{
+                  sx: { borderRadius: 2 },
+                  endAdornment: (
+                    <InputAdornment position="end">{formData.unit}</InputAdornment>
+                  ),
+                }}
+              />
+            </Grid>
+          </Grid>
+        </Box>
+
+        <Divider />
+
+        {/* SECTION 5: ADDITIONAL INFORMATION */}
+        <Box>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.25, mb: 1.75 }}>
+            <Box
+              sx={{
+                width: 30,
+                height: 30,
+                borderRadius: 1.75,
+                bgcolor: alpha(theme.palette.primary.main, 0.1),
+                color: theme.palette.primary.main,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <NotesOutlinedIcon sx={{ fontSize: 17 }} />
+            </Box>
+            <Box>
+              <Typography variant="subtitle2" fontWeight={750} color="text.primary">
                 Additional Information
               </Typography>
-            </Stack>
+            </Box>
+          </Box>
 
-            <Grid container spacing={2.5}>
-              <Grid xs={12}>
-                <TextField
-                  label="Description / Specifications"
-                  placeholder="Detailed product specifications, notes, model numbers..."
-                  value={formData.description}
-                  onChange={(e) => handleChange('description', e.target.value)}
-                  multiline
-                  rows={3}
-                  fullWidth
-                  size="small"
-                  disabled={loading}
-                />
-              </Grid>
+          <Grid container spacing={2}>
+            <Grid item xs={12}>
+              <TextField
+                label="Description / Specifications"
+                placeholder="Product specifications, notes, model numbers..."
+                value={formData.description}
+                onChange={(e) => handleChange('description', e.target.value)}
+                multiline
+                rows={2}
+                fullWidth
+                size="small"
+                disabled={loading}
+                InputProps={{ sx: { borderRadius: 2 } }}
+              />
             </Grid>
-          </CardContent>
-        </Card>
+          </Grid>
+        </Box>
 
         {/* FORM ACTIONS */}
-        <Box sx={{ display: 'flex', flexDirection: { xs: 'column-reverse', sm: 'row' }, justifyContent: 'flex-end', gap: 2, pt: 1, pb: 4, '& > button': { width: { xs: '100%', sm: 'auto' } } }}>
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: { xs: 'column-reverse', sm: 'row' },
+            justifyContent: 'flex-end',
+            gap: 1.5,
+            pt: 1.5,
+            borderTop: 1,
+            borderColor: 'divider',
+            '& > button': { width: { xs: '100%', sm: 'auto' } },
+          }}
+        >
           <Button
             variant="outlined"
             color="inherit"
             startIcon={<CloseOutlinedIcon />}
             onClick={onCancel}
             disabled={loading}
-            sx={{ px: 3 }}
+            sx={{ borderRadius: 2.5, px: 3, fontWeight: 600 }}
           >
             Cancel
           </Button>
@@ -495,7 +612,7 @@ const ItemForm = ({
             color="primary"
             startIcon={loading ? <CircularProgress size={16} color="inherit" /> : <SaveOutlinedIcon />}
             disabled={loading}
-            sx={{ px: 4 }}
+            sx={{ borderRadius: 2.5, px: 3.5, fontWeight: 700 }}
           >
             {loading ? 'Saving Item...' : isEdit ? 'Update Item' : 'Save Item'}
           </Button>

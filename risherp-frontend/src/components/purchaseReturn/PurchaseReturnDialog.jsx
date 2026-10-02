@@ -4,8 +4,9 @@ import {
   DialogContent,
   IconButton,
   Typography,
-  Stack,
   Box,
+  useTheme,
+  alpha,
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import AssignmentReturnOutlinedIcon from '@mui/icons-material/AssignmentReturnOutlined';
@@ -13,9 +14,12 @@ import PurchaseReturnCreate from '../../pages/purchaseReturn/PurchaseReturnCreat
 
 /**
  * PurchaseReturnDialog Component
- * MUI Modal dialog for creating purchase returns against a purchase invoice.
+ * Modern modal dialog for creating purchase returns against a purchase invoice.
  */
 const PurchaseReturnDialog = ({ open = false, onClose, onSuccess }) => {
+  const theme = useTheme();
+  const isDark = theme.palette.mode === 'dark';
+
   return (
     <Dialog
       open={open}
@@ -25,43 +29,56 @@ const PurchaseReturnDialog = ({ open = false, onClose, onSuccess }) => {
       scroll="paper"
       PaperProps={{
         sx: {
-          borderRadius: 2.5,
+          borderRadius: 4,
+          border: 1,
+          borderColor: 'divider',
           maxHeight: '92vh',
+          boxShadow: isDark
+            ? '0 25px 50px -12px rgba(0, 0, 0, 0.8), 0 0 1px 1px rgba(255, 255, 255, 0.08)'
+            : '0 25px 50px -12px rgba(15, 23, 42, 0.16), 0 0 1px 1px rgba(15, 23, 42, 0.05)',
         },
       }}
     >
       <DialogTitle
         sx={{
           m: 0,
-          px: 3,
+          px: { xs: 2.5, sm: 3 },
           py: 2,
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          borderBottom: '1px solid',
+          borderBottom: 1,
           borderColor: 'divider',
           bgcolor: 'background.paper',
         }}
       >
-        <Stack direction="row" spacing={1.5} alignItems="center">
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.75 }}>
           <Box
             sx={{
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              width: 38,
-              height: 38,
-              borderRadius: 1.5,
-              bgcolor: 'error.lighter',
+              width: 42,
+              height: 42,
+              borderRadius: 2.5,
+              bgcolor: isDark
+                ? alpha(theme.palette.error.main, 0.2)
+                : alpha(theme.palette.error.main, 0.1),
               color: 'error.main',
+              border: isDark ? `1px solid ${alpha(theme.palette.error.main, 0.3)}` : 'none',
             }}
           >
-            <AssignmentReturnOutlinedIcon fontSize="small" />
+            <AssignmentReturnOutlinedIcon sx={{ fontSize: 22 }} />
           </Box>
-          <Typography variant="h6" fontWeight={700}>
-            Create Purchase Return
-          </Typography>
-        </Stack>
+          <Box>
+            <Typography variant="h6" fontWeight={750} color="text.primary" sx={{ lineHeight: 1.2 }}>
+              Create Purchase Return
+            </Typography>
+            <Typography variant="caption" color="text.secondary">
+              Return goods to vendor, generate debit note, and adjust ledger
+            </Typography>
+          </Box>
+        </Box>
 
         <IconButton
           aria-label="close"
@@ -69,7 +86,7 @@ const PurchaseReturnDialog = ({ open = false, onClose, onSuccess }) => {
           size="small"
           sx={{
             color: 'text.secondary',
-            '&:hover': { bgcolor: 'action.hover' },
+            '&:hover': { bgcolor: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.04)' },
           }}
         >
           <CloseIcon fontSize="small" />

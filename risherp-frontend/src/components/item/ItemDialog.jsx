@@ -5,8 +5,9 @@ import {
   DialogContent,
   IconButton,
   Typography,
-  Stack,
   Box,
+  useTheme,
+  alpha,
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import Inventory2OutlinedIcon from '@mui/icons-material/Inventory2Outlined';
@@ -20,7 +21,7 @@ import { DEFAULT_UNITS } from '../../utils/constants';
 
 /**
  * ItemDialog Component
- * MUI Modal dialog for registering or modifying product records in the Item Master.
+ * Modern modal dialog for registering or modifying product records in Item Master.
  */
 const ItemDialog = ({
   open = false,
@@ -28,6 +29,9 @@ const ItemDialog = ({
   onClose,
   onSuccess,
 }) => {
+  const theme = useTheme();
+  const isDark = theme.palette.mode === 'dark';
+
   const [categories, setCategories] = useState([]);
   const [units, setUnits] = useState(DEFAULT_UNITS);
   const [submitting, setSubmitting] = useState(false);
@@ -86,7 +90,7 @@ const ItemDialog = ({
 
   const dialogTitle = isEdit
     ? `Edit Item — ${item?.itemName || ''}`
-    : 'Add New Item';
+    : 'Add New Product / Item';
 
   return (
     <Dialog
@@ -97,43 +101,62 @@ const ItemDialog = ({
       scroll="paper"
       PaperProps={{
         sx: {
-          borderRadius: 2.5,
-          maxHeight: '90vh',
+          borderRadius: 4,
+          border: 1,
+          borderColor: 'divider',
+          maxHeight: '92vh',
+          boxShadow: isDark
+            ? '0 25px 50px -12px rgba(0, 0, 0, 0.8), 0 0 1px 1px rgba(255, 255, 255, 0.08)'
+            : '0 25px 50px -12px rgba(15, 23, 42, 0.16), 0 0 1px 1px rgba(15, 23, 42, 0.05)',
         },
       }}
     >
       <DialogTitle
         sx={{
           m: 0,
-          px: 3,
+          px: { xs: 2.5, sm: 3 },
           py: 2,
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          borderBottom: '1px solid',
+          borderBottom: 1,
           borderColor: 'divider',
           bgcolor: 'background.paper',
         }}
       >
-        <Stack direction="row" spacing={1.5} alignItems="center">
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.75 }}>
           <Box
             sx={{
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              width: 38,
-              height: 38,
-              borderRadius: 1.5,
-              bgcolor: isEdit ? 'warning.lighter' : 'primary.lighter',
+              width: 42,
+              height: 42,
+              borderRadius: 2.5,
+              bgcolor: isEdit
+                ? isDark
+                  ? alpha(theme.palette.warning.main, 0.2)
+                  : alpha(theme.palette.warning.main, 0.1)
+                : isDark
+                ? alpha(theme.palette.primary.main, 0.2)
+                : alpha(theme.palette.primary.main, 0.1),
               color: isEdit ? 'warning.main' : 'primary.main',
+              border: isDark
+                ? `1px solid ${alpha(isEdit ? theme.palette.warning.main : theme.palette.primary.main, 0.3)}`
+                : 'none',
             }}
           >
-            {isEdit ? <EditOutlinedIcon fontSize="small" /> : <Inventory2OutlinedIcon fontSize="small" />}
+            {isEdit ? <EditOutlinedIcon sx={{ fontSize: 22 }} /> : <Inventory2OutlinedIcon sx={{ fontSize: 22 }} />}
           </Box>
-          <Typography variant="h6" fontWeight={700}>
-            {dialogTitle}
-          </Typography>
-        </Stack>
+          <Box>
+            <Typography variant="h6" fontWeight={750} color="text.primary" sx={{ lineHeight: 1.2 }}>
+              {dialogTitle}
+            </Typography>
+            <Typography variant="caption" color="text.secondary">
+              {isEdit ? 'Update product pricing, stock, unit, and tax specifications' : 'Register a new SKU with opening stock, rates, and category'}
+            </Typography>
+          </Box>
+        </Box>
 
         <IconButton
           aria-label="close"
@@ -141,14 +164,14 @@ const ItemDialog = ({
           size="small"
           sx={{
             color: 'text.secondary',
-            '&:hover': { bgcolor: 'action.hover' },
+            '&:hover': { bgcolor: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.04)' },
           }}
         >
           <CloseIcon fontSize="small" />
         </IconButton>
       </DialogTitle>
 
-      <DialogContent sx={{ p: { xs: 2, sm: 3 }, bgcolor: 'background.default' }}>
+      <DialogContent sx={{ p: { xs: 2.5, sm: 3.5 }, bgcolor: 'background.paper' }}>
         <ItemForm
           initialValues={item}
           isEdit={isEdit}

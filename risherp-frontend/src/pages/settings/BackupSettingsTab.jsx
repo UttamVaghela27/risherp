@@ -24,7 +24,8 @@ import {
   DialogActions,
   TextField,
   Tooltip,
-  useTheme
+  useTheme,
+  alpha,
 } from '@mui/material';
 import BackupIcon from '@mui/icons-material/Backup';
 import DownloadIcon from '@mui/icons-material/Download';
@@ -33,12 +34,14 @@ import AddIcon from '@mui/icons-material/Add';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutlined';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutlined';
+import CloseIcon from '@mui/icons-material/Close';
 import toast from 'react-hot-toast';
 import backupService from '../../services/backupService';
 import { useAuth } from '../../context/AuthContext';
 
 const BackupSettingsTab = () => {
   const theme = useTheme();
+  const isDark = theme.palette.mode === 'dark';
   const { hasPermission, isAdmin } = useAuth();
   const canCreate = isAdmin() || hasPermission('BACKUP_CREATE');
   const canRestore = isAdmin() || hasPermission('BACKUP_RESTORE');
@@ -304,50 +307,153 @@ const BackupSettingsTab = () => {
         )}
 
         {/* RESTORE CONFIRMATION DIALOG */}
-        <Dialog open={restoreModalOpen} onClose={handleCloseRestore} maxWidth="sm" fullWidth>
-          <DialogTitle sx={{ display: 'flex', alignItems: 'center', gap: 1.5, color: 'error.main', fontWeight: 800 }}>
-            <WarningAmberIcon color="error" />
-            CRITICAL CONFIRMATION: Restore Database
+        <Dialog
+          open={restoreModalOpen}
+          onClose={handleCloseRestore}
+          maxWidth="sm"
+          fullWidth
+          PaperProps={{
+            sx: {
+              borderRadius: 4,
+              boxShadow: isDark ? '0 24px 48px -12px rgba(0,0,0,0.8)' : '0 24px 48px -12px rgba(15,23,42,0.18)',
+              border: 1,
+              borderColor: 'divider',
+              overflow: 'hidden',
+            },
+          }}
+        >
+          <DialogTitle
+            sx={{
+              p: { xs: 2.5, sm: 3 },
+              pb: 2,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              borderBottom: 1,
+              borderColor: 'divider',
+            }}
+          >
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.75 }}>
+              <Box
+                sx={{
+                  width: 44,
+                  height: 44,
+                  borderRadius: 2.5,
+                  bgcolor: alpha(theme.palette.error.main, 0.12),
+                  color: theme.palette.error.main,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  flexShrink: 0,
+                }}
+              >
+                <WarningAmberIcon />
+              </Box>
+              <Box>
+                <Typography variant="h6" fontWeight={800} sx={{ lineHeight: 1.25, fontSize: { xs: '1.05rem', sm: '1.15rem' } }}>
+                  Restore Database Snapshot
+                </Typography>
+                <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 0.25 }}>
+                  Critical operational confirmation required
+                </Typography>
+              </Box>
+            </Box>
+            <IconButton
+              onClick={handleCloseRestore}
+              size="small"
+              sx={{ color: 'text.secondary', '&:hover': { bgcolor: alpha(theme.palette.text.primary, 0.08) } }}
+            >
+              <CloseIcon fontSize="small" />
+            </IconButton>
           </DialogTitle>
-          <DialogContent dividers>
-            <Alert severity="error" sx={{ mb: 2.5 }}>
-              <strong>DANGER:</strong> Restoring this backup will replace current ERP database tables with data from this
-              snapshot.
+
+          <DialogContent sx={{ p: { xs: 2.5, sm: 3.5 } }}>
+            <Alert
+              severity="error"
+              sx={{
+                mb: 3,
+                borderRadius: 2.5,
+                border: 1,
+                borderColor: alpha(theme.palette.error.main, 0.3),
+              }}
+            >
+              <Typography variant="subtitle2" fontWeight={800} sx={{ mb: 0.5 }}>
+                DANGER: Database Overwrite
+              </Typography>
+              <Typography variant="body2" sx={{ fontSize: '0.85rem' }}>
+                Restoring this backup will replace current ERP database tables with data from this snapshot. Active transactions since this snapshot will be overwritten.
+              </Typography>
             </Alert>
 
-            <Typography variant="body2" paragraph>
-              A safety backup of the active database will be created automatically before the restore is executed.
-              However, this operation cannot be undone automatically.
-            </Typography>
-
             {selectedBackup && (
-              <Paper variant="outlined" sx={{ p: 2, bgcolor: 'background.default', mb: 2.5, borderRadius: 1.5 }}>
-                <Typography variant="caption" color="text.secondary" display="block">
-                  Target Backup Dump:
+              <Paper
+                variant="outlined"
+                sx={{
+                  p: 2.5,
+                  bgcolor: isDark ? alpha(theme.palette.background.default, 0.6) : alpha(theme.palette.text.primary, 0.02),
+                  mb: 3,
+                  borderRadius: 2.5,
+                  border: 1,
+                  borderColor: 'divider',
+                }}
+              >
+                <Typography variant="caption" color="text.secondary" fontWeight={700} sx={{ textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', mb: 0.75 }}>
+                  Target Backup Dump
                 </Typography>
-                <Typography variant="subtitle2" fontWeight={700} sx={{ fontFamily: 'monospace' }}>
+                <Typography variant="subtitle1" fontWeight={750} sx={{ fontFamily: 'monospace', mb: 1, wordBreak: 'break-all', color: 'text.primary' }}>
                   {selectedBackup.fileName}
                 </Typography>
-                <Typography variant="caption" color="text.secondary">
-                  Size: {selectedBackup.fileSizeFormatted} | Created: {formatDate(selectedBackup.createdAt)}
-                </Typography>
+                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1.5, alignItems: 'center' }}>
+                  <Chip
+                    label={`Size: ${selectedBackup.fileSizeFormatted}`}
+                    size="small"
+                    sx={{ borderRadius: '6px', fontWeight: 600, fontSize: '0.72rem' }}
+                  />
+                  <Chip
+                    label={`Created: ${formatDate(selectedBackup.createdAt)}`}
+                    size="small"
+                    sx={{ borderRadius: '6px', fontWeight: 600, fontSize: '0.72rem' }}
+                  />
+                </Box>
               </Paper>
             )}
 
-            <Typography variant="body2" fontWeight={600} gutterBottom>
-              Type <strong>RESTORE</strong> below to enable confirmation:
-            </Typography>
-            <TextField
-              fullWidth
-              size="small"
-              placeholder="RESTORE"
-              value={confirmInput}
-              onChange={(e) => setConfirmInput(e.target.value)}
-              autoFocus
-            />
+            <Box sx={{ mb: 1 }}>
+              <Typography variant="body2" fontWeight={600} color="text.primary" sx={{ mb: 1 }}>
+                Type <strong style={{ color: theme.palette.error.main }}>RESTORE</strong> below to enable confirmation:
+              </Typography>
+              <TextField
+                fullWidth
+                size="small"
+                placeholder="RESTORE"
+                value={confirmInput}
+                onChange={(e) => setConfirmInput(e.target.value)}
+                autoFocus
+                InputProps={{ sx: { borderRadius: 2 } }}
+              />
+            </Box>
           </DialogContent>
-          <DialogActions sx={{ px: 3, py: 2, flexDirection: { xs: 'column-reverse', sm: 'row' }, gap: { xs: 1, sm: 0 }, '& .MuiButton-root': { width: { xs: '100%', sm: 'auto' } } }}>
-            <Button onClick={handleCloseRestore} color="inherit" disabled={restoring}>
+
+          <DialogActions
+            sx={{
+              p: { xs: 2, sm: 2.5 },
+              px: { xs: 2.5, sm: 3.5 },
+              bgcolor: isDark ? 'rgba(15, 23, 42, 0.3)' : '#f8fafc',
+              borderTop: 1,
+              borderColor: 'divider',
+              display: 'flex',
+              justifyContent: 'flex-end',
+              gap: 1.5,
+              flexDirection: { xs: 'column-reverse', sm: 'row' },
+            }}
+          >
+            <Button
+              onClick={handleCloseRestore}
+              variant="outlined"
+              color="inherit"
+              disabled={restoring}
+              sx={{ borderRadius: 2.5, px: 3, fontWeight: 600, width: { xs: '100%', sm: 'auto' } }}
+            >
               Cancel
             </Button>
             <Button
@@ -356,6 +462,7 @@ const BackupSettingsTab = () => {
               color="error"
               disabled={confirmInput.trim().toUpperCase() !== 'RESTORE' || restoring}
               startIcon={restoring ? <CircularProgress size={16} color="inherit" /> : <RestoreIcon />}
+              sx={{ fontWeight: 700, borderRadius: 2.5, px: 3.5, width: { xs: '100%', sm: 'auto' } }}
             >
               {restoring ? 'Restoring Database...' : 'Confirm & Restore'}
             </Button>

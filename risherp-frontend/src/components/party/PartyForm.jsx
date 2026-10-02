@@ -1,8 +1,6 @@
 import { useState, useEffect } from 'react';
 import {
   Box,
-  Card,
-  CardContent,
   Grid,
   TextField,
   MenuItem,
@@ -11,7 +9,10 @@ import {
   Stack,
   CircularProgress,
   FormHelperText,
-  Alert,
+  Divider,
+  useTheme,
+  alpha,
+  InputAdornment,
 } from '@mui/material';
 import BusinessIcon from '@mui/icons-material/Business';
 import ContactPhoneOutlinedIcon from '@mui/icons-material/ContactPhoneOutlined';
@@ -23,7 +24,7 @@ import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined';
 
 /**
  * PartyForm Component
- * Comprehensive structured form for creating or updating Party records.
+ * Clean, flat, modern form for creating or updating Party records without cluttered nested card boxes.
  */
 const PartyForm = ({
   initialValues = null,
@@ -33,6 +34,9 @@ const PartyForm = ({
   loading = false,
   defaultPartyType = 'CUSTOMER',
 }) => {
+  const theme = useTheme();
+  const isDark = theme.palette.mode === 'dark';
+
   const [formData, setFormData] = useState({
     partyName: '',
     partyType: defaultPartyType,
@@ -76,12 +80,10 @@ const PartyForm = ({
     }
   }, [initialValues, defaultPartyType]);
 
-  // Handle field change
   const handleChange = (field, value) => {
     setFormData((prev) => {
       const updated = { ...prev, [field]: value };
 
-      // Automatic balance type default according to party type
       if (field === 'partyType') {
         if (value === 'CUSTOMER' && updated.openingBalanceType === 'PAYABLE') {
           updated.openingBalanceType = 'RECEIVABLE';
@@ -90,7 +92,6 @@ const PartyForm = ({
         }
       }
 
-      // If opening balance is 0, auto-default type to NONE; if changed from 0 to > 0, set to logical default
       if (field === 'openingBalance') {
         const num = parseFloat(value) || 0;
         if (num === 0) {
@@ -103,7 +104,6 @@ const PartyForm = ({
       return updated;
     });
 
-    // Clear field error on edit
     if (errors[field]) {
       setErrors((prev) => ({ ...prev, [field]: null }));
     }
@@ -149,51 +149,77 @@ const PartyForm = ({
         break;
 
       case 'pincode':
-        if (value && value.trim() && !/^[1-9][0-9]{5}$/.test(value.trim())) {
-          error = 'Please enter a valid 6-digit Indian PIN code.';
+        if (value && value.trim() && !/^\d{6}$/.test(value.trim())) {
+          error = 'Please enter a valid 6-digit PIN code.';
         }
         break;
 
-      case 'openingBalance':
-        const ob = parseFloat(value);
-        if (isNaN(ob) || ob < 0) {
-          error = 'Opening balance cannot be negative.';
+      case 'openingBalance': {
+        const num = parseFloat(value);
+        if (isNaN(num) || num < 0) {
+          error = 'Opening balance must be 0 or a positive number.';
         }
         break;
+      }
 
-      case 'creditLimit':
-        const cl = parseFloat(value);
-        if (isNaN(cl) || cl < 0) {
-          error = 'Credit limit cannot be negative.';
+      case 'creditLimit': {
+        const num = parseFloat(value);
+        if (isNaN(num) || num < 0) {
+          error = 'Credit limit must be 0 or a positive number.';
         }
         break;
+      }
 
       default:
         break;
     }
 
     setErrors((prev) => ({ ...prev, [field]: error }));
-    return error;
+    return error === null;
   };
 
   const validateAll = () => {
+    const fieldsToValidate = [
+      'partyName',
+      'mobile',
+      'alternateMobile',
+      'email',
+      'pincode',
+      'openingBalance',
+      'creditLimit',
+    ];
+
+    let isValid = true;
     const newErrors = {};
-    Object.keys(formData).forEach((field) => {
-      const err = validateField(field, formData[field]);
-      if (err) newErrors[field] = err;
+
+    fieldsToValidate.forEach((f) => {
+      const valid = validateField(f, formData[f]);
+      if (!valid) isValid = false;
     });
 
-    const numBal = parseFloat(formData.openingBalance) || 0;
-    if (numBal > 0 && formData.openingBalanceType === 'NONE') {
-      newErrors.openingBalanceType = 'Opening balance > 0 requires Receivable or Payable.';
+    const opBal = parseFloat(formData.openingBalance) || 0;
+    if (opBal > 0 && (!formData.openingBalanceType || formData.openingBalanceType === 'NONE')) {
+      newErrors.openingBalanceType = 'Please select whether balance is Receivable or Payable.';
+      isValid = false;
     }
 
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+    setErrors((prev) => ({ ...prev, ...newErrors }));
+    return isValid;
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    setTouched({
+      partyName: true,
+      mobile: true,
+      alternateMobile: true,
+      email: true,
+      pincode: true,
+      openingBalance: true,
+      creditLimit: true,
+    });
+
     if (!validateAll()) {
       return;
     }
@@ -212,323 +238,388 @@ const PartyForm = ({
   return (
     <Box component="form" onSubmit={handleSubmit} noValidate>
       <Stack spacing={3}>
-        {/* Section 1: Party Information */}
-        <Card sx={{ border: 1, borderColor: 'divider', borderRadius: 2 }}>
-          <CardContent sx={{ p: { xs: 2, sm: 3 } }}>
-            <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 2.5 }}>
-              <BusinessIcon color="primary" fontSize="small" />
-              <Typography variant="subtitle1" fontWeight={750} color="text.primary">
+        {/* SECTION 1: PARTY INFORMATION */}
+        <Box>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.25, mb: 1.75 }}>
+            <Box
+              sx={{
+                width: 30,
+                height: 30,
+                borderRadius: 1.75,
+                bgcolor: alpha(theme.palette.primary.main, 0.1),
+                color: theme.palette.primary.main,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <BusinessIcon sx={{ fontSize: 17 }} />
+            </Box>
+            <Box>
+              <Typography variant="subtitle2" fontWeight={750} color="text.primary">
                 Party Information
               </Typography>
-            </Stack>
+            </Box>
+          </Box>
 
-            <Grid container spacing={2.5}>
-              <Grid xs={12} sm={8}>
-                <TextField
-                  fullWidth
-                  required
-                  id="partyName"
-                  label="Party Name"
-                  placeholder="e.g. ABC Traders, Shri Ganesh Enterprises"
-                  value={formData.partyName}
-                  onChange={(e) => handleChange('partyName', e.target.value)}
-                  onBlur={() => handleBlur('partyName')}
-                  error={Boolean(errors.partyName)}
-                  helperText={errors.partyName || 'The legal trade name or registered business name'}
-                />
-              </Grid>
-
-              <Grid xs={12} sm={4}>
-                <TextField
-                  select
-                  fullWidth
-                  required
-                  id="partyType"
-                  label="Party Type"
-                  value={formData.partyType}
-                  onChange={(e) => handleChange('partyType', e.target.value)}
-                >
-                  <MenuItem value="CUSTOMER">Customer (Buyer)</MenuItem>
-                  <MenuItem value="SUPPLIER">Supplier (Vendor)</MenuItem>
-                  <MenuItem value="BOTH">Both (Customer & Supplier)</MenuItem>
-                </TextField>
-              </Grid>
+          <Grid container spacing={2}>
+            <Grid item xs={12} sm={8}>
+              <TextField
+                fullWidth
+                required
+                id="partyName"
+                label="Party Name"
+                placeholder="e.g. ABC Traders, Shri Ganesh Enterprises"
+                value={formData.partyName}
+                onChange={(e) => handleChange('partyName', e.target.value)}
+                onBlur={() => handleBlur('partyName')}
+                error={Boolean(errors.partyName)}
+                helperText={errors.partyName || 'Legal trade name or registered business name'}
+                size="small"
+                disabled={loading}
+                InputProps={{ sx: { borderRadius: 2 } }}
+              />
             </Grid>
-          </CardContent>
-        </Card>
 
-        {/* Section 2: Contact Information */}
-        <Card sx={{ border: 1, borderColor: 'divider', borderRadius: 2 }}>
-          <CardContent sx={{ p: { xs: 2, sm: 3 } }}>
-            <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 2.5 }}>
-              <ContactPhoneOutlinedIcon color="primary" fontSize="small" />
-              <Typography variant="subtitle1" fontWeight={750} color="text.primary">
+            <Grid item xs={12} sm={4}>
+              <TextField
+                select
+                fullWidth
+                required
+                id="partyType"
+                label="Party Type"
+                value={formData.partyType}
+                onChange={(e) => handleChange('partyType', e.target.value)}
+                size="small"
+                disabled={loading}
+                InputProps={{ sx: { borderRadius: 2 } }}
+              >
+                <MenuItem value="CUSTOMER">Customer (Buyer)</MenuItem>
+                <MenuItem value="SUPPLIER">Supplier (Vendor)</MenuItem>
+                <MenuItem value="BOTH">Both (Customer & Supplier)</MenuItem>
+              </TextField>
+            </Grid>
+          </Grid>
+        </Box>
+
+        <Divider />
+
+        {/* SECTION 2: CONTACT INFORMATION */}
+        <Box>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.25, mb: 1.75 }}>
+            <Box
+              sx={{
+                width: 30,
+                height: 30,
+                borderRadius: 1.75,
+                bgcolor: alpha(theme.palette.primary.main, 0.1),
+                color: theme.palette.primary.main,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <ContactPhoneOutlinedIcon sx={{ fontSize: 17 }} />
+            </Box>
+            <Box>
+              <Typography variant="subtitle2" fontWeight={750} color="text.primary">
                 Contact Information
               </Typography>
-            </Stack>
+            </Box>
+          </Box>
 
-            <Grid container spacing={2.5}>
-              <Grid xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  id="contactPerson"
-                  label="Contact Person"
-                  placeholder="e.g. Rahul Patel, Accounts Manager"
-                  value={formData.contactPerson}
-                  onChange={(e) => handleChange('contactPerson', e.target.value)}
-                  onBlur={() => handleBlur('contactPerson')}
-                  error={Boolean(errors.contactPerson)}
-                  helperText={errors.contactPerson}
-                />
-              </Grid>
-
-              <Grid xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  required
-                  id="mobile"
-                  label="Mobile Number"
-                  placeholder="e.g. 9876543210"
-                  value={formData.mobile}
-                  onChange={(e) => handleChange('mobile', e.target.value)}
-                  onBlur={() => handleBlur('mobile')}
-                  error={Boolean(errors.mobile)}
-                  helperText={errors.mobile || '10-digit primary mobile number for billing & SMS'}
-                />
-              </Grid>
-
-              <Grid xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  id="alternateMobile"
-                  label="Alternate Mobile"
-                  placeholder="e.g. 9823456789 (optional)"
-                  value={formData.alternateMobile}
-                  onChange={(e) => handleChange('alternateMobile', e.target.value)}
-                  onBlur={() => handleBlur('alternateMobile')}
-                  error={Boolean(errors.alternateMobile)}
-                  helperText={errors.alternateMobile}
-                />
-              </Grid>
-
-              <Grid xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  id="email"
-                  type="email"
-                  label="Email Address"
-                  placeholder="e.g. accounts@abctraders.com"
-                  value={formData.email}
-                  onChange={(e) => handleChange('email', e.target.value)}
-                  onBlur={() => handleBlur('email')}
-                  error={Boolean(errors.email)}
-                  helperText={errors.email || 'Used for e-invoices and account statements'}
-                />
-              </Grid>
+          <Grid container spacing={2}>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                id="contactPerson"
+                label="Contact Person"
+                placeholder="e.g. Rahul Patel, Accounts Manager"
+                value={formData.contactPerson}
+                onChange={(e) => handleChange('contactPerson', e.target.value)}
+                onBlur={() => handleBlur('contactPerson')}
+                error={Boolean(errors.contactPerson)}
+                helperText={errors.contactPerson}
+                size="small"
+                disabled={loading}
+                InputProps={{ sx: { borderRadius: 2 } }}
+              />
             </Grid>
-          </CardContent>
-        </Card>
 
-        {/* Section 3: Address Information */}
-        <Card sx={{ border: 1, borderColor: 'divider', borderRadius: 2 }}>
-          <CardContent sx={{ p: { xs: 2, sm: 3 } }}>
-            <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 2.5 }}>
-              <PlaceOutlinedIcon color="primary" fontSize="small" />
-              <Typography variant="subtitle1" fontWeight={750} color="text.primary">
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                required
+                id="mobile"
+                label="Mobile Number"
+                placeholder="e.g. 9876543210"
+                value={formData.mobile}
+                onChange={(e) => handleChange('mobile', e.target.value)}
+                onBlur={() => handleBlur('mobile')}
+                error={Boolean(errors.mobile)}
+                helperText={errors.mobile || '10-digit primary mobile for invoices and SMS'}
+                size="small"
+                disabled={loading}
+                InputProps={{ sx: { borderRadius: 2 } }}
+              />
+            </Grid>
+
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                id="alternateMobile"
+                label="Alternate Mobile"
+                placeholder="e.g. 9823456789 (optional)"
+                value={formData.alternateMobile}
+                onChange={(e) => handleChange('alternateMobile', e.target.value)}
+                onBlur={() => handleBlur('alternateMobile')}
+                error={Boolean(errors.alternateMobile)}
+                helperText={errors.alternateMobile}
+                size="small"
+                disabled={loading}
+                InputProps={{ sx: { borderRadius: 2 } }}
+              />
+            </Grid>
+
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                id="email"
+                type="email"
+                label="Email Address"
+                placeholder="e.g. accounts@abctraders.com"
+                value={formData.email}
+                onChange={(e) => handleChange('email', e.target.value)}
+                onBlur={() => handleBlur('email')}
+                error={Boolean(errors.email)}
+                helperText={errors.email || 'Used for e-invoices and billing statements'}
+                size="small"
+                disabled={loading}
+                InputProps={{ sx: { borderRadius: 2 } }}
+              />
+            </Grid>
+          </Grid>
+        </Box>
+
+        <Divider />
+
+        {/* SECTION 3: ADDRESS DETAILS */}
+        <Box>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.25, mb: 1.75 }}>
+            <Box
+              sx={{
+                width: 30,
+                height: 30,
+                borderRadius: 1.75,
+                bgcolor: alpha(theme.palette.primary.main, 0.1),
+                color: theme.palette.primary.main,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <PlaceOutlinedIcon sx={{ fontSize: 17 }} />
+            </Box>
+            <Box>
+              <Typography variant="subtitle2" fontWeight={750} color="text.primary">
                 Address Details
               </Typography>
-            </Stack>
+            </Box>
+          </Box>
 
-            <Grid container spacing={2.5}>
-              <Grid xs={12}>
-                <TextField
-                  fullWidth
-                  id="address"
-                  label="Street Address / Shop No."
-                  placeholder="e.g. Shop 12, Millennium Textile Market, Ring Road"
-                  value={formData.address}
-                  onChange={(e) => handleChange('address', e.target.value)}
-                  onBlur={() => handleBlur('address')}
-                  error={Boolean(errors.address)}
-                  helperText={errors.address}
-                />
-              </Grid>
-
-              <Grid xs={12} sm={4}>
-                <TextField
-                  fullWidth
-                  id="city"
-                  label="City"
-                  placeholder="e.g. Surat"
-                  value={formData.city}
-                  onChange={(e) => handleChange('city', e.target.value)}
-                  onBlur={() => handleBlur('city')}
-                  error={Boolean(errors.city)}
-                  helperText={errors.city}
-                />
-              </Grid>
-
-              <Grid xs={12} sm={4}>
-                <TextField
-                  fullWidth
-                  id="state"
-                  label="State"
-                  placeholder="e.g. Gujarat"
-                  value={formData.state}
-                  onChange={(e) => handleChange('state', e.target.value)}
-                  onBlur={() => handleBlur('state')}
-                  error={Boolean(errors.state)}
-                  helperText={errors.state}
-                />
-              </Grid>
-
-              <Grid xs={12} sm={4}>
-                <TextField
-                  fullWidth
-                  id="pincode"
-                  label="PIN Code"
-                  placeholder="e.g. 395002"
-                  value={formData.pincode}
-                  onChange={(e) => handleChange('pincode', e.target.value)}
-                  onBlur={() => handleBlur('pincode')}
-                  error={Boolean(errors.pincode)}
-                  helperText={errors.pincode}
-                />
-              </Grid>
+          <Grid container spacing={2}>
+            <Grid item xs={12}>
+              <TextField
+                fullWidth
+                id="address"
+                label="Street Address / Shop No."
+                placeholder="e.g. Shop 12, Millennium Textile Market, Ring Road"
+                value={formData.address}
+                onChange={(e) => handleChange('address', e.target.value)}
+                onBlur={() => handleBlur('address')}
+                error={Boolean(errors.address)}
+                helperText={errors.address}
+                size="small"
+                disabled={loading}
+                InputProps={{ sx: { borderRadius: 2 } }}
+              />
             </Grid>
-          </CardContent>
-        </Card>
 
-        {/* Section 4: Financial Information */}
-        <Card sx={{ border: 1, borderColor: 'divider', borderRadius: 2 }}>
-          <CardContent sx={{ p: { xs: 2, sm: 3 } }}>
-            <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 2.5 }}>
-              <AccountBalanceWalletOutlinedIcon color="primary" fontSize="small" />
-              <Typography variant="subtitle1" fontWeight={750} color="text.primary">
-                Financial Information
+            <Grid item xs={12} sm={4}>
+              <TextField
+                fullWidth
+                id="city"
+                label="City"
+                placeholder="e.g. Surat"
+                value={formData.city}
+                onChange={(e) => handleChange('city', e.target.value)}
+                onBlur={() => handleBlur('city')}
+                error={Boolean(errors.city)}
+                helperText={errors.city}
+                size="small"
+                disabled={loading}
+                InputProps={{ sx: { borderRadius: 2 } }}
+              />
+            </Grid>
+
+            <Grid item xs={12} sm={4}>
+              <TextField
+                fullWidth
+                id="state"
+                label="State"
+                placeholder="e.g. Gujarat"
+                value={formData.state}
+                onChange={(e) => handleChange('state', e.target.value)}
+                onBlur={() => handleBlur('state')}
+                error={Boolean(errors.state)}
+                helperText={errors.state}
+                size="small"
+                disabled={loading}
+                InputProps={{ sx: { borderRadius: 2 } }}
+              />
+            </Grid>
+
+            <Grid item xs={12} sm={4}>
+              <TextField
+                fullWidth
+                id="pincode"
+                label="PIN Code"
+                placeholder="e.g. 395002"
+                value={formData.pincode}
+                onChange={(e) => handleChange('pincode', e.target.value)}
+                onBlur={() => handleBlur('pincode')}
+                error={Boolean(errors.pincode)}
+                helperText={errors.pincode}
+                size="small"
+                disabled={loading}
+                InputProps={{ sx: { borderRadius: 2 } }}
+              />
+            </Grid>
+          </Grid>
+        </Box>
+
+        <Divider />
+
+        {/* SECTION 4: FINANCIAL INFORMATION */}
+        <Box>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.25, mb: 1.75 }}>
+            <Box
+              sx={{
+                width: 30,
+                height: 30,
+                borderRadius: 1.75,
+                bgcolor: alpha(theme.palette.primary.main, 0.1),
+                color: theme.palette.primary.main,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <AccountBalanceWalletOutlinedIcon sx={{ fontSize: 17 }} />
+            </Box>
+            <Box>
+              <Typography variant="subtitle2" fontWeight={750} color="text.primary">
+                Financial Settings
               </Typography>
-            </Stack>
+            </Box>
+          </Box>
 
-            <Grid container spacing={2.5}>
-              <Grid xs={12} sm={4}>
-                <TextField
-                  fullWidth
-                  required
-                  id="openingBalance"
-                  type="number"
-                  label="Opening Balance (₹)"
-                  value={formData.openingBalance}
-                  onChange={(e) => handleChange('openingBalance', e.target.value)}
-                  onBlur={() => handleBlur('openingBalance')}
-                  error={Boolean(errors.openingBalance)}
-                  helperText={errors.openingBalance || 'Initial outstanding balance'}
-                  inputProps={{ min: '0', step: '0.01' }}
-                />
-              </Grid>
-
-              <Grid xs={12} sm={4}>
-                <TextField
-                  select
-                  fullWidth
-                  required
-                  id="openingBalanceType"
-                  label="Balance Type"
-                  value={
-                    parseFloat(formData.openingBalance) === 0
-                      ? 'NONE'
-                      : formData.openingBalanceType
-                  }
-                  onChange={(e) => handleChange('openingBalanceType', e.target.value)}
-                  disabled={parseFloat(formData.openingBalance) === 0}
-                  error={Boolean(errors.openingBalanceType)}
-                >
-                  <MenuItem value="NONE">None (₹0.00 Balance)</MenuItem>
-                  <MenuItem value="RECEIVABLE">Receivable (Party owes you money)</MenuItem>
-                  <MenuItem value="PAYABLE">Payable (You owe party money)</MenuItem>
-                </TextField>
-                {errors.openingBalanceType && (
-                  <FormHelperText error>{errors.openingBalanceType}</FormHelperText>
-                )}
-              </Grid>
-
-              <Grid xs={12} sm={4}>
-                <TextField
-                  fullWidth
-                  required
-                  id="creditLimit"
-                  type="number"
-                  label="Credit Limit (₹)"
-                  value={formData.creditLimit}
-                  onChange={(e) => handleChange('creditLimit', e.target.value)}
-                  onBlur={() => handleBlur('creditLimit')}
-                  error={Boolean(errors.creditLimit)}
-                  helperText={errors.creditLimit || 'Maximum credit threshold (0 = No limit)'}
-                  inputProps={{ min: '0', step: '0.01' }}
-                />
-              </Grid>
-
-              {/* Financial guidance alert */}
-              <Grid xs={12}>
-                <Alert severity="info" sx={{ fontSize: '0.8125rem', py: 0.5, borderRadius: 1.5 }}>
-                  <strong>Receivable:</strong> Customer owes money to your business. &nbsp;|&nbsp;{' '}
-                  <strong>Payable:</strong> Your business owes money to this vendor/party.
-                </Alert>
-              </Grid>
+          <Grid container spacing={2}>
+            <Grid item xs={12} sm={4}>
+              <TextField
+                fullWidth
+                required
+                id="openingBalance"
+                type="number"
+                label="Opening Balance"
+                value={formData.openingBalance}
+                onChange={(e) => handleChange('openingBalance', e.target.value)}
+                onBlur={() => handleBlur('openingBalance')}
+                error={Boolean(errors.openingBalance)}
+                helperText={errors.openingBalance || 'Initial opening balance'}
+                inputProps={{ min: '0', step: '0.01' }}
+                size="small"
+                disabled={loading}
+                InputProps={{
+                  sx: { borderRadius: 2 },
+                  startAdornment: <InputAdornment position="start">₹</InputAdornment>,
+                }}
+              />
             </Grid>
-          </CardContent>
-        </Card>
 
-        {/* Section 5: Other & Status */}
-        <Card sx={{ border: 1, borderColor: 'divider', borderRadius: 2 }}>
-          <CardContent sx={{ p: { xs: 2, sm: 3 } }}>
-            <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 2.5 }}>
-              <NotesOutlinedIcon color="primary" fontSize="small" />
-              <Typography variant="subtitle1" fontWeight={750} color="text.primary">
-                Additional Notes & Status
-              </Typography>
-            </Stack>
-
-            <Grid container spacing={2.5}>
-              <Grid xs={12} sm={8}>
-                <TextField
-                  fullWidth
-                  multiline
-                  rows={3}
-                  id="notes"
-                  label="Internal Notes / Terms"
-                  placeholder="e.g. 15 days payment terms, GST exempt, special transport instructions"
-                  value={formData.notes}
-                  onChange={(e) => handleChange('notes', e.target.value)}
-                />
-              </Grid>
-
-              <Grid xs={12} sm={4}>
-                <TextField
-                  select
-                  fullWidth
-                  required
-                  id="status"
-                  label="Operational Status"
-                  value={formData.status}
-                  onChange={(e) => handleChange('status', e.target.value)}
-                >
-                  <MenuItem value="ACTIVE">Active (Enabled for billing)</MenuItem>
-                  <MenuItem value="INACTIVE">Inactive (Disabled / Archived)</MenuItem>
-                </TextField>
-              </Grid>
+            <Grid item xs={12} sm={4}>
+              <TextField
+                select
+                fullWidth
+                required
+                id="openingBalanceType"
+                label="Balance Type"
+                value={
+                  parseFloat(formData.openingBalance) === 0
+                    ? 'NONE'
+                    : formData.openingBalanceType
+                }
+                onChange={(e) => handleChange('openingBalanceType', e.target.value)}
+                disabled={parseFloat(formData.openingBalance) === 0 || loading}
+                error={Boolean(errors.openingBalanceType)}
+                size="small"
+                InputProps={{ sx: { borderRadius: 2 } }}
+              >
+                <MenuItem value="NONE">None (₹0.00 Balance)</MenuItem>
+                <MenuItem value="RECEIVABLE">Receivable (Party owes you)</MenuItem>
+                <MenuItem value="PAYABLE">Payable (You owe party)</MenuItem>
+              </TextField>
+              {errors.openingBalanceType && (
+                <FormHelperText error sx={{ ml: 1.5, mt: 0.5 }}>{errors.openingBalanceType}</FormHelperText>
+              )}
             </Grid>
-          </CardContent>
-        </Card>
 
-        {/* Form Action Buttons */}
-        <Box sx={{ display: 'flex', flexDirection: { xs: 'column-reverse', sm: 'row' }, justifyContent: 'flex-end', gap: 2, pt: 1, pb: 4, '& > button': { width: { xs: '100%', sm: 'auto' } } }}>
+            <Grid item xs={12} sm={4}>
+              <TextField
+                fullWidth
+                id="creditLimit"
+                type="number"
+                label="Credit Limit"
+                placeholder="0.00"
+                value={formData.creditLimit}
+                onChange={(e) => handleChange('creditLimit', e.target.value)}
+                onBlur={() => handleBlur('creditLimit')}
+                error={Boolean(errors.creditLimit)}
+                helperText={errors.creditLimit || '0 means no credit limit'}
+                inputProps={{ min: '0', step: '0.01' }}
+                size="small"
+                disabled={loading}
+                InputProps={{
+                  sx: { borderRadius: 2 },
+                  startAdornment: <InputAdornment position="start">₹</InputAdornment>,
+                }}
+              />
+            </Grid>
+          </Grid>
+        </Box>
+
+
+
+        {/* FORM ACTIONS */}
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: { xs: 'column-reverse', sm: 'row' },
+            justifyContent: 'flex-end',
+            gap: 1.5,
+            pt: 1.5,
+            borderTop: 1,
+            borderColor: 'divider',
+            '& > button': { width: { xs: '100%', sm: 'auto' } },
+          }}
+        >
           <Button
             variant="outlined"
             color="inherit"
             startIcon={<CloseOutlinedIcon />}
             onClick={onCancel}
             disabled={loading}
-            sx={{ px: 3, borderRadius: 1.5, borderColor: 'divider' }}
+            sx={{ borderRadius: 2.5, px: 3, fontWeight: 600 }}
           >
             Cancel
           </Button>
@@ -537,11 +628,11 @@ const PartyForm = ({
             type="submit"
             variant="contained"
             color="primary"
-            startIcon={loading ? <CircularProgress size={18} color="inherit" /> : <SaveOutlinedIcon />}
+            startIcon={loading ? <CircularProgress size={16} color="inherit" /> : <SaveOutlinedIcon />}
             disabled={loading}
-            sx={{ px: 3.5, borderRadius: 1.5 }}
+            sx={{ borderRadius: 2.5, px: 3.5, fontWeight: 700 }}
           >
-            {loading ? 'Saving...' : isEdit ? 'Update Party' : 'Save Party'}
+            {loading ? 'Saving Party...' : isEdit ? 'Update Party' : 'Save Party'}
           </Button>
         </Box>
       </Stack>

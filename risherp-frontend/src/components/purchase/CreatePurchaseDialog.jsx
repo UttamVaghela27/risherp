@@ -249,7 +249,9 @@ const CreatePurchaseDialog = ({ open, onClose, onSuccess }) => {
       scroll="paper"
       PaperProps={{
         sx: {
-          borderRadius: '18px',
+          borderRadius: 4,
+          border: 1,
+          borderColor: 'divider',
           maxHeight: '95vh',
           bgcolor: 'background.default',
           boxShadow: '0 25px 60px -12px rgba(15, 23, 42, 0.25)',

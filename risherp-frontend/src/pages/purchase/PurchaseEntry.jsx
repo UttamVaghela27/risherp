@@ -43,6 +43,7 @@ let cartIdCounter = 1;
  */
 const PurchaseEntry = () => {
   const theme = useTheme();
+  const isDark = theme.palette.mode === 'dark';
   const navigate = useNavigate();
   const saveRef = useRef(false);
 
@@ -587,32 +588,118 @@ const PurchaseEntry = () => {
 
       {/* Success Dialog */}
       {successData && (
-        <Dialog open={true} maxWidth="xs" fullWidth>
-          <DialogTitle sx={{ textAlign: 'center', pt: 3 }}>
-            <CheckCircleOutlinedIcon sx={{ fontSize: 60, color: 'success.main', mb: 1 }} />
-            <Typography variant="h6" fontWeight={700}>
+        <Dialog
+          open={true}
+          maxWidth="xs"
+          fullWidth
+          PaperProps={{
+            sx: {
+              borderRadius: 4,
+              boxShadow: isDark ? '0 24px 48px -12px rgba(0,0,0,0.8)' : '0 24px 48px -12px rgba(15,23,42,0.18)',
+              border: 1,
+              borderColor: 'divider',
+              overflow: 'hidden',
+            },
+          }}
+        >
+          <DialogTitle sx={{ textAlign: 'center', pt: 3.5, pb: 1.5 }}>
+            <Box
+              sx={{
+                width: 56,
+                height: 56,
+                borderRadius: '50%',
+                bgcolor: alpha(theme.palette.success.main, 0.12),
+                color: theme.palette.success.main,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                margin: '0 auto 14px',
+              }}
+            >
+              <CheckCircleOutlinedIcon sx={{ fontSize: 34 }} />
+            </Box>
+            <Typography variant="h6" fontWeight={800} sx={{ color: 'text.primary', lineHeight: 1.25 }}>
               Purchase Saved Successfully
             </Typography>
-            <Typography variant="subtitle1" color="primary.main" fontWeight={800} sx={{ mt: 0.5 }}>
-              {successData.purchaseNumber}
-            </Typography>
+            <Chip
+              label={successData.purchaseNumber}
+              color="primary"
+              size="small"
+              sx={{ mt: 1, fontWeight: 750, fontFamily: 'monospace', borderRadius: '6px' }}
+            />
           </DialogTitle>
-          <DialogContent sx={{ textAlign: 'center', pb: 2 }}>
-            <Typography variant="body2" color="text.secondary">
-              Supplier: <strong>{successData.partyName}</strong>
-            </Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
-              Grand Total: <strong>{formatCurrency(successData.grandTotal)}</strong>
-            </Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
-              Status: <strong>{successData.paymentStatus}</strong>
-            </Typography>
+
+          <DialogContent sx={{ px: { xs: 2.5, sm: 3.5 }, py: 1.5 }}>
+            <Paper
+              variant="outlined"
+              sx={{
+                p: 2,
+                borderRadius: 2.5,
+                bgcolor: isDark ? alpha(theme.palette.background.default, 0.6) : alpha(theme.palette.text.primary, 0.02),
+                border: 1,
+                borderColor: 'divider',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 1.25,
+              }}
+            >
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <Typography variant="caption" color="text.secondary" fontWeight={600}>
+                  Supplier:
+                </Typography>
+                <Typography variant="body2" fontWeight={700} color="text.primary">
+                  {successData.partyName}
+                </Typography>
+              </Box>
+              <Divider />
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <Typography variant="caption" color="text.secondary" fontWeight={600}>
+                  Grand Total:
+                </Typography>
+                <Typography variant="body1" fontWeight={800} color="primary.main">
+                  {formatCurrency(successData.grandTotal)}
+                </Typography>
+              </Box>
+              <Divider />
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <Typography variant="caption" color="text.secondary" fontWeight={600}>
+                  Payment Status:
+                </Typography>
+                <Chip
+                  label={successData.paymentStatus}
+                  size="small"
+                  color={
+                    successData.paymentStatus === 'PAID'
+                      ? 'success'
+                      : successData.paymentStatus === 'PARTIAL'
+                      ? 'warning'
+                      : 'error'
+                  }
+                  sx={{ fontWeight: 700, fontSize: '0.72rem', height: 22, borderRadius: '6px' }}
+                />
+              </Box>
+            </Paper>
           </DialogContent>
-          <DialogActions sx={{ p: 2.5, justifyContent: 'center', gap: 1.5 }}>
+
+          <DialogActions
+            sx={{
+              p: 2.5,
+              px: { xs: 2.5, sm: 3.5 },
+              bgcolor: isDark ? 'rgba(15, 23, 42, 0.3)' : '#f8fafc',
+              borderTop: 1,
+              borderColor: 'divider',
+              display: 'flex',
+              justifyContent: 'center',
+              gap: 1.5,
+              flexDirection: { xs: 'column-reverse', sm: 'row' },
+            }}
+          >
             <Button
               variant="outlined"
+              color="inherit"
               startIcon={<VisibilityOutlinedIcon />}
               onClick={() => navigate(`/purchases/${successData.id}`)}
+              sx={{ borderRadius: 2.5, px: 2.5, fontWeight: 600, width: { xs: '100%', sm: 'auto' } }}
             >
               View Details
             </Button>
@@ -624,6 +711,7 @@ const PurchaseEntry = () => {
                 handleReset();
                 saveRef.current = false;
               }}
+              sx={{ fontWeight: 700, borderRadius: 2.5, px: 3, width: { xs: '100%', sm: 'auto' } }}
             >
               New Purchase
             </Button>

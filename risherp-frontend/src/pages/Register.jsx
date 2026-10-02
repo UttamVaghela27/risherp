@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import {
   Box,
   Card,
@@ -11,7 +11,8 @@ import {
   InputAdornment,
   IconButton,
   CircularProgress,
-  useTheme
+  Tooltip,
+  useTheme,
 } from '@mui/material';
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
 import BusinessIcon from '@mui/icons-material/Business';
@@ -23,11 +24,20 @@ import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import BusinessCenterIcon from '@mui/icons-material/BusinessCenter';
+import DarkModeOutlinedIcon from '@mui/icons-material/DarkModeOutlined';
+import LightModeOutlinedIcon from '@mui/icons-material/LightModeOutlined';
 import { useAuth } from '../context/AuthContext';
+import { ThemeContext } from '../context/ThemeContext';
 import SecurityCodeModal from '../components/common/SecurityCodeModal';
 
+/**
+ * Business Registration Page for RISHERP
+ * Fully supports Dark and Light themes.
+ */
 const Register = () => {
   const theme = useTheme();
+  const isDark = theme.palette.mode === 'dark';
+  const { mode, toggleColorMode } = useContext(ThemeContext);
   const navigate = useNavigate();
   const { register } = useAuth();
 
@@ -114,21 +124,64 @@ const Register = () => {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        background: 'radial-gradient(ellipse at 50% 0%, #eff6ff 0%, #f8fafc 60%, #f1f5f9 100%)',
+        position: 'relative',
+        background: isDark
+          ? 'radial-gradient(ellipse at 50% 0%, #1e293b 0%, #0f172a 60%, #020617 100%)'
+          : 'radial-gradient(ellipse at 50% 0%, #eff6ff 0%, #f8fafc 60%, #f1f5f9 100%)',
         p: { xs: 2, sm: 4 },
+        transition: 'background 0.3s ease',
       }}
     >
+      {/* Top Floating Controls */}
+      <Box
+        sx={{
+          position: 'absolute',
+          top: { xs: 16, sm: 24 },
+          right: { xs: 16, sm: 24 },
+          display: 'flex',
+          alignItems: 'center',
+          gap: 1,
+          zIndex: 10,
+        }}
+      >
+        <Tooltip title={`Switch to ${mode === 'dark' ? 'Light' : 'Dark'} Mode`}>
+          <IconButton
+            onClick={toggleColorMode}
+            size="medium"
+            sx={{
+              bgcolor: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)',
+              border: 1,
+              borderColor: 'divider',
+              color: 'text.primary',
+              backdropFilter: 'blur(8px)',
+              '&:hover': {
+                bgcolor: isDark ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.08)',
+              },
+            }}
+          >
+            {mode === 'dark' ? (
+              <LightModeOutlinedIcon fontSize="small" sx={{ color: '#f59e0b' }} />
+            ) : (
+              <DarkModeOutlinedIcon fontSize="small" sx={{ color: '#64748b' }} />
+            )}
+          </IconButton>
+        </Tooltip>
+      </Box>
+
       <Card
         elevation={0}
         sx={{
           width: '100%',
           maxWidth: 960,
           borderRadius: 4,
-          border: 1, borderColor: 'divider',
+          border: 1,
+          borderColor: 'divider',
           overflow: 'hidden',
           display: 'flex',
           flexDirection: { xs: 'column', md: 'row' },
-          boxShadow: '0 25px 50px -12px rgba(15, 23, 42, 0.08)',
+          boxShadow: isDark
+            ? '0 25px 50px -12px rgba(0, 0, 0, 0.7), 0 0 1px 1px rgba(255, 255, 255, 0.05)'
+            : '0 25px 50px -12px rgba(15, 23, 42, 0.08)',
           bgcolor: 'background.paper',
         }}
       >
@@ -137,11 +190,13 @@ const Register = () => {
           sx={{
             flex: 1,
             background: 'linear-gradient(145deg, #0f172a 0%, #1e293b 100%)',
-            color: theme.palette.background.paper,
+            color: '#ffffff',
             p: { xs: 4, md: 5.5 },
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'space-between',
+            borderRight: { xs: 'none', md: '1px solid rgba(255,255,255,0.08)' },
+            borderBottom: { xs: '1px solid rgba(255,255,255,0.08)', md: 'none' },
           }}
         >
           <Box>
@@ -158,17 +213,17 @@ const Register = () => {
                   boxShadow: '0 4px 12px rgba(37, 99, 235, 0.4)',
                 }}
               >
-                <BusinessCenterIcon sx={{ fontSize: 22, color: theme.palette.background.paper }} />
+                <BusinessCenterIcon sx={{ fontSize: 22, color: '#ffffff' }} />
               </Box>
-              <Typography variant="h5" fontWeight={800} letterSpacing={-0.3} color={theme.palette.background.paper}>
+              <Typography variant="h5" fontWeight={800} letterSpacing={-0.3} sx={{ color: '#ffffff' }}>
                 RISHERP
               </Typography>
             </Box>
 
-            <Typography variant="h5" fontWeight={750} sx={{ mb: 1.5, color: theme.palette.background.default, letterSpacing: -0.3 }}>
-              Enterprise Billing & Management
+            <Typography variant="h5" fontWeight={750} sx={{ mb: 1.5, color: '#f8fafc', letterSpacing: -0.3 }}>
+              Enterprise Billing &amp; Management
             </Typography>
-            <Typography variant="body2" sx={{ color: theme.palette.text.secondary, mb: 4, lineHeight: 1.6, fontSize: '0.875rem' }}>
+            <Typography variant="body2" sx={{ color: '#94a3b8', mb: 4, lineHeight: 1.6, fontSize: '0.875rem' }}>
               Set up your business profile to start managing inventory, high-speed POS billing, supplier ledgers, and real-time financial reporting.
             </Typography>
 
@@ -181,7 +236,7 @@ const Register = () => {
               ].map((text, idx) => (
                 <Box key={idx} sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
                   <CheckCircleIcon sx={{ fontSize: 20, color: '#38bdf8', flexShrink: 0 }} />
-                  <Typography variant="body2" sx={{ color: theme.palette.divider, fontSize: '0.85rem', fontWeight: 500 }}>
+                  <Typography variant="body2" sx={{ color: '#e2e8f0', fontSize: '0.85rem', fontWeight: 500 }}>
                     {text}
                   </Typography>
                 </Box>
@@ -190,9 +245,18 @@ const Register = () => {
           </Box>
 
           <Box sx={{ pt: 4, borderTop: '1px solid rgba(255,255,255,0.1)', mt: 4 }}>
-            <Typography variant="caption" sx={{ color: theme.palette.text.secondary, fontSize: '0.825rem' }}>
+            <Typography variant="caption" sx={{ color: '#94a3b8', fontSize: '0.825rem' }}>
               Already registered?{' '}
-              <Link component={RouterLink} to="/login" sx={{ color: '#38bdf8', fontWeight: 700, textDecoration: 'none', '&:hover': { textDecoration: 'underline' } }}>
+              <Link
+                component={RouterLink}
+                to="/login"
+                sx={{
+                  color: '#38bdf8',
+                  fontWeight: 700,
+                  textDecoration: 'none',
+                  '&:hover': { textDecoration: 'underline', color: '#7dd3fc' },
+                }}
+              >
                 Sign In to RISHERP
               </Link>
             </Typography>
@@ -202,10 +266,10 @@ const Register = () => {
         {/* Right Side: Registration Form */}
         <CardContent sx={{ flex: 1.2, p: { xs: 3.5, md: 5 } }}>
           <Box sx={{ mb: 3 }}>
-            <Typography variant="h5" fontWeight={800} color={theme.palette.text.primary} sx={{ letterSpacing: -0.4 }}>
+            <Typography variant="h5" fontWeight={800} color="text.primary" sx={{ letterSpacing: -0.4 }}>
               Register Organization
             </Typography>
-            <Typography variant="body2" color={theme.palette.text.secondary} sx={{ mt: 0.5 }}>
+            <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
               Create your business account and administrator profile
             </Typography>
           </Box>
@@ -226,7 +290,7 @@ const Register = () => {
                     sx: { borderRadius: 2 },
                     startAdornment: (
                       <InputAdornment position="start">
-                        <BusinessIcon fontSize="small" sx={{ color: theme.palette.text.secondary }} />
+                        <BusinessIcon fontSize="small" sx={{ color: 'text.secondary' }} />
                       </InputAdornment>
                     ),
                   }}
@@ -247,7 +311,7 @@ const Register = () => {
                     sx: { borderRadius: 2 },
                     startAdornment: (
                       <InputAdornment position="start">
-                        <PersonIcon fontSize="small" sx={{ color: theme.palette.text.secondary }} />
+                        <PersonIcon fontSize="small" sx={{ color: 'text.secondary' }} />
                       </InputAdornment>
                     ),
                   }}
@@ -268,7 +332,7 @@ const Register = () => {
                     sx: { borderRadius: 2 },
                     startAdornment: (
                       <InputAdornment position="start">
-                        <PhoneIcon fontSize="small" sx={{ color: theme.palette.text.secondary }} />
+                        <PhoneIcon fontSize="small" sx={{ color: 'text.secondary' }} />
                       </InputAdornment>
                     ),
                   }}
@@ -290,7 +354,7 @@ const Register = () => {
                     sx: { borderRadius: 2 },
                     startAdornment: (
                       <InputAdornment position="start">
-                        <EmailIcon fontSize="small" sx={{ color: theme.palette.text.secondary }} />
+                        <EmailIcon fontSize="small" sx={{ color: 'text.secondary' }} />
                       </InputAdornment>
                     ),
                   }}
@@ -312,7 +376,7 @@ const Register = () => {
                     sx: { borderRadius: 2 },
                     startAdornment: (
                       <InputAdornment position="start">
-                        <LockIcon fontSize="small" sx={{ color: theme.palette.text.secondary }} />
+                        <LockIcon fontSize="small" sx={{ color: 'text.secondary' }} />
                       </InputAdornment>
                     ),
                     endAdornment: (
@@ -321,7 +385,7 @@ const Register = () => {
                           size="small"
                           onClick={() => setShowPassword(!showPassword)}
                           edge="end"
-                          sx={{ color: theme.palette.text.secondary }}
+                          sx={{ color: 'text.secondary' }}
                         >
                           {showPassword ? <VisibilityOff fontSize="small" /> : <Visibility fontSize="small" />}
                         </IconButton>
@@ -346,7 +410,7 @@ const Register = () => {
                     sx: { borderRadius: 2 },
                     startAdornment: (
                       <InputAdornment position="start">
-                        <LockIcon fontSize="small" sx={{ color: theme.palette.text.secondary }} />
+                        <LockIcon fontSize="small" sx={{ color: 'text.secondary' }} />
                       </InputAdornment>
                     ),
                     endAdornment: (
@@ -355,7 +419,7 @@ const Register = () => {
                           size="small"
                           onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                           edge="end"
-                          sx={{ color: theme.palette.text.secondary }}
+                          sx={{ color: 'text.secondary' }}
                         >
                           {showConfirmPassword ? <VisibilityOff fontSize="small" /> : <Visibility fontSize="small" />}
                         </IconButton>

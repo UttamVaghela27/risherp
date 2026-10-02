@@ -19,6 +19,7 @@ import toast from 'react-hot-toast';
 
 export default function ReceiptCreate({ isModal = false, onClose, onSuccess } = {}) {
   const theme = useTheme();
+  const isDark = theme.palette.mode === 'dark';
   const navigate = useNavigate();
 
   // Parties (Customers)
