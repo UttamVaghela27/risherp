@@ -222,7 +222,7 @@ export const DetailRow = ({
         px: 1,
         mx: -1,
         borderRadius: 1.5,
-        borderBottom: divider ? '1px solid #f1f5f9' : 'none',
+        borderBottom: divider ? `1px solid ${theme.palette.divider}` : 'none',
         transition: 'background-color 0.15s ease',
         '&:hover': {
           bgcolor: 'background.default',

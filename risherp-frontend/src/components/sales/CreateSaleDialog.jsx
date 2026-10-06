@@ -24,6 +24,7 @@ import {
   calculateSaleTotals,
   determinePaymentStatus,
 } from '../../utils/saleCalculations';
+import { getDialogPaperSx } from '../../theme/theme';
 
 
 
@@ -246,12 +247,9 @@ const CreateSaleDialog = ({ open, onClose, onSuccess }) => {
       scroll="paper"
       PaperProps={{
         sx: {
-          borderRadius: 4,
-          border: 1,
-          borderColor: 'divider',
+          ...getDialogPaperSx(theme),
           maxHeight: '95vh',
           bgcolor: 'background.default',
-          boxShadow: '0 25px 60px -12px rgba(15, 23, 42, 0.25)',
         },
       }}
     >

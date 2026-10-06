@@ -24,12 +24,9 @@ import ExportButtons from '../../components/reports/ExportButtons';
 
 const ProfitReport = () => {
   const theme = useTheme();
-  const [datePreset, setDatePreset] = useState('THIS_MONTH');
-  const [dateFrom, setDateFrom] = useState(() => {
-    const d = new Date();
-    return new Date(d.getFullYear(), d.getMonth(), 1).toISOString().split('T')[0];
-  });
-  const [dateTo, setDateTo] = useState(() => new Date().toISOString().split('T')[0]);
+  const [datePreset, setDatePreset] = useState('ALL');
+  const [dateFrom, setDateFrom] = useState('');
+  const [dateTo, setDateTo] = useState('');
   const [categoryId, setCategoryId] = useState('');
   const [search, setSearch] = useState('');
 
@@ -83,10 +80,9 @@ const ProfitReport = () => {
   };
 
   const handleResetFilters = () => {
-    setDatePreset('THIS_MONTH');
-    const d = new Date();
-    setDateFrom(new Date(d.getFullYear(), d.getMonth(), 1).toISOString().split('T')[0]);
-    setDateTo(new Date().toISOString().split('T')[0]);
+    setDatePreset('ALL');
+    setDateFrom('');
+    setDateTo('');
     setCategoryId('');
     setSearch('');
   };
@@ -142,35 +138,41 @@ const ProfitReport = () => {
     return `₹ ${parseFloat(val).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
   };
 
+  const grossRevenue = summary?.grossSales ?? summary?.totalRevenue ?? summary?.netSales ?? 0;
+  const cogs = summary?.costOfGoodsSold ?? summary?.totalCost ?? 0;
+  const grossProfit = summary?.grossProfit ?? (Number(grossRevenue) - Number(cogs));
+  const marginPct = summary?.grossMarginPercentage ?? summary?.overallMarginPercentage ?? 0;
+  const totalInvoices = summary?.totalInvoices ?? summary?.invoiceCount ?? 0;
+
   const kpiCards = summary
     ? [
         {
-          title: 'Gross Revenue',
-          value: fmt(summary.totalRevenue),
+          title: 'Gross Sales',
+          value: fmt(grossRevenue),
           icon: <AttachMoneyOutlinedIcon />,
           color: 'primary',
         },
         {
           title: 'COGS (Total Cost)',
-          value: fmt(summary.totalCost),
+          value: fmt(cogs),
           icon: <ShoppingBagOutlinedIcon />,
           color: 'warning',
         },
         {
           title: 'Gross Profit',
-          value: fmt(summary.grossProfit),
+          value: fmt(grossProfit),
           icon: <TrendingUpOutlinedIcon />,
-          color: summary.grossProfit >= 0 ? 'success' : 'error',
+          color: grossProfit >= 0 ? 'success' : 'error',
         },
         {
-          title: 'Overall Margin %',
-          value: `${summary.overallMarginPercentage ?? '0.00'}%`,
+          title: 'Gross Margin %',
+          value: `${marginPct != null ? parseFloat(marginPct).toFixed(2) : '0.00'}%`,
           icon: <PercentOutlinedIcon />,
-          color: summary.overallMarginPercentage >= 0 ? 'success' : 'error',
+          color: marginPct >= 0 ? 'success' : 'error',
         },
         {
           title: 'Total Invoices',
-          value: summary.invoiceCount,
+          value: totalInvoices,
           icon: <AccountBalanceWalletOutlinedIcon />,
           color: 'info',
         },

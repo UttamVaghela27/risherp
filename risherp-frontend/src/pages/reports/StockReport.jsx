@@ -173,35 +173,38 @@ const StockReport = () => {
     return `₹ ${parseFloat(val).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
   };
 
+  const totalStockVal = summary?.totalStockValue ?? summary?.totalValuation ?? 0;
+  const inStockCount = summary?.inStockItems ?? Math.max(0, (summary?.totalItems || 0) - (summary?.lowStockItems || 0) - (summary?.outOfStockItems || 0));
+
   const kpiCards = summary
     ? [
         {
           title: 'Total Items',
-          value: summary.totalItems,
+          value: summary.totalItems ?? 0,
           icon: <LayersOutlinedIcon />,
           color: 'primary',
         },
         {
           title: 'Total Valuation',
-          value: fmt(summary.totalValuation),
+          value: fmt(totalStockVal),
           icon: <AccountBalanceWalletOutlinedIcon />,
           color: 'success',
         },
         {
-          title: 'In Stock Items',
-          value: summary.inStockItems,
+          title: 'Total Stock Qty',
+          value: summary.totalStockQuantity != null ? parseFloat(summary.totalStockQuantity).toLocaleString('en-IN', { maximumFractionDigits: 2 }) : inStockCount,
           icon: <Inventory2OutlinedIcon />,
           color: 'info',
         },
         {
           title: 'Low Stock Items',
-          value: summary.lowStockItems,
+          value: summary.lowStockItems ?? 0,
           icon: <WarningAmberOutlinedIcon />,
           color: 'warning',
         },
         {
           title: 'Out of Stock Items',
-          value: summary.outOfStockItems,
+          value: summary.outOfStockItems ?? 0,
           icon: <ErrorOutlineOutlinedIcon />,
           color: 'error',
         },

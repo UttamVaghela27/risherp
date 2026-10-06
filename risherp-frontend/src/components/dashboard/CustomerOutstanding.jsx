@@ -9,6 +9,7 @@ import {
   ListItem,
   Chip,
   Skeleton,
+  useTheme,
 } from '@mui/material';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import AccountBalanceWalletOutlinedIcon from '@mui/icons-material/AccountBalanceWalletOutlined';
@@ -21,6 +22,7 @@ import CurrencyDisplay from '../common/CurrencyDisplay';
  * Lists top accounts receivable to assist in collection and cash flow monitoring.
  */
 const CustomerOutstanding = ({ customers = [], loading = false }) => {
+  const theme = useTheme();
   const navigate = useNavigate();
 
   if (loading) {
@@ -101,7 +103,7 @@ const CustomerOutstanding = ({ customers = [], loading = false }) => {
                 disableGutters
                 sx={{
                   py: 1.25,
-                  borderBottom: idx < customers.length - 1 ? '1px solid #f1f5f9' : 'none',
+                  borderBottom: idx < customers.length - 1 ? `1px solid ${theme.palette.divider}` : 'none',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'space-between',

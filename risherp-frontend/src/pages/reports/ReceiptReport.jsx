@@ -24,12 +24,9 @@ import ExportButtons from '../../components/reports/ExportButtons';
 const ReceiptReport = () => {
   const navigate = useNavigate();
 
-  const [datePreset, setDatePreset] = useState('THIS_MONTH');
-  const [dateFrom, setDateFrom] = useState(() => {
-    const d = new Date();
-    return new Date(d.getFullYear(), d.getMonth(), 1).toISOString().split('T')[0];
-  });
-  const [dateTo, setDateTo] = useState(() => new Date().toISOString().split('T')[0]);
+  const [datePreset, setDatePreset] = useState('ALL');
+  const [dateFrom, setDateFrom] = useState('');
+  const [dateTo, setDateTo] = useState('');
   const [search, setSearch] = useState('');
   const [partyId, setPartyId] = useState('');
   const [paymentMode, setPaymentMode] = useState('');
@@ -164,25 +161,25 @@ const ReceiptReport = () => {
         },
         {
           title: 'Total Collected',
-          value: fmt(summary.totalCollected),
+          value: fmt(summary.totalAmount ?? summary.totalCollected),
           icon: <AttachMoneyOutlinedIcon />,
           color: 'success',
         },
         {
           title: 'Bank Collections',
-          value: fmt(summary.bankCollected),
+          value: fmt(summary.bankAmount ?? summary.bankCollected),
           icon: <AccountBalanceOutlinedIcon />,
           color: 'info',
         },
         {
           title: 'UPI Collections',
-          value: fmt(summary.upiCollected),
+          value: fmt(summary.upiAmount ?? summary.upiCollected),
           icon: <QrCodeScannerOutlinedIcon />,
           color: 'secondary',
         },
         {
           title: 'Cash Collections',
-          value: fmt(summary.cashCollected),
+          value: fmt(summary.cashAmount ?? summary.cashCollected),
           icon: <PaymentsOutlinedIcon />,
           color: 'warning',
         },

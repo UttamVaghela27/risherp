@@ -1,15 +1,5 @@
 import { useState, useEffect } from 'react';
-import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  IconButton,
-  Typography,
-  Box,
-  useTheme,
-  alpha,
-} from '@mui/material';
-import CloseIcon from '@mui/icons-material/Close';
+import { Dialog, DialogContent, useTheme } from '@mui/material';
 import Inventory2OutlinedIcon from '@mui/icons-material/Inventory2Outlined';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import toast from 'react-hot-toast';
@@ -18,20 +8,11 @@ import ItemForm from './ItemForm';
 import itemService from '../../services/itemService';
 import categoryService from '../../services/categoryService';
 import { DEFAULT_UNITS } from '../../utils/constants';
+import AppDialogTitle from '../common/AppDialogTitle';
+import { getDialogPaperSx } from '../../theme/theme';
 
-/**
- * ItemDialog Component
- * Modern modal dialog for registering or modifying product records in Item Master.
- */
-const ItemDialog = ({
-  open = false,
-  item = null,
-  onClose,
-  onSuccess,
-}) => {
+const ItemDialog = ({ open = false, item = null, onClose, onSuccess }) => {
   const theme = useTheme();
-  const isDark = theme.palette.mode === 'dark';
-
   const [categories, setCategories] = useState([]);
   const [units, setUnits] = useState(DEFAULT_UNITS);
   const [submitting, setSubmitting] = useState(false);
@@ -88,9 +69,7 @@ const ItemDialog = ({
     }
   };
 
-  const dialogTitle = isEdit
-    ? `Edit Item — ${item?.itemName || ''}`
-    : 'Add New Product / Item';
+  const dialogTitle = isEdit ? `Edit Item — ${item?.itemName || ''}` : 'Add New Product / Item';
 
   return (
     <Dialog
@@ -99,79 +78,27 @@ const ItemDialog = ({
       maxWidth="md"
       fullWidth
       scroll="paper"
-      PaperProps={{
-        sx: {
-          borderRadius: 4,
-          border: 1,
-          borderColor: 'divider',
-          maxHeight: '92vh',
-          boxShadow: isDark
-            ? '0 25px 50px -12px rgba(0, 0, 0, 0.8), 0 0 1px 1px rgba(255, 255, 255, 0.08)'
-            : '0 25px 50px -12px rgba(15, 23, 42, 0.16), 0 0 1px 1px rgba(15, 23, 42, 0.05)',
-        },
-      }}
+      PaperProps={{ sx: getDialogPaperSx(theme) }}
     >
-      <DialogTitle
-        sx={{
-          m: 0,
-          px: { xs: 2.5, sm: 3 },
-          py: 2,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          borderBottom: 1,
-          borderColor: 'divider',
-          bgcolor: 'background.paper',
-        }}
-      >
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.75 }}>
-          <Box
-            sx={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              width: 42,
-              height: 42,
-              borderRadius: 2.5,
-              bgcolor: isEdit
-                ? isDark
-                  ? alpha(theme.palette.warning.main, 0.2)
-                  : alpha(theme.palette.warning.main, 0.1)
-                : isDark
-                ? alpha(theme.palette.primary.main, 0.2)
-                : alpha(theme.palette.primary.main, 0.1),
-              color: isEdit ? 'warning.main' : 'primary.main',
-              border: isDark
-                ? `1px solid ${alpha(isEdit ? theme.palette.warning.main : theme.palette.primary.main, 0.3)}`
-                : 'none',
-            }}
-          >
-            {isEdit ? <EditOutlinedIcon sx={{ fontSize: 22 }} /> : <Inventory2OutlinedIcon sx={{ fontSize: 22 }} />}
-          </Box>
-          <Box>
-            <Typography variant="h6" fontWeight={750} color="text.primary" sx={{ lineHeight: 1.2 }}>
-              {dialogTitle}
-            </Typography>
-            <Typography variant="caption" color="text.secondary">
-              {isEdit ? 'Update product pricing, stock, unit, and tax specifications' : 'Register a new SKU with opening stock, rates, and category'}
-            </Typography>
-          </Box>
-        </Box>
+      <AppDialogTitle
+        title={dialogTitle}
+        subtitle={
+          isEdit
+            ? 'Update product pricing, stock, unit, and tax specifications'
+            : 'Register a new SKU with opening stock, rates, and category'
+        }
+        icon={
+          isEdit ? (
+            <EditOutlinedIcon sx={{ fontSize: 22 }} />
+          ) : (
+            <Inventory2OutlinedIcon sx={{ fontSize: 22 }} />
+          )
+        }
+        color={isEdit ? 'warning' : 'primary'}
+        onClose={onClose}
+      />
 
-        <IconButton
-          aria-label="close"
-          onClick={onClose}
-          size="small"
-          sx={{
-            color: 'text.secondary',
-            '&:hover': { bgcolor: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.04)' },
-          }}
-        >
-          <CloseIcon fontSize="small" />
-        </IconButton>
-      </DialogTitle>
-
-      <DialogContent sx={{ p: { xs: 2.5, sm: 3.5 }, bgcolor: 'background.paper' }}>
+      <DialogContent sx={{ pt: 2.5 }}>
         <ItemForm
           initialValues={item}
           isEdit={isEdit}

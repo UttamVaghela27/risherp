@@ -73,10 +73,13 @@ const AppLayout = () => {
 
         {/* Dynamic Outlet Page Content */}
         <Box
+          component="section"
           sx={{
             flex: 1,
-            p: { xs: 2, sm: 3, md: 3.5 },
+            p: { xs: 2, sm: 2.5, md: 3 },
             width: '100%',
+            maxWidth: 1680,
+            mx: 'auto',
           }}
         >
           <Outlet />

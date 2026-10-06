@@ -23,12 +23,9 @@ import ExportButtons from '../../components/reports/ExportButtons';
 const PaymentReport = () => {
   const navigate = useNavigate();
 
-  const [datePreset, setDatePreset] = useState('THIS_MONTH');
-  const [dateFrom, setDateFrom] = useState(() => {
-    const d = new Date();
-    return new Date(d.getFullYear(), d.getMonth(), 1).toISOString().split('T')[0];
-  });
-  const [dateTo, setDateTo] = useState(() => new Date().toISOString().split('T')[0]);
+  const [datePreset, setDatePreset] = useState('ALL');
+  const [dateFrom, setDateFrom] = useState('');
+  const [dateTo, setDateTo] = useState('');
   const [search, setSearch] = useState('');
   const [partyId, setPartyId] = useState('');
   const [paymentMode, setPaymentMode] = useState('');
@@ -163,19 +160,19 @@ const PaymentReport = () => {
         },
         {
           title: 'Total Disbursed',
-          value: fmt(summary.totalDisbursed),
+          value: fmt(summary.totalAmount ?? summary.totalDisbursed),
           icon: <AttachMoneyOutlinedIcon />,
           color: 'error',
         },
         {
           title: 'Bank / Transfer',
-          value: fmt(summary.bankDisbursed),
+          value: fmt(summary.bankAmount ?? summary.bankDisbursed),
           icon: <AccountBalanceOutlinedIcon />,
           color: 'info',
         },
         {
           title: 'Cash Disbursed',
-          value: fmt(summary.cashDisbursed),
+          value: fmt(summary.cashAmount ?? summary.cashDisbursed),
           icon: <MoneyOffOutlinedIcon />,
           color: 'warning',
         },

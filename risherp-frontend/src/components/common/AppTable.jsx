@@ -8,14 +8,10 @@ import {
   TableCell,
   TableBody,
   TablePagination,
-  useTheme
+  useTheme,
+  alpha,
 } from '@mui/material';
 
-/**
- * AppTable
- * A common, theme-aware wrapper for all data tables in the application.
- * Automatically handles dark/light mode styling for borders, backgrounds, and pagination.
- */
 const AppTable = ({
   columns = [],
   children,
@@ -27,20 +23,18 @@ const AppTable = ({
   onRowsPerPageChange,
   minHeight = 340,
   headContent,
-  hidePagination = false
+  hidePagination = false,
 }) => {
   const theme = useTheme();
+
   return (
-    <Card sx={{ 
-      width: '100%', 
-      overflow: 'hidden', 
-      border: `1px solid ${theme.palette.divider}`, 
-      borderRadius: 2,
-      bgcolor: theme.palette.background.paper,
-      boxShadow: theme.palette.mode === 'dark' 
-        ? '0 4px 6px -1px rgba(0, 0, 0, 0.5)' 
-        : '0 1px 3px 0 rgba(0, 0, 0, 0.04)'
-    }}>
+    <Card
+      sx={{
+        width: '100%',
+        overflow: 'hidden',
+        borderRadius: 2,
+      }}
+    >
       <TableContainer sx={{ minHeight, overflowX: 'auto', maxWidth: '100%' }}>
         <Table stickyHeader size="small">
           <TableHead>
@@ -49,17 +43,17 @@ const AppTable = ({
             ) : (
               <TableRow>
                 {columns.map((col, idx) => (
-                  <TableCell 
-                    key={idx} 
-                    align={col.align || 'left'} 
-                    sx={{ 
-                      fontWeight: 700, 
-                      width: col.width, 
+                  <TableCell
+                    key={idx}
+                    align={col.align || 'left'}
+                    sx={{
+                      width: col.width,
                       minWidth: col.minWidth,
-                      bgcolor: theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.05)' : theme.palette.background.default,
-                      color: theme.palette.text.primary,
-                      borderBottom: `1px solid ${theme.palette.divider}`,
-                      whiteSpace: 'nowrap'
+                      whiteSpace: 'nowrap',
+                      bgcolor:
+                        theme.palette.mode === 'dark'
+                          ? alpha(theme.palette.background.default, 0.8)
+                          : '#f8fafc',
                     }}
                   >
                     {col.label}
@@ -68,9 +62,7 @@ const AppTable = ({
               </TableRow>
             )}
           </TableHead>
-          <TableBody>
-            {children}
-          </TableBody>
+          <TableBody>{children}</TableBody>
         </Table>
       </TableContainer>
 
@@ -84,19 +76,16 @@ const AppTable = ({
           onPageChange={onPageChange}
           onRowsPerPageChange={onRowsPerPageChange}
           sx={{
-            borderTop: `1px solid ${theme.palette.divider}`,
-            bgcolor: theme.palette.background.paper,
+            borderTop: 1,
+            borderColor: 'divider',
             '& .MuiTablePagination-toolbar': {
               flexWrap: 'wrap',
               justifyContent: { xs: 'center', sm: 'flex-end' },
-              px: { xs: 1, sm: 2 },
-              py: { xs: 0.5, sm: 0 },
-              minHeight: { xs: 52, sm: 52 },
+              minHeight: 52,
             },
             '& .MuiTablePagination-selectLabel, & .MuiTablePagination-displayedRows': {
-              fontSize: '0.8rem',
+              fontSize: '0.8125rem',
               color: 'text.secondary',
-              m: 0,
             },
           }}
         />

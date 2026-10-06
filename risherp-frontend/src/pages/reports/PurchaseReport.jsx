@@ -32,12 +32,9 @@ const PurchaseReport = () => {
   const [activeTab, setActiveTab] = useState(0);
 
   // Filters State
-  const [datePreset, setDatePreset] = useState('THIS_MONTH');
-  const [dateFrom, setDateFrom] = useState(() => {
-    const d = new Date();
-    return new Date(d.getFullYear(), d.getMonth(), 1).toISOString().split('T')[0];
-  });
-  const [dateTo, setDateTo] = useState(() => new Date().toISOString().split('T')[0]);
+  const [datePreset, setDatePreset] = useState('ALL');
+  const [dateFrom, setDateFrom] = useState('');
+  const [dateTo, setDateTo] = useState('');
   const [search, setSearch] = useState('');
   const [supplierId, setSupplierId] = useState('');
   const [categoryId, setCategoryId] = useState('');
@@ -245,7 +242,7 @@ const PurchaseReport = () => {
         },
         {
           title: 'Total Outstanding',
-          value: fmt(summary.totalOutstanding),
+          value: fmt(summary.totalPayable ?? summary.totalOutstanding),
           icon: <HourglassEmptyOutlinedIcon />,
           color: 'error',
         },

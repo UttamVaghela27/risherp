@@ -9,6 +9,7 @@ import {
   ListItem,
   Chip,
   Skeleton,
+  useTheme,
 } from '@mui/material';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import PendingActionsOutlinedIcon from '@mui/icons-material/PendingActionsOutlined';
@@ -21,6 +22,7 @@ import CurrencyDisplay from '../common/CurrencyDisplay';
  * Lists top accounts payable to track vendor liabilities and cash commitments.
  */
 const SupplierOutstanding = ({ suppliers = [], loading = false }) => {
+  const theme = useTheme();
   const navigate = useNavigate();
 
   if (loading) {
@@ -101,7 +103,7 @@ const SupplierOutstanding = ({ suppliers = [], loading = false }) => {
                 disableGutters
                 sx={{
                   py: 1.25,
-                  borderBottom: idx < suppliers.length - 1 ? '1px solid #f1f5f9' : 'none',
+                  borderBottom: idx < suppliers.length - 1 ? `1px solid ${theme.palette.divider}` : 'none',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'space-between',

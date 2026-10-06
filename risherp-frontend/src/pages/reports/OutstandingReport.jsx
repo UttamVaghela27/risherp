@@ -131,12 +131,12 @@ const OutstandingReport = () => {
       if (activeTab === 0) {
         csvContent += 'Customer Name,Phone,Opening Balance,Total Sales (+),Total Receipts (-),Total Returns (-),Net Outstanding\n';
         customers.forEach((r) => {
-          csvContent += `"${r.partyName}","${r.phone || ''}","${r.openingBalance}","${r.totalSales}","${r.totalReceipts}","${r.totalSalesReturns}","${r.netOutstanding}"\n`;
+          csvContent += `"${r.partyName}","${r.mobile || r.phone || ''}","${r.openingBalance || 0}","${r.totalSales || 0}","${r.totalReceipts || 0}","${r.totalSalesReturns || 0}","${r.outstanding ?? r.netOutstanding ?? 0}"\n`;
         });
       } else {
         csvContent += 'Supplier Name,Phone,Opening Balance,Total Purchases (+),Total Payments (-),Total Returns (-),Net Outstanding\n';
         suppliers.forEach((r) => {
-          csvContent += `"${r.partyName}","${r.phone || ''}","${r.openingBalance}","${r.totalPurchases}","${r.totalPayments}","${r.totalPurchaseReturns}","${r.netOutstanding}"\n`;
+          csvContent += `"${r.partyName}","${r.mobile || r.phone || ''}","${r.openingBalance || 0}","${r.totalPurchases || 0}","${r.totalPayments || 0}","${r.totalPurchaseReturns || 0}","${r.outstanding ?? r.netOutstanding ?? 0}"\n`;
         });
       }
 
@@ -159,38 +159,56 @@ const OutstandingReport = () => {
     return `₹ ${parseFloat(val).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
   };
 
-  const kpiCards = summary
-    ? [
-        {
-          title: 'Customer Receivables',
-          value: fmt(summary.totalCustomerReceivables),
-          icon: <RequestQuoteOutlinedIcon />,
-          color: 'warning',
-        },
-        {
-          title: 'Supplier Payables',
-          value: fmt(summary.totalSupplierPayables),
-          icon: <AccountBalanceWalletOutlinedIcon />,
-          color: 'error',
-        },
-        {
-          title: 'Net Position',
-          value: fmt(summary.netPosition),
-          icon: <TrendingUpOutlinedIcon />,
-          color: summary.netPosition >= 0 ? 'success' : 'error',
-          subtitle: summary.netPosition >= 0 ? 'Net Asset / Surplus' : 'Net Liability / Deficit',
-        },
-      ]
-    : [];
+  const customerListReceivables = customers.reduce((sum, c) => sum + (parseFloat(c.outstanding ?? c.netOutstanding) || 0), 0);
+  const supplierListPayables = suppliers.reduce((sum, s) => sum + (parseFloat(s.outstanding ?? s.netOutstanding) || 0), 0);
+
+  const totalReceivable = summary?.totalReceivable ?? summary?.totalCustomerReceivables ?? (activeTab === 0 && customers.length > 0 ? customerListReceivables : 0);
+  const totalPayable = summary?.totalPayable ?? summary?.totalSupplierPayables ?? (activeTab === 1 && suppliers.length > 0 ? supplierListPayables : 0);
+  const netPosition = summary?.netPosition ?? (Number(totalReceivable) - Number(totalPayable));
+
+  const kpiCards = [
+    {
+      title: 'Customer Receivables',
+      value: fmt(totalReceivable),
+      icon: <RequestQuoteOutlinedIcon />,
+      color: 'warning',
+    },
+    {
+      title: 'Supplier Payables',
+      value: fmt(totalPayable),
+      icon: <AccountBalanceWalletOutlinedIcon />,
+      color: 'error',
+    },
+    {
+      title: 'Net Position',
+      value: fmt(netPosition),
+      icon: <TrendingUpOutlinedIcon />,
+      color: netPosition >= 0 ? 'success' : 'error',
+      subtitle: netPosition >= 0 ? 'Net Asset / Surplus' : 'Net Liability / Deficit',
+    },
+  ];
 
   const customerColumns = [
     { id: 'partyName', label: 'Customer Name', bold: true, minWidth: 160 },
-    { id: 'phone', label: 'Phone', minWidth: 120 },
+    {
+      id: 'mobile',
+      label: 'Phone',
+      minWidth: 120,
+      render: (row) => row.mobile || row.phone || '-',
+    },
     { id: 'openingBalance', label: 'Opening Bal', format: 'currency', align: 'right', minWidth: 110 },
     { id: 'totalSales', label: 'Total Sales (+)', format: 'currency', align: 'right', minWidth: 120 },
     { id: 'totalReceipts', label: 'Receipts (-)', format: 'currency', align: 'right', minWidth: 110 },
     { id: 'totalSalesReturns', label: 'Returns (-)', format: 'currency', align: 'right', minWidth: 110 },
-    { id: 'netOutstanding', label: 'Net Outstanding', format: 'currency', align: 'right', bold: true, minWidth: 130 },
+    {
+      id: 'outstanding',
+      label: 'Net Outstanding',
+      format: 'currency',
+      align: 'right',
+      bold: true,
+      minWidth: 130,
+      render: (row) => fmt(row.outstanding ?? row.netOutstanding ?? 0),
+    },
     {
       id: 'actions',
       label: 'Statement',
@@ -208,12 +226,25 @@ const OutstandingReport = () => {
 
   const supplierColumns = [
     { id: 'partyName', label: 'Supplier Name', bold: true, minWidth: 160 },
-    { id: 'phone', label: 'Phone', minWidth: 120 },
+    {
+      id: 'mobile',
+      label: 'Phone',
+      minWidth: 120,
+      render: (row) => row.mobile || row.phone || '-',
+    },
     { id: 'openingBalance', label: 'Opening Bal', format: 'currency', align: 'right', minWidth: 110 },
     { id: 'totalPurchases', label: 'Total Purchases (+)', format: 'currency', align: 'right', minWidth: 130 },
     { id: 'totalPayments', label: 'Payments (-)', format: 'currency', align: 'right', minWidth: 110 },
     { id: 'totalPurchaseReturns', label: 'Returns (-)', format: 'currency', align: 'right', minWidth: 110 },
-    { id: 'netOutstanding', label: 'Net Outstanding', format: 'currency', align: 'right', bold: true, minWidth: 130 },
+    {
+      id: 'outstanding',
+      label: 'Net Outstanding',
+      format: 'currency',
+      align: 'right',
+      bold: true,
+      minWidth: 130,
+      render: (row) => fmt(row.outstanding ?? row.netOutstanding ?? 0),
+    },
     {
       id: 'actions',
       label: 'Statement',

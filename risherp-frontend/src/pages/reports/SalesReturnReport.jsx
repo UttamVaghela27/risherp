@@ -22,12 +22,9 @@ import ExportButtons from '../../components/reports/ExportButtons';
 const SalesReturnReport = () => {
   const navigate = useNavigate();
 
-  const [datePreset, setDatePreset] = useState('THIS_MONTH');
-  const [dateFrom, setDateFrom] = useState(() => {
-    const d = new Date();
-    return new Date(d.getFullYear(), d.getMonth(), 1).toISOString().split('T')[0];
-  });
-  const [dateTo, setDateTo] = useState(() => new Date().toISOString().split('T')[0]);
+  const [datePreset, setDatePreset] = useState('ALL');
+  const [dateFrom, setDateFrom] = useState('');
+  const [dateTo, setDateTo] = useState('');
   const [search, setSearch] = useState('');
   const [partyId, setPartyId] = useState('');
   const [status, setStatus] = useState('');
@@ -158,19 +155,19 @@ const SalesReturnReport = () => {
         },
         {
           title: 'Total Returned Value',
-          value: fmt(summary.totalAmount),
+          value: fmt(summary.totalReturnAmount ?? summary.totalAmount),
           icon: <AttachMoneyOutlinedIcon />,
           color: 'error',
         },
         {
           title: 'Cash Refunded',
-          value: fmt(summary.refundAmount),
+          value: fmt(summary.totalRefundAmount ?? summary.refundAmount),
           icon: <CurrencyExchangeOutlinedIcon />,
           color: 'warning',
         },
         {
           title: 'Credit Adjusted',
-          value: fmt(summary.adjustedAmount),
+          value: fmt(summary.totalAdjustmentAmount ?? summary.adjustedAmount),
           icon: <TuneOutlinedIcon />,
           color: 'info',
         },

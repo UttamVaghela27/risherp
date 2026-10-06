@@ -1,7 +1,7 @@
-import { Toaster } from 'react-hot-toast';
 import { AuthProvider } from './context/AuthContext';
 import AppRoutes from './routes/AppRoutes';
 import { CustomThemeProvider } from './context/ThemeContext';
+import ThemedToaster from './components/common/ThemedToaster';
 
 /**
  * App — Root Component
@@ -18,31 +18,7 @@ function App() {
     <CustomThemeProvider>
       <AuthProvider>
         <AppRoutes />
-        <Toaster
-          position="top-right"
-          toastOptions={{
-            duration: 3000,
-            style: {
-              borderRadius: '8px',
-              background: '#333',
-              color: '#fff',
-              fontSize: '0.875rem',
-              padding: '12px 16px',
-            },
-            success: {
-              iconTheme: {
-                primary: '#2e7d32',
-                secondary: '#fff',
-              },
-            },
-            error: {
-              iconTheme: {
-                primary: '#d32f2f',
-                secondary: '#fff',
-              },
-            },
-          }}
-        />
+        <ThemedToaster />
       </AuthProvider>
     </CustomThemeProvider>
   );

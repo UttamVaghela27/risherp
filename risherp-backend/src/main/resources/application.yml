@@ -8,9 +8,9 @@ spring:
     name: risherp-backend
 
   datasource:
-    url: jdbc:mysql://${DB_HOST}:${DB_PORT}/${DB_NAME}?sslMode=REQUIRED&serverTimezone=Asia/Kolkata
-    username: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
+    url: jdbc:mysql://${DB_HOST:mysql-2eb4a9f3-vaghelauttam81-9c5b.f.aivencloud.com}:${DB_PORT:27985}/${DB_NAME:defaultdb}?sslMode=REQUIRED&serverTimezone=Asia/Kolkata
+    username: ${DB_USERNAME:avnadmin}
+    password: ${DB_PASSWORD:AVNS_oLAusE8gqRtIJ50T2L4}
     driver-class-name: com.mysql.cj.jdbc.Driver
 
     hikari:
@@ -48,7 +48,7 @@ app:
   cors:
     allowed-origins: ${CORS_ORIGINS:http://localhost:5173}
   jwt:
-    secret: ${JWT_SECRET}
+    secret: ${JWT_SECRET:404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970}
     expiration-ms: ${JWT_EXPIRATION_MS:86400000}
 
 management:

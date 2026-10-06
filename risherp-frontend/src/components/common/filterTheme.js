@@ -1,6 +1,5 @@
 /**
  * Centralized Filter Theme & Constants for RISHERP
- * Single source of truth for all filter drawer dimensions, colors, tokens, and presets.
  */
 
 export const FILTER_DRAWER_WIDTH = 580;
@@ -23,9 +22,6 @@ export const QUICK_DATE_PRESETS = [
   { label: 'All Dates', value: 'ALL' },
 ];
 
-/**
- * Calculates start (from) and end (to) date strings (YYYY-MM-DD) for a given preset
- */
 export const calculatePresetRange = (preset) => {
   const today = new Date();
   const formatDate = (d) => {
@@ -48,7 +44,7 @@ export const calculatePresetRange = (preset) => {
     to = formatDate(yest);
   } else if (preset === 'THIS_WEEK') {
     const day = today.getDay();
-    const diff = today.getDate() - day + (day === 0 ? -6 : 1); // Monday start
+    const diff = today.getDate() - day + (day === 0 ? -6 : 1);
     const monday = new Date(today);
     monday.setDate(diff);
     from = formatDate(monday);
@@ -61,62 +57,36 @@ export const calculatePresetRange = (preset) => {
     const firstDay = new Date(today.getFullYear(), 0, 1);
     from = formatDate(firstDay);
     to = formatDate(new Date());
-  } else if (preset === 'ALL') {
-    from = '';
-    to = '';
   }
 
   return { from, to };
 };
 
-/**
- * Centralized SX styling for filter controls (TextFields, Selects, Inputs)
- * Deeply integrates with RISHERP dark and light mode palette.
- */
-export const getStandardControlSx = (theme) => {
-  const isDark = theme.palette.mode === 'dark';
-  return {
-    '& .MuiOutlinedInput-root': {
-      height: '42px',
-      borderRadius: '8px',
-      bgcolor: isDark ? '#0f172a !important' : '#ffffff !important',
-      color: isDark ? '#f8fafc !important' : '#0f172a !important',
-      fontSize: '0.875rem',
-      transition: 'all 0.15s ease',
-      '& fieldset': {
-        borderColor: isDark ? '#334155 !important' : '#cbd5e1 !important',
-      },
-      '&:hover fieldset': {
-        borderColor: isDark ? '#60a5fa !important' : '#3b82f6 !important',
-      },
-      '&.Mui-focused fieldset': {
-        borderColor: '#3b82f6 !important',
-        borderWidth: '1.5px !important',
-      },
-      '& input': {
-        color: isDark ? '#f8fafc !important' : '#0f172a !important',
-        '&::placeholder': {
-          color: isDark ? '#64748b !important' : '#94a3b8 !important',
-          opacity: 1,
-        },
-      },
+export const getStandardControlSx = (theme) => ({
+  '& .MuiOutlinedInput-root': {
+    minHeight: 40,
+    borderRadius: 1,
+    bgcolor: 'background.paper',
+    fontSize: '0.875rem',
+    '& fieldset': {
+      borderColor: 'divider',
     },
-    '& .MuiInputLabel-root': {
-      color: isDark ? '#94a3b8 !important' : '#475569 !important',
-      fontSize: '0.875rem',
-      '&.Mui-focused': {
-        color: '#3b82f6 !important',
-      },
+    '&:hover fieldset': {
+      borderColor: 'primary.light',
     },
-    '& .MuiSelect-select': {
-      color: isDark ? '#f8fafc !important' : '#0f172a !important',
+    '&.Mui-focused fieldset': {
+      borderColor: 'primary.main',
+      borderWidth: '1.5px',
     },
-    '& .MuiSvgIcon-root': {
-      color: isDark ? '#94a3b8 !important' : '#64748b !important',
+  },
+  '& .MuiInputLabel-root': {
+    fontSize: '0.875rem',
+    '&.Mui-focused': {
+      color: 'primary.main',
     },
-    '& input[type="date"]::-webkit-calendar-picker-indicator': {
-      filter: isDark ? 'invert(1)' : 'none',
-      cursor: 'pointer',
-    },
-  };
-};
+  },
+  '& input[type="date"]::-webkit-calendar-picker-indicator': {
+    filter: theme.palette.mode === 'dark' ? 'invert(1)' : 'none',
+    cursor: 'pointer',
+  },
+});

@@ -1,7 +1,7 @@
-/* RISHERP — Modern Executive Global Stylesheet */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap');
+/* RISHERP — Professional ERP Global Stylesheet */
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,300;0,14..32,400;0,14..32,500;0,14..32,600;0,14..32,700;0,14..32,800;1,14..32,400&family=JetBrains+Mono:wght@500;600&display=swap');
 
-/* Reset defaults */
+/* ── Reset ───────────────────────────────────────────────────────────────── */
 *,
 *::before,
 *::after {
@@ -10,76 +10,45 @@
   box-sizing: border-box;
 }
 
-/* ==========================================================================
-   Centralized Filter UI Design Tokens (Light & Dark Mode)
-   ========================================================================== */
-:root {
-  --filter-drawer-width: 580px;
-  --filter-drawer-bg: #ffffff;
-  --filter-drawer-surface: #f8fafc;
-  --filter-border: #e2e8f0;
-  --filter-input-bg: #ffffff;
-  --filter-input-border: #cbd5e1;
-  --filter-input-text: #0f172a;
-  --filter-placeholder: #94a3b8;
-  --filter-label: #475569;
-  --filter-primary: #3b82f6;
-  --filter-danger: #ef4444;
-  --filter-hover: rgba(0, 0, 0, 0.04);
-  --filter-overlay: rgba(15, 23, 42, 0.45);
-}
-
-[data-theme='dark'],
-body.dark {
-  --filter-drawer-width: 580px;
-  --filter-drawer-bg: #1e293b;
-  --filter-drawer-surface: #0f172a;
-  --filter-border: #334155;
-  --filter-input-bg: #0f172a;
-  --filter-input-border: #475569;
-  --filter-input-text: #f8fafc;
-  --filter-placeholder: #64748b;
-  --filter-label: #94a3b8;
-  --filter-primary: #3b82f6;
-  --filter-danger: #ef4444;
-  --filter-hover: rgba(255, 255, 255, 0.05);
-  --filter-overlay: rgba(0, 0, 0, 0.65);
-}
-
+/* ── Base ────────────────────────────────────────────────────────────────── */
 html {
   scroll-behavior: smooth;
   -webkit-text-size-adjust: 100%;
+  font-size: 16px;
 }
 
 body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: #f8fafc;
+  background-color: #f0f4f8;
   color: #0f172a;
   line-height: 1.5;
   overflow-x: hidden;
 }
 
-/* Remove default link styling */
 a {
   text-decoration: none;
   color: inherit;
 }
 
-/* Tabular figures for numbers, invoices, currencies, and quantities */
+/* ── Typography utilities ────────────────────────────────────────────────── */
 .tabular-nums,
 table td,
-.currency-amount {
+.currency-amount,
+.numeric {
   font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
 }
 
-/* Code & Reference Badges */
-code, .font-mono {
-  font-family: 'JetBrains Mono', monospace;
+code,
+.font-mono,
+.ref-code {
+  font-family: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
+  font-size: 0.875em;
 }
 
-/* Ultra-Sleek Custom Scrollbars */
+/* ── Scrollbar ───────────────────────────────────────────────────────────── */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -92,37 +61,31 @@ code, .font-mono {
 ::-webkit-scrollbar-thumb {
   background: #cbd5e1;
   border-radius: 9999px;
-  transition: background 0.2s ease;
 }
 
 ::-webkit-scrollbar-thumb:hover {
   background: #94a3b8;
 }
 
-/* Remove number input spinners */
+/* Dark mode scrollbar */
+.dark ::-webkit-scrollbar-thumb,
+[data-theme='dark'] ::-webkit-scrollbar-thumb {
+  background: #2d4a6a;
+}
+
+/* ── Form inputs ─────────────────────────────────────────────────────────── */
+/* Remove number spinners */
 input[type='number']::-webkit-inner-spin-button,
 input[type='number']::-webkit-outer-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
-
 input[type='number'] {
   -moz-appearance: textfield;
 }
 
-/* Smooth transitions for interactive elements */
-button,
-a,
-input,
-select,
-textarea {
-  transition: color 0.15s ease, background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
-}
-
-/* ==========================================================================
-   Date & Time Input Label Positioning Fix
-   Prevents floating labels from overlapping the browser's native dd-mm-yyyy placeholder
-   ========================================================================== */
+/* ── Date/Time Input Fix ─────────────────────────────────────────────────── */
+/* Keeps MUI label floated for date inputs that always show placeholder text */
 .MuiInputLabel-root:has(+ .MuiInputBase-root input[type='date']),
 .MuiInputLabel-root:has(+ .MuiInputBase-root input[type='time']),
 .MuiInputLabel-root:has(+ .MuiInputBase-root input[type='datetime-local']),
@@ -135,19 +98,17 @@ textarea {
   z-index: 2;
 }
 
-/* Ensure legend notch opens on outlined input for date/time */
 .MuiOutlinedInput-root:has(input[type='date']) .MuiOutlinedInput-notchedOutline legend,
 .MuiOutlinedInput-root:has(input[type='time']) .MuiOutlinedInput-notchedOutline legend,
 .MuiOutlinedInput-root:has(input[type='datetime-local']) .MuiOutlinedInput-notchedOutline legend {
   max-width: 100% !important;
 }
 
-/* Clean up native date input typography and picker icon */
 input[type='date'],
 input[type='time'],
 input[type='datetime-local'] {
   font-family: inherit;
-  font-size: 0.8125rem;
+  font-size: 0.875rem;
   color: inherit;
   min-height: 1.4375em;
 }
@@ -156,25 +117,93 @@ input[type='date']::-webkit-calendar-picker-indicator,
 input[type='time']::-webkit-calendar-picker-indicator,
 input[type='datetime-local']::-webkit-calendar-picker-indicator {
   cursor: pointer;
-  opacity: 0.55;
+  opacity: 0.5;
   transition: opacity 0.15s ease;
 }
 
 input[type='date']::-webkit-calendar-picker-indicator:hover,
 input[type='time']::-webkit-calendar-picker-indicator:hover,
 input[type='datetime-local']::-webkit-calendar-picker-indicator:hover {
-  opacity: 1;
+  opacity: 0.9;
 }
 
-/* Print styles */
+/* ── Transition helpers ──────────────────────────────────────────────────── */
+button,
+a,
+input,
+select,
+textarea {
+  transition: color 0.15s ease, background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+/* ── Filter drawer design tokens ─────────────────────────────────────────── */
+:root {
+  --filter-drawer-width: 560px;
+  --filter-drawer-bg: #ffffff;
+  --filter-drawer-surface: #f8fafc;
+  --filter-border: #e2e8f0;
+  --filter-input-bg: #ffffff;
+  --filter-input-border: #cbd5e1;
+  --filter-input-text: #0f172a;
+  --filter-placeholder: #94a3b8;
+  --filter-label: #475569;
+  --filter-primary: #1a56db;
+  --filter-danger: #dc2626;
+  --filter-hover: rgba(0, 0, 0, 0.04);
+  --filter-overlay: rgba(15, 23, 42, 0.45);
+}
+
+[data-theme='dark'],
+body.dark {
+  --filter-drawer-width: 560px;
+  --filter-drawer-bg: #152032;
+  --filter-drawer-surface: #0c1929;
+  --filter-border: #1e3a5f;
+  --filter-input-bg: rgba(12, 25, 41, 0.6);
+  --filter-input-border: #2d4a6a;
+  --filter-input-text: #e2e8f0;
+  --filter-placeholder: #64748b;
+  --filter-label: #94a3b8;
+  --filter-primary: #3b82f6;
+  --filter-danger: #ef4444;
+  --filter-hover: rgba(255, 255, 255, 0.05);
+  --filter-overlay: rgba(0, 0, 0, 0.65);
+}
+
+/* ── Page layout spacing ─────────────────────────────────────────────────── */
+.page-container {
+  padding: 24px;
+  max-width: 1400px;
+}
+
+@media (max-width: 600px) {
+  .page-container {
+    padding: 16px;
+  }
+}
+
+/* ── Table refinements ───────────────────────────────────────────────────── */
+.MuiTable-root {
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+/* ── Focus ring ──────────────────────────────────────────────────────────── */
+:focus-visible {
+  outline: 2px solid #1a56db;
+  outline-offset: 2px;
+}
+
+/* ── Print styles ────────────────────────────────────────────────────────── */
 @media print {
   body {
     background: #fff !important;
     margin: 0 !important;
     padding: 0 !important;
+    color: #000 !important;
   }
 
-  /* Hide complete ERP navigation chrome */
+  /* Hide navigation chrome */
   header,
   nav,
   aside,
@@ -212,6 +241,6 @@ input[type='datetime-local']::-webkit-calendar-picker-indicator:hover {
 
   @page {
     size: A4;
-    margin: 10mm;
+    margin: 10mm 12mm;
   }
 }

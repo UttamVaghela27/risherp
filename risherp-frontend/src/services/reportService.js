@@ -159,6 +159,13 @@ const reportService = {
     return response.data;
   },
 
+  downloadOutstandingReportPdf: async ({ type, ...params } = {}) => {
+    if (type === 'SUPPLIER') {
+      return reportService.downloadSupplierOutstandingPdf(params);
+    }
+    return reportService.downloadCustomerOutstandingPdf(params);
+  },
+
   // =========================================================================
   // 6. RECEIPT REPORTS
   // =========================================================================

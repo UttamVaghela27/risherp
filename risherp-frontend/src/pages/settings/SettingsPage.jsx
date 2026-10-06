@@ -1,12 +1,6 @@
 import { useState, useEffect } from 'react';
-import {
-  Box,
-  Typography,
-  Tabs,
-  Tab,
-  Paper,
-  Container,
-} from '@mui/material';
+import { Box, Tabs, Tab, Paper } from '@mui/material';
+import PageHeader from '../../components/common/PageHeader';
 import BusinessIcon from '@mui/icons-material/Business';
 import ReceiptLongIcon from '@mui/icons-material/ReceiptLong';
 import NumbersIcon from '@mui/icons-material/Numbers';
@@ -122,18 +116,12 @@ const SettingsPage = () => {
 
   return (
     <Box sx={{ width: '100%' }}>
-      {/* Header */}
-      <Box sx={{ mb: 3 }}>
-        <Typography variant="h5" fontWeight={800} color="text.primary">
-          Settings & Administration
-        </Typography>
-        <Typography variant="body2" color="text.secondary">
-          Manage business credentials, invoice numbering, system backups, and application behavior.
-        </Typography>
-      </Box>
+      <PageHeader
+        title="Settings & Administration"
+        description="Manage business credentials, invoice numbering, system backups, and application behavior."
+      />
 
-      {/* Navigation Tabs */}
-      <Paper variant="outlined" sx={{ mb: 3, borderRadius: '16px', border: 1, borderColor: 'divider', boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.04)', bgcolor: 'background.paper', overflow: 'hidden' }}>
+      <Paper variant="outlined" sx={{ mb: 3, borderRadius: 2, overflow: 'hidden' }}>
         <Tabs
           value={activeTabIdx >= 0 ? activeTabIdx : 0}
           onChange={handleTabChange}

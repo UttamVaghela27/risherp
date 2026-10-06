@@ -100,7 +100,7 @@ const LowStockItems = ({ items = [], loading = false }) => {
                   disableGutters
                   sx={{
                     py: 1.25,
-                    borderBottom: idx < items.length - 1 ? '1px solid #f1f5f9' : 'none',
+                    borderBottom: idx < items.length - 1 ? `1px solid ${theme.palette.divider}` : 'none',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'space-between',
