@@ -8,9 +8,9 @@ spring:
     name: risherp-backend
 
   datasource:
-    url: jdbc:mysql://${DB_HOST:mysql-2eb4a9f3-vaghelauttam81-9c5b.f.aivencloud.com}:${DB_PORT:27985}/${DB_NAME:defaultdb}?sslMode=REQUIRED&serverTimezone=Asia/Kolkata
-    username: ${DB_USERNAME:avnadmin}
-    password: ${DB_PASSWORD:AVNS_oLAusE8gqRtIJ50T2L4}
+    url: jdbc:mysql://localhost:3306/risherp_db
+    username: root
+    password: root
     driver-class-name: com.mysql.cj.jdbc.Driver
 
     hikari:
