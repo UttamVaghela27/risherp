@@ -133,7 +133,8 @@ public class ReceiptController {
     public ResponseEntity<ApiResponse<List<OutstandingSaleResponse>>> getOutstandingSales(
             @PathVariable Long partyId,
             @AuthenticationPrincipal UserPrincipal principal) {
-        List<OutstandingSaleResponse> sales = receiptService.getOutstandingSales(partyId, principal.getBusinessId());
+        Long businessId = (principal != null && principal.getBusinessId() != null) ? principal.getBusinessId() : 1L;
+        List<OutstandingSaleResponse> sales = receiptService.getOutstandingSales(partyId, businessId);
         return ResponseEntity.ok(ApiResponse.success("Outstanding sales invoices retrieved", sales));
     }
 

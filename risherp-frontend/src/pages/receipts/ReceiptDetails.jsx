@@ -150,7 +150,7 @@ export default function ReceiptDetails() {
 
   return (
     <Box>
-      <Box className="no-print" sx={{ p: 0 }}>
+      <Box className="no-print" sx={{ p: { xs: 2, sm: 3 } }}>
         {/* Header */}
       <PageHeader
         title={
@@ -185,7 +185,7 @@ export default function ReceiptDetails() {
               <IconButton
                 onClick={handlePrint}
                 sx={{
-                  border: '1px solid #cbd5e1',
+                  border: `1px solid ${theme.palette.divider}`,
                   bgcolor: 'background.paper',
                   borderRadius: 2,
                   p: '8px',
@@ -331,9 +331,9 @@ export default function ReceiptDetails() {
                   sx={{
                     fontFamily: 'monospace',
                     fontWeight: 700,
-                    bgcolor: '#eef2ff',
-                    color: '#4338ca',
-                    border: '1px solid #c7d2fe',
+                    bgcolor: alpha(theme.palette.secondary.main, 0.1),
+                    color: theme.palette.secondary.dark,
+                    border: `1px solid ${alpha(theme.palette.secondary.main, 0.3)}`,
                   }}
                 />
               )
@@ -390,7 +390,7 @@ export default function ReceiptDetails() {
           sx={{
             px: 2.5,
             py: 2,
-            bgcolor: '#fafbfc',
+            bgcolor: 'background.default',
             borderBottom: 1, borderColor: 'divider',
             display: 'flex',
             alignItems: 'center',
@@ -485,7 +485,7 @@ export default function ReceiptDetails() {
       </Card>
 
       {/* Financial Breakdown & Notes */}
-      <Grid container spacing={2.5}>
+      <Grid container spacing={2.5} sx={{ mb: 3 }}>
         <Grid size={{ xs: 12, md: 7 }}>
           <DetailCard
             title="Notes & Remarks"
@@ -539,14 +539,14 @@ export default function ReceiptDetails() {
                 }}
               >
                 <Box>
-                  <Typography variant="caption" sx={{ color: '#065f46', fontWeight: 700, textTransform: 'uppercase' }}>
+                  <Typography variant="caption" sx={{ color: theme.palette.success.dark, fontWeight: 700, textTransform: 'uppercase' }}>
                     Total Amount Received
                   </Typography>
-                  <Typography variant="body2" sx={{ color: '#047857', fontSize: '0.75rem' }}>
+                  <Typography variant="body2" sx={{ color: theme.palette.success.dark, fontSize: '0.75rem' }}>
                     Cash / Bank Inflow
                   </Typography>
                 </Box>
-                <Typography variant="h5" sx={{ fontWeight: 800, color: '#047857', letterSpacing: '-0.02em' }}>
+                <Typography variant="h5" sx={{ fontWeight: 800, color: theme.palette.success.dark, letterSpacing: '-0.02em' }}>
                   {formatCurrency(totalAmount)}
                 </Typography>
               </Box>

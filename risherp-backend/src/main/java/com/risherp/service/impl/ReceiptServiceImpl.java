@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -291,16 +292,28 @@ public class ReceiptServiceImpl implements ReceiptService {
     @Override
     @Transactional(readOnly = true)
     public List<OutstandingSaleResponse> getOutstandingSales(Long partyId, Long businessId) {
-        List<Sale> sales = saleRepository.findOutstandingSalesByPartyId(businessId, partyId);
-        return sales.stream().map(s -> OutstandingSaleResponse.builder()
-                .saleId(s.getId())
-                .invoiceNumber(s.getInvoiceNumber())
-                .saleDate(s.getSaleDate())
-                .grandTotal(s.getGrandTotal())
-                .paidAmount(s.getPaidAmount())
-                .balanceAmount(s.getBalanceAmount())
-                .paymentStatus(s.getPaymentStatus())
-                .build()).collect(Collectors.toList());
+        if (partyId == null) {
+            return Collections.emptyList();
+        }
+        Long bizId = businessId != null ? businessId : 1L;
+        try {
+            List<Sale> sales = saleRepository.findOutstandingSalesByPartyId(bizId, partyId);
+            if (sales == null) {
+                return Collections.emptyList();
+            }
+            return sales.stream().map(s -> OutstandingSaleResponse.builder()
+                    .saleId(s.getId())
+                    .invoiceNumber(s.getInvoiceNumber())
+                    .saleDate(s.getSaleDate())
+                    .grandTotal(s.getGrandTotal())
+                    .paidAmount(s.getPaidAmount())
+                    .balanceAmount(s.getBalanceAmount())
+                    .paymentStatus(s.getPaymentStatus())
+                    .build()).collect(Collectors.toList());
+        } catch (Exception ex) {
+            log.error("Error fetching outstanding sales for party {}: {}", partyId, ex.getMessage());
+            return Collections.emptyList();
+        }
     }
 
     // =========================================================================

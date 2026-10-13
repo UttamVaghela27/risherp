@@ -13,6 +13,9 @@ import DoneAllIcon from '@mui/icons-material/DoneAll';
 
 
 
+import PageHeader from '../../components/common/PageHeader';
+import StatusChip from '../../components/common/StatusChip';
+import { receiptService } from '../../services/receiptService';
 import partyService from '../../services/partyService';
 import { formatCurrency, formatDate } from '../../utils/formatters';
 import toast from 'react-hot-toast';
@@ -69,9 +72,11 @@ export default function ReceiptCreate({ isModal = false, onClose, onSuccess } = 
     setLoadingSales(true);
     try {
       const res = await receiptService.getOutstandingSales(partyId);
-      setOutstandingSales(res.data || res || []);
-    } catch {
-      toast.error('Failed to load customer outstanding invoices');
+      const list = res?.data || res || [];
+      setOutstandingSales(Array.isArray(list) ? list : []);
+    } catch (err) {
+      console.warn('Could not load customer outstanding invoices:', err);
+      setOutstandingSales([]);
     } finally {
       setLoadingSales(false);
     }

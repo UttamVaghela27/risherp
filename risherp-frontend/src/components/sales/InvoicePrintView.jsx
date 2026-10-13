@@ -1,8 +1,9 @@
-import { Box, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
+import { Box, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, useTheme } from '@mui/material';
 import { formatCurrency, formatQuantity } from '../../utils/formatters';
 
 const InvoicePrintView = ({ invoice }) => {
   if (!invoice) return null;
+  const theme = useTheme();
 
   const companyName = invoice.businessName || 'ABC Enterprise';
   const companyMobile = invoice.businessMobile || '';
@@ -17,7 +18,7 @@ const InvoicePrintView = ({ invoice }) => {
         maxWidth: 800,
         mx: 'auto',
         bgcolor: 'background.paper',
-        color: '#000000',
+        color: theme.palette.text.primary,
         '@media print': { p: 0, m: 0, maxWidth: '100% !important', width: '100% !important' },
       }}
     >
@@ -28,16 +29,16 @@ const InvoicePrintView = ({ invoice }) => {
           <Typography variant="subtitle2" sx={{ color: '#1e3a8a', fontWeight: 600, textTransform: 'uppercase', mb: 0.5, fontSize: '0.9rem' }}>
             TAX INVOICE / BILL
           </Typography>
-          <Typography variant="body2" sx={{ color: '#666', fontSize: '0.8rem' }}>
+          <Typography variant="body2" sx={{ color: theme.palette.text.secondary, fontSize: '0.8rem' }}>
             Phone: {companyMobile} | Email: {companyEmail}
           </Typography>
         </Box>
         <Box sx={{ textAlign: { xs: 'left', sm: 'right' } }}>
           <Typography variant="h5" sx={{ fontWeight: 700, color: '#1e3a8a', mb: 1 }}>{invoice.invoiceNumber}</Typography>
-          <Typography variant="body2" sx={{ color: '#000', mb: 0.25, fontSize: '0.85rem' }}>
+          <Typography variant="body2" sx={{ color: theme.palette.text.primary, mb: 0.25, fontSize: '0.85rem' }}>
             Date: {invoice.invoiceDate || '—'}
           </Typography>
-          <Typography variant="body2" sx={{ color: '#000', mb: 0.25, fontSize: '0.85rem' }}>
+          <Typography variant="body2" sx={{ color: theme.palette.text.primary, mb: 0.25, fontSize: '0.85rem' }}>
             Type: {invoice.invoiceType || 'CASH'}
           </Typography>
           <Typography variant="body2" sx={{ color: '#047857', fontWeight: 700, fontSize: '0.85rem' }}>
@@ -47,16 +48,16 @@ const InvoicePrintView = ({ invoice }) => {
       </Box>
 
       {/* Customer Block */}
-      <Box sx={{ bgcolor: '#f0f4f8', p: 1.5, mb: 3, mt: 1, borderTop: '1px solid #d1d5db', borderRadius: '6px' }}>
+      <Box sx={{ bgcolor: theme.palette.background.default, p: 1.5, mb: 3, mt: 1, borderTop: `1px solid ${theme.palette.divider}`, borderRadius: '6px' }}>
         <Typography variant="body2" sx={{ color: '#1e3a8a', fontWeight: 600, textTransform: 'uppercase', mb: 0.5, fontSize: '0.75rem' }}>
           CUSTOMER / BILL TO DETAILS:
         </Typography>
         <Typography variant="h6" sx={{ fontWeight: 700, color: '#1e3a8a', mb: 0.25, fontSize: '1.1rem' }}>{invoice.partyName}</Typography>
-        <Typography variant="body2" sx={{ color: '#4b5563', mb: 0.25, fontSize: '0.85rem' }}>
+        <Typography variant="body2" sx={{ color: theme.palette.text.secondary, mb: 0.25, fontSize: '0.85rem' }}>
           {invoice.partyCode && `Customer Code: ${invoice.partyCode} | `}Phone: {invoice.partyMobile} | Email: {invoice.partyEmail}
         </Typography>
         {(invoice.partyAddress || invoice.partyCity) && (
-          <Typography variant="body2" sx={{ color: '#4b5563', fontSize: '0.85rem' }}>
+          <Typography variant="body2" sx={{ color: theme.palette.text.secondary, fontSize: '0.85rem' }}>
             Address: {[invoice.partyAddress, invoice.partyCity, invoice.partyState, invoice.partyPincode].filter(Boolean).join(', ')}
           </Typography>
         )}
@@ -64,8 +65,8 @@ const InvoicePrintView = ({ invoice }) => {
 
       {/* Items Table with horizontal scrolling container */}
       <TableContainer sx={{ overflowX: 'auto', maxWidth: '100%', mb: 2 }}>
-        <Table sx={{ minWidth: 540, border: '1px solid #e5e7eb' }} size="small">
-          <TableHead sx={{ bgcolor: '#f0f4f8' }}>
+        <Table sx={{ minWidth: 540, border: `1px solid ${theme.palette.divider}` }} size="small">
+          <TableHead sx={{ bgcolor: theme.palette.background.default }}>
             <TableRow>
               <TableCell sx={{ fontWeight: 700, color: '#1e3a8a', py: 1 }}>#</TableCell>
               <TableCell sx={{ fontWeight: 700, color: '#1e3a8a', py: 1 }}>ITEM DESCRIPTION</TableCell>
@@ -79,22 +80,22 @@ const InvoicePrintView = ({ invoice }) => {
           <TableBody>
             {(invoice.items || []).map((item, idx) => (
               <TableRow key={item.id || idx}>
-                <TableCell sx={{ color: '#000', py: 1.5, borderBottom: '1px solid #e5e7eb' }}>{idx + 1}</TableCell>
-                <TableCell sx={{ color: '#000', py: 1.5, borderBottom: '1px solid #e5e7eb' }}>
+                <TableCell sx={{ color: theme.palette.text.primary, py: 1.5, borderBottom: `1px solid ${theme.palette.divider}` }}>{idx + 1}</TableCell>
+                <TableCell sx={{ color: theme.palette.text.primary, py: 1.5, borderBottom: `1px solid ${theme.palette.divider}` }}>
                   <Typography variant="body2" sx={{ fontWeight: 700 }}>{item.itemNameSnapshot}</Typography>
-                  {item.itemCodeSnapshot && <Typography variant="caption" sx={{ color: '#666' }}>Code: {item.itemCodeSnapshot}</Typography>}
+                  {item.itemCodeSnapshot && <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>Code: {item.itemCodeSnapshot}</Typography>}
                 </TableCell>
-                <TableCell align="center" sx={{ color: '#000', fontWeight: 700, py: 1.5, borderBottom: '1px solid #e5e7eb' }}>
+                <TableCell align="center" sx={{ color: theme.palette.text.primary, fontWeight: 700, py: 1.5, borderBottom: `1px solid ${theme.palette.divider}` }}>
                   {formatQuantity(item.quantity)}
                 </TableCell>
-                <TableCell align="center" sx={{ color: '#000', py: 1.5, borderBottom: '1px solid #e5e7eb' }}>
+                <TableCell align="center" sx={{ color: theme.palette.text.primary, py: 1.5, borderBottom: `1px solid ${theme.palette.divider}` }}>
                   {item.unitSnapshot}
                 </TableCell>
-                <TableCell align="right" sx={{ color: '#000', py: 1.5, borderBottom: '1px solid #e5e7eb' }}>{formatCurrency(item.rate)}</TableCell>
-                <TableCell align="right" sx={{ color: '#000', py: 1.5, borderBottom: '1px solid #e5e7eb' }}>
+                <TableCell align="right" sx={{ color: theme.palette.text.primary, py: 1.5, borderBottom: `1px solid ${theme.palette.divider}` }}>{formatCurrency(item.rate)}</TableCell>
+                <TableCell align="right" sx={{ color: theme.palette.text.primary, py: 1.5, borderBottom: `1px solid ${theme.palette.divider}` }}>
                   {parseFloat(item.discountAmount) > 0 ? `- ${formatCurrency(item.discountAmount)}` : '—'}
                 </TableCell>
-                <TableCell align="right" sx={{ color: '#000', fontWeight: 700, py: 1.5, borderBottom: '1px solid #e5e7eb' }}>{formatCurrency(item.lineTotal)}</TableCell>
+                <TableCell align="right" sx={{ color: theme.palette.text.primary, fontWeight: 700, py: 1.5, borderBottom: `1px solid ${theme.palette.divider}` }}>{formatCurrency(item.lineTotal)}</TableCell>
               </TableRow>
             ))}
           </TableBody>
@@ -104,7 +105,7 @@ const InvoicePrintView = ({ invoice }) => {
       {/* Bottom Section */}
       <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, justifyContent: 'space-between', gap: 2, mb: 2 }}>
         <Box sx={{ width: { xs: '100%', sm: '48%' }, pt: 1 }}>
-          <Typography variant="body2" sx={{ color: '#4b5563', fontSize: '0.85rem' }}>
+          <Typography variant="body2" sx={{ color: theme.palette.text.secondary, fontSize: '0.85rem' }}>
             Payment Mode: {invoice.paymentMode || 'CASH'}
           </Typography>
         </Box>
@@ -112,28 +113,28 @@ const InvoicePrintView = ({ invoice }) => {
           <Table size="small">
             <TableBody>
               <TableRow>
-                <TableCell sx={{ color: '#4b5563', borderBottom: 'none', py: 0.5, px: 0 }}>Subtotal:</TableCell>
-                <TableCell align="right" sx={{ color: '#000', borderBottom: 'none', py: 0.5, px: 0 }}>{formatCurrency(invoice.subtotal)}</TableCell>
+                <TableCell sx={{ color: theme.palette.text.secondary, borderBottom: 'none', py: 0.5, px: 0 }}>Subtotal:</TableCell>
+                <TableCell align="right" sx={{ color: theme.palette.text.primary, borderBottom: 'none', py: 0.5, px: 0 }}>{formatCurrency(invoice.subtotal)}</TableCell>
               </TableRow>
               <TableRow>
-                <TableCell sx={{ color: '#4b5563', borderBottom: 'none', py: 0.5, px: 0 }}>Item Discount:</TableCell>
-                <TableCell align="right" sx={{ color: '#000', borderBottom: 'none', py: 0.5, px: 0 }}>- {formatCurrency(invoice.itemDiscount)}</TableCell>
+                <TableCell sx={{ color: theme.palette.text.secondary, borderBottom: 'none', py: 0.5, px: 0 }}>Item Discount:</TableCell>
+                <TableCell align="right" sx={{ color: theme.palette.text.primary, borderBottom: 'none', py: 0.5, px: 0 }}>- {formatCurrency(invoice.itemDiscount)}</TableCell>
               </TableRow>
               <TableRow>
-                <TableCell sx={{ color: '#4b5563', borderBottom: '1px solid #e5e7eb', py: 0.5, px: 0 }}>Total Discount:</TableCell>
-                <TableCell align="right" sx={{ color: '#000', borderBottom: '1px solid #e5e7eb', py: 0.5, px: 0 }}>- {formatCurrency(invoice.overallDiscount)}</TableCell>
+                <TableCell sx={{ color: theme.palette.text.secondary, borderBottom: `1px solid ${theme.palette.divider}`, py: 0.5, px: 0 }}>Total Discount:</TableCell>
+                <TableCell align="right" sx={{ color: theme.palette.text.primary, borderBottom: `1px solid ${theme.palette.divider}`, py: 0.5, px: 0 }}>- {formatCurrency(invoice.overallDiscount)}</TableCell>
               </TableRow>
               <TableRow>
-                <TableCell sx={{ fontWeight: 700, color: '#1e3a8a', borderBottom: '1px solid #e5e7eb', py: 1, px: 0, fontSize: '1rem' }}>Grand Total:</TableCell>
-                <TableCell align="right" sx={{ fontWeight: 700, color: '#1e3a8a', borderBottom: '1px solid #e5e7eb', py: 1, px: 0, fontSize: '1rem' }}>{formatCurrency(invoice.grandTotal)}</TableCell>
+                <TableCell sx={{ fontWeight: 700, color: '#1e3a8a', borderBottom: `1px solid ${theme.palette.divider}`, py: 1, px: 0, fontSize: '1rem' }}>Grand Total:</TableCell>
+                <TableCell align="right" sx={{ fontWeight: 700, color: '#1e3a8a', borderBottom: `1px solid ${theme.palette.divider}`, py: 1, px: 0, fontSize: '1rem' }}>{formatCurrency(invoice.grandTotal)}</TableCell>
               </TableRow>
               <TableRow>
-                <TableCell sx={{ color: '#000', borderBottom: 'none', py: 1, px: 0 }}>Paid Amount:</TableCell>
+                <TableCell sx={{ color: theme.palette.text.primary, borderBottom: 'none', py: 1, px: 0 }}>Paid Amount:</TableCell>
                 <TableCell align="right" sx={{ fontWeight: 700, color: '#047857', borderBottom: 'none', py: 1, px: 0 }}>{formatCurrency(invoice.paidAmount)}</TableCell>
               </TableRow>
               <TableRow>
-                <TableCell sx={{ color: '#000', borderBottom: 'none', py: 0.5, px: 0 }}>Balance Payable:</TableCell>
-                <TableCell align="right" sx={{ color: '#6b7280', borderBottom: 'none', py: 0.5, px: 0 }}>{formatCurrency(invoice.balanceAmount)}</TableCell>
+                <TableCell sx={{ color: theme.palette.text.primary, borderBottom: 'none', py: 0.5, px: 0 }}>Balance Payable:</TableCell>
+                <TableCell align="right" sx={{ color: theme.palette.text.secondary, borderBottom: 'none', py: 0.5, px: 0 }}>{formatCurrency(invoice.balanceAmount)}</TableCell>
               </TableRow>
             </TableBody>
           </Table>

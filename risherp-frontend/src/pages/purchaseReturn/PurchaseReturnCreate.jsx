@@ -2,17 +2,16 @@ import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Box, Card, Grid, Typography, TextField, MenuItem, Button,
-  Stack, Divider, CircularProgress,
+  Stack, Divider, CircularProgress, Alert,
 } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import SaveIcon from '@mui/icons-material/Save';
+import SaveOutlinedIcon from '@mui/icons-material/SaveOutlined';
 
 import PageHeader from '../../components/common/PageHeader';
 import PurchaseSelector from '../../components/purchaseReturn/PurchaseSelector';
 import OriginalPurchasePreview from '../../components/purchaseReturn/OriginalPurchasePreview';
 import ReturnablePurchaseItemsTable from '../../components/purchaseReturn/ReturnablePurchaseItemsTable';
 import purchaseReturnService from '../../services/purchaseReturnService';
-import { formatCurrency } from '../../utils/formatters';
 import toast from 'react-hot-toast';
 
 const REASON_PRESETS = [
@@ -43,6 +42,7 @@ export default function PurchaseReturnCreate({ isModal = false, onClose, onSucce
   const [customReason, setCustomReason] = useState('');
   const [notes, setNotes] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const [formError, setFormError] = useState('');
 
   // When purchase is chosen, load returnable quantities
   const handlePurchaseSelected = async (purchase) => {
@@ -98,14 +98,14 @@ export default function PurchaseReturnCreate({ isModal = false, onClose, onSucce
         if (qty > 0 && item.originalQuantity > 0) {
           const prop = qty / item.originalQuantity;
           const lineTotal = item.lineTotal * prop;
-          const disc = (item.discountAmount || 0) * prop;
           subtotal += lineTotal;
-          itemDiscount += disc;
+          if (item.discountAmount) {
+            itemDiscount += item.discountAmount * prop;
+          }
         }
       }
     });
 
-    // Proportional share of overall discount
     let overallDiscountAllocated = 0;
     if (selectedPurchase.overallDiscount > 0 && selectedPurchase.subtotal > 0) {
       const weight = subtotal / selectedPurchase.subtotal;
@@ -124,6 +124,7 @@ export default function PurchaseReturnCreate({ isModal = false, onClose, onSucce
 
   const handleSubmit = async (e) => {
     e?.preventDefault();
+    setFormError('');
 
     if (!selectedPurchase) {
       toast.error('Please select an original purchase first.');
@@ -132,7 +133,9 @@ export default function PurchaseReturnCreate({ isModal = false, onClose, onSucce
 
     const selectedKeys = Object.keys(selectedItems);
     if (selectedKeys.length === 0) {
-      toast.error('Please select at least one item to return.');
+      const msg = 'Please select at least one item to return.';
+      setFormError(msg);
+      toast.error(msg);
       return;
     }
 
@@ -142,12 +145,16 @@ export default function PurchaseReturnCreate({ isModal = false, onClose, onSucce
       const sel = selectedItems[pItemId];
       const qty = parseFloat(sel.returnQuantity);
       if (isNaN(qty) || qty <= 0) {
-        toast.error('Please enter a valid return quantity (> 0) for all selected items.');
+        const msg = 'Please enter a valid return quantity (> 0) for all selected items.';
+        setFormError(msg);
+        toast.error(msg);
         return;
       }
       const originalItem = returnableItems.find((i) => String(i.purchaseItemId) === String(pItemId));
       if (originalItem && qty > originalItem.returnableQuantity) {
-        toast.error(`Return quantity for ${originalItem.itemNameSnapshot} exceeds returnable quantity (${originalItem.returnableQuantity}).`);
+        const msg = `Return quantity for ${originalItem.itemNameSnapshot} exceeds returnable quantity (${originalItem.returnableQuantity}).`;
+        setFormError(msg);
+        toast.error(msg);
         return;
       }
       itemsPayload.push({
@@ -180,6 +187,7 @@ export default function PurchaseReturnCreate({ isModal = false, onClose, onSucce
       }
     } catch (err) {
       const msg = err.response?.data?.message || 'Failed to create purchase return.';
+      setFormError(msg);
       toast.error(msg);
     } finally {
       setSubmitting(false);
@@ -205,9 +213,12 @@ export default function PurchaseReturnCreate({ isModal = false, onClose, onSucce
       )}
 
       {/* Step 1: Purchase Selector */}
-      {!selectedPurchase ? (
+      {!selectedPurchase && (
         <PurchaseSelector onPurchaseSelected={handlePurchaseSelected} />
-      ) : (
+      )}
+
+      {/* Step 2: Invoice Preview */}
+      {selectedPurchase && (
         <OriginalPurchasePreview
           purchase={selectedPurchase}
           onChangePurchase={() => {
@@ -218,12 +229,15 @@ export default function PurchaseReturnCreate({ isModal = false, onClose, onSucce
         />
       )}
 
-      {/* Step 2: Return Items Table */}
+      {/* Step 3: Return Items Table */}
       {selectedPurchase && (
         <>
           {loadingItems ? (
-            <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
-              <CircularProgress />
+            <Box sx={{ textAlign: 'center', py: 4 }}>
+              <CircularProgress size={32} />
+              <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+                Loading returnable items…
+              </Typography>
             </Box>
           ) : (
             <ReturnablePurchaseItemsTable
@@ -235,174 +249,122 @@ export default function PurchaseReturnCreate({ isModal = false, onClose, onSucce
             />
           )}
 
-          {/* Step 3: Form Details & Estimated Summary */}
-          <Grid container spacing={3}>
-            <Grid xs={12} md={7}>
-              <Card sx={{ p: { xs: 2, sm: 2.5 } }}>
-                <Typography variant="subtitle1" fontWeight={700} gutterBottom>
-                  Return Details & Adjustment
-                </Typography>
-
-                <Grid container spacing={2} sx={{ mt: 0.5 }}>
-                  <Grid xs={12} sm={6}>
-                    <TextField
-                      type="date"
-                      fullWidth
-                      size="small"
-                      label="Return Date"
-                      value={returnDate}
-                      onChange={(e) => setReturnDate(e.target.value)}
-                      slotProps={{ inputLabel: { shrink: true } }}
-                      disabled={submitting}
-                    />
-                  </Grid>
-
-                  <Grid xs={12} sm={6}>
-                    <TextField
-                      select
-                      fullWidth
-                      size="small"
-                      label="Adjustment / Refund Mode"
-                      value={refundMode}
-                      onChange={(e) => setRefundMode(e.target.value)}
-                      disabled={submitting}
-                    >
-                      <MenuItem value="CREDIT_ADJUSTMENT">
-                        Debit Adjustment (Reduce Vendor Outstanding)
-                      </MenuItem>
-                      <MenuItem value="CASH">Cash Refund</MenuItem>
-                      <MenuItem value="BANK">Bank Transfer Refund</MenuItem>
-                    </TextField>
-                  </Grid>
-
-                  <Grid xs={12}>
-                    <TextField
-                      select
-                      fullWidth
-                      size="small"
-                      label="Reason for Return"
-                      value={reasonPreset}
-                      onChange={(e) => setReasonPreset(e.target.value)}
-                      disabled={submitting}
-                    >
-                      {REASON_PRESETS.map((r) => (
-                        <MenuItem key={r} value={r}>
-                          {r}
-                        </MenuItem>
-                      ))}
-                    </TextField>
-                  </Grid>
-
-                  {reasonPreset === 'Other' && (
-                    <Grid xs={12}>
-                      <TextField
-                        fullWidth
-                        size="small"
-                        label="Specify Reason"
-                        value={customReason}
-                        onChange={(e) => setCustomReason(e.target.value)}
-                        disabled={submitting}
-                      />
-                    </Grid>
-                  )}
-
-                  <Grid xs={12}>
-                    <TextField
-                      fullWidth
-                      multiline
-                      rows={2}
-                      size="small"
-                      label="Notes / Vendor Remarks"
-                      value={notes}
-                      onChange={(e) => setNotes(e.target.value)}
-                      disabled={submitting}
-                    />
-                  </Grid>
-                </Grid>
-              </Card>
-            </Grid>
-
-            <Grid xs={12} md={5}>
-              <Card sx={{ p: { xs: 2, sm: 2.5 } }}>
-                <Typography variant="subtitle1" fontWeight={700} gutterBottom>
-                  Return Financial Summary
-                </Typography>
-                <Typography variant="caption" color="text.secondary">
-                  Calculated proportionally using original purchase prices and discounts.
-                </Typography>
-
-                <Stack spacing={1.5} sx={{ mt: 2 }}>
-                  <Stack direction="row" justifyContent="space-between">
-                    <Typography variant="body2" color="text.secondary">
-                      Return Subtotal
-                    </Typography>
-                    <Typography variant="body2" fontWeight={600}>
-                      {formatCurrency(estimatedSummary?.subtotal || 0)}
-                    </Typography>
-                  </Stack>
-
-                  {(estimatedSummary?.itemDiscount || 0) > 0 && (
-                    <Stack direction="row" justifyContent="space-between">
-                      <Typography variant="body2" color="text.secondary">
-                        Item Discounts (Estimated)
-                      </Typography>
-                      <Typography variant="body2" color="error.main">
-                        - {formatCurrency(estimatedSummary.itemDiscount)}
-                      </Typography>
-                    </Stack>
-                  )}
-
-                  {(estimatedSummary?.overallDiscountAllocated || 0) > 0 && (
-                    <Stack direction="row" justifyContent="space-between">
-                      <Typography variant="body2" color="text.secondary">
-                        Overall Discount Share
-                      </Typography>
-                      <Typography variant="body2" color="error.main">
-                        - {formatCurrency(estimatedSummary.overallDiscountAllocated)}
-                      </Typography>
-                    </Stack>
-                  )}
-
-                  <Divider />
-
-                  <Stack direction="row" justifyContent="space-between" alignItems="center">
-                    <Typography variant="subtitle1" fontWeight={700}>
-                      Estimated Return Amount
-                    </Typography>
-                    <Typography variant="h6" fontWeight={800} color="error.main">
-                      {formatCurrency(estimatedSummary?.returnAmount || 0)}
-                    </Typography>
-                  </Stack>
-
-                  <Button
+          {/* Step 4: Return Details */}
+          {!loadingItems && returnableItems.length > 0 && (
+            <Card sx={{ p: { xs: 2, sm: 3 }, border: 1, borderColor: 'divider', borderRadius: 2, mb: 2.5 }}>
+              <Typography variant="subtitle1" fontWeight={700} sx={{ mb: 2 }}>
+                Step 4 — Return Details
+              </Typography>
+              <Grid container spacing={2.5}>
+                <Grid item xs={12} sm={6} md={6} lg={3}>
+                  <TextField
+                    size="small"
                     fullWidth
+                    label="Return Date"
+                    type="date"
+                    value={returnDate}
+                    onChange={(e) => setReturnDate(e.target.value)}
+                    slotProps={{ inputLabel: { shrink: true } }}
+                    required
+                    disabled={submitting}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6} md={6} lg={3}>
+                  <TextField
+                    select
+                    size="small"
+                    fullWidth
+                    label="Adjustment / Refund Mode"
+                    value={refundMode}
+                    onChange={(e) => setRefundMode(e.target.value)}
+                    disabled={submitting}
+                  >
+                    <MenuItem value="CREDIT_ADJUSTMENT">
+                      Debit Adjustment (Reduce Vendor Outstanding)
+                    </MenuItem>
+                    <MenuItem value="CASH">Cash Refund</MenuItem>
+                    <MenuItem value="BANK">Bank Transfer Refund</MenuItem>
+                  </TextField>
+                </Grid>
+                <Grid item xs={12} sm={6} md={6} lg={3}>
+                  <TextField
+                    select
+                    size="small"
+                    fullWidth
+                    label="Reason for Return"
+                    value={reasonPreset}
+                    onChange={(e) => setReasonPreset(e.target.value)}
+                    disabled={submitting}
+                  >
+                    {REASON_PRESETS.map((r) => (
+                      <MenuItem key={r} value={r}>{r}</MenuItem>
+                    ))}
+                  </TextField>
+                </Grid>
+                <Grid item xs={12} sm={6} md={6} lg={3}>
+                  <TextField
+                    size="small"
+                    fullWidth
+                    label="Notes (optional)"
+                    value={notes}
+                    onChange={(e) => setNotes(e.target.value)}
+                    inputProps={{ maxLength: 1000 }}
+                    disabled={submitting}
+                  />
+                </Grid>
+                {reasonPreset === 'Other' && (
+                  <Grid item xs={12}>
+                    <TextField
+                      size="small"
+                      fullWidth
+                      label="Specify Custom Reason"
+                      value={customReason}
+                      onChange={(e) => setCustomReason(e.target.value)}
+                      disabled={submitting}
+                    />
+                  </Grid>
+                )}
+              </Grid>
+
+              <Divider sx={{ my: 2.5 }} />
+
+              {/* Return Amount Preview */}
+              <Stack direction={{ xs: 'column', sm: 'row' }} justifyContent="space-between" alignItems="center" spacing={2}>
+                <Box sx={{ width: { xs: '100%', sm: 'auto' }, textAlign: { xs: 'left', sm: 'left' } }}>
+                  <Typography variant="caption" color="text.secondary">ESTIMATED RETURN AMOUNT</Typography>
+                  <Typography variant="h5" fontWeight={800} color="warning.dark">
+                    ₹ {(estimatedSummary?.returnAmount || 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  </Typography>
+                  <Typography variant="caption" color="text.disabled">
+                    * Proportional allocation of discounts and taxes
+                  </Typography>
+                </Box>
+                <Stack direction={{ xs: 'column-reverse', sm: 'row' }} spacing={1.5} sx={{ width: { xs: '100%', sm: 'auto' }, '& > button': { width: { xs: '100%', sm: 'auto' } } }}>
+                  <Button
+                    variant="outlined"
+                    onClick={isModal ? onClose : () => navigate('/purchases/returns')}
+                    disabled={submitting}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
                     variant="contained"
-                    color="primary"
-                    size="large"
-                    startIcon={submitting ? <CircularProgress size={20} color="inherit" /> : <SaveIcon />}
+                    color="warning"
                     onClick={handleSubmit}
                     disabled={submitting || Object.keys(selectedItems).length === 0}
-                    sx={{ mt: 2, height: 48 }}
+                    startIcon={submitting ? <CircularProgress size={16} color="inherit" /> : <SaveOutlinedIcon />}
+                    sx={{ minWidth: 180 }}
                   >
-                    {submitting ? 'Processing Return...' : 'Confirm & Create Purchase Return'}
+                    {submitting ? 'Processing…' : 'Create Purchase Return'}
                   </Button>
-
-                  {isModal && (
-                    <Button
-                      fullWidth
-                      variant="outlined"
-                      color="inherit"
-                      onClick={onClose}
-                      disabled={submitting}
-                      sx={{ borderRadius: '10px' }}
-                    >
-                      Cancel
-                    </Button>
-                  )}
                 </Stack>
-              </Card>
-            </Grid>
-          </Grid>
+              </Stack>
+
+              {formError && (
+                <Alert severity="error" sx={{ mt: 2 }}>{formError}</Alert>
+              )}
+            </Card>
+          )}
         </>
       )}
     </Box>

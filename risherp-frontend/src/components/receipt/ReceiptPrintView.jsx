@@ -1,13 +1,14 @@
-import { Box, Typography, Table, TableBody, TableCell, TableRow } from '@mui/material';
+import { Box, Typography, Table, TableBody, TableCell, TableRow, useTheme, alpha } from '@mui/material';
 import { formatCurrency } from '../../utils/formatters';
 
 const ReceiptPrintView = ({ receipt }) => {
   if (!receipt) return null;
+  const theme = useTheme();
 
   const companyName = receipt.businessName || 'ABC Enterprise';
   const companyMobile = receipt.businessMobile || '';
   const companyEmail = receipt.businessEmail || '';
-  
+
   const totalAmount = Number(receipt.amount || 0);
   const unallocated = Number(receipt.unallocatedAmount || 0);
 
@@ -20,7 +21,7 @@ const ReceiptPrintView = ({ receipt }) => {
         maxWidth: 800,
         mx: 'auto',
         bgcolor: 'background.paper',
-        color: '#000000',
+        color: theme.palette.text.primary,
         '@media print': { p: 0, m: 0, maxWidth: '100% !important', width: '100% !important' },
       }}
     >
@@ -31,29 +32,29 @@ const ReceiptPrintView = ({ receipt }) => {
           <Typography variant="subtitle2" sx={{ color: '#047857', fontWeight: 600, textTransform: 'uppercase', mb: 0.5, fontSize: '0.9rem' }}>
             CUSTOMER PAYMENT RECEIPT
           </Typography>
-          <Typography variant="body2" sx={{ color: '#666', fontSize: '0.8rem' }}>
+          <Typography variant="body2" sx={{ color: theme.palette.text.secondary, fontSize: '0.8rem' }}>
             Email: {companyEmail} &nbsp; Mobile: {companyMobile}
           </Typography>
         </Box>
         <Box sx={{ textAlign: { xs: 'left', sm: 'right' } }}>
           <Typography variant="h5" sx={{ fontWeight: 700, color: '#047857', mb: 1 }}>{receipt.receiptNumber}</Typography>
-          <Typography variant="body2" sx={{ color: '#000', mb: 0.5, fontSize: '0.85rem' }}>
+          <Typography variant="body2" sx={{ color: theme.palette.text.primary, mb: 0.5, fontSize: '0.85rem' }}>
             Receipt Date: {receipt.receiptDate || '—'}
           </Typography>
-          <Typography variant="body2" sx={{ color: '#000', fontSize: '0.85rem' }}>
+          <Typography variant="body2" sx={{ color: theme.palette.text.primary, fontSize: '0.85rem' }}>
             Payment Mode: {receipt.paymentMode?.replace('_', ' ') || '—'}
           </Typography>
         </Box>
       </Box>
 
       {/* Customer Block */}
-      <Box sx={{ bgcolor: '#f0fdf4', p: 1.5, mb: 3, mt: 1, borderTop: '1px solid #d1d5db' }}>
-        <Typography variant="body2" sx={{ color: '#4b5563', mb: 0.5, fontSize: '0.8rem' }}>Received From (Customer)</Typography>
+      <Box sx={{ bgcolor: theme.palette.background.default, p: 1.5, mb: 3, mt: 1, borderTop: `1px solid ${theme.palette.divider}` }}>
+        <Typography variant="body2" sx={{ color: theme.palette.text.secondary, mb: 0.5, fontSize: '0.8rem' }}>Received From (Customer)</Typography>
         <Typography variant="subtitle1" sx={{ fontWeight: 700, color: '#1e3a8a', mb: 0.5 }}>{receipt.partyName}</Typography>
-        <Typography variant="body2" sx={{ color: '#000', mb: 0.5, fontSize: '0.85rem' }}>Mobile: {receipt.partyMobile}</Typography>
-        <Typography variant="body2" sx={{ color: '#000', mb: 0.5, fontSize: '0.85rem' }}>Email: {receipt.partyEmail}</Typography>
+        <Typography variant="body2" sx={{ color: theme.palette.text.primary, mb: 0.5, fontSize: '0.85rem' }}>Mobile: {receipt.partyMobile}</Typography>
+        <Typography variant="body2" sx={{ color: theme.palette.text.primary, mb: 0.5, fontSize: '0.85rem' }}>Email: {receipt.partyEmail}</Typography>
         {(receipt.partyAddress || receipt.partyCity) && (
-          <Typography variant="body2" sx={{ color: '#000', fontSize: '0.85rem' }}>
+          <Typography variant="body2" sx={{ color: theme.palette.text.primary, fontSize: '0.85rem' }}>
             Address: {[receipt.partyAddress, receipt.partyCity, receipt.partyState].filter(Boolean).join(', ')}
           </Typography>
         )}
@@ -61,22 +62,22 @@ const ReceiptPrintView = ({ receipt }) => {
 
       {/* Totals Table */}
       <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 4 }}>
-        <Table sx={{ width: { xs: '100%', sm: '60%', md: '50%' }, border: '1px solid #e5e7eb' }} size="small">
+        <Table sx={{ width: { xs: '100%', sm: '60%', md: '50%' }, border: `1px solid ${theme.palette.divider}` }} size="small">
           <TableBody>
-            <TableRow sx={{ bgcolor: '#ecfdf5' }}>
-              <TableCell sx={{ fontWeight: 700, color: '#047857', borderBottom: '1px solid #e5e7eb', py: 1 }}>TOTAL RECEIVED</TableCell>
-              <TableCell align="right" sx={{ fontWeight: 700, color: '#047857', borderBottom: '1px solid #e5e7eb', py: 1 }}>{formatCurrency(totalAmount)}</TableCell>
+            <TableRow sx={{ bgcolor: alpha(theme.palette.success.main, 0.1) }}>
+              <TableCell sx={{ fontWeight: 700, color: '#047857', borderBottom: `1px solid ${theme.palette.divider}`, py: 1 }}>TOTAL RECEIVED</TableCell>
+              <TableCell align="right" sx={{ fontWeight: 700, color: '#047857', borderBottom: `1px solid ${theme.palette.divider}`, py: 1 }}>{formatCurrency(totalAmount)}</TableCell>
             </TableRow>
             <TableRow>
-              <TableCell sx={{ color: '#000', borderBottom: '1px solid #e5e7eb', py: 1 }}>Customer Advance / Credit</TableCell>
-              <TableCell align="right" sx={{ fontWeight: 700, color: '#000', borderBottom: '1px solid #e5e7eb', py: 1 }}>{formatCurrency(unallocated)}</TableCell>
+              <TableCell sx={{ color: theme.palette.text.primary, borderBottom: `1px solid ${theme.palette.divider}`, py: 1 }}>Customer Advance / Credit</TableCell>
+              <TableCell align="right" sx={{ fontWeight: 700, color: theme.palette.text.primary, borderBottom: `1px solid ${theme.palette.divider}`, py: 1 }}>{formatCurrency(unallocated)}</TableCell>
             </TableRow>
           </TableBody>
         </Table>
       </Box>
 
       {/* Footer */}
-      <Typography variant="body2" sx={{ fontStyle: 'italic', color: '#6b7280', fontSize: '0.8rem', borderTop: '1px solid #e5e7eb', pt: 1 }}>
+      <Typography variant="body2" sx={{ fontStyle: 'italic', color: theme.palette.text.secondary, fontSize: '0.8rem', borderTop: `1px solid ${theme.palette.divider}`, pt: 1 }}>
         This is an official computer-generated receipt. Thank you for your business.
       </Typography>
     </Box>

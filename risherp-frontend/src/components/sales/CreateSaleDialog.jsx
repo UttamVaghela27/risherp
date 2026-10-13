@@ -36,6 +36,8 @@ import { getDialogPaperSx } from '../../theme/theme';
  *   onClose    — callback when dialog should close
  *   onSuccess  — callback(sale) after a sale is created successfully
  */
+let cartIdCounter = 1;
+
 const CreateSaleDialog = ({ open, onClose, onSuccess }) => {
   const theme = useTheme();
   const navigate = useNavigate();

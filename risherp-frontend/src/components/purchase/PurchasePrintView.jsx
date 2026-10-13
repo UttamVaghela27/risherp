@@ -1,8 +1,9 @@
-import { Box, Typography, Table, TableBody, TableCell, TableHead, TableRow, TableContainer } from '@mui/material';
+import { Box, Typography, Table, TableBody, TableCell, TableHead, TableRow, TableContainer, useTheme } from '@mui/material';
 import { formatCurrency, formatQuantity } from '../../utils/formatters';
 
 const PurchasePrintView = ({ purchase }) => {
   if (!purchase) return null;
+  const theme = useTheme();
 
   const companyName = purchase.businessName || 'ABC Enterprise';
   const companyMobile = purchase.businessMobile || '';
@@ -17,7 +18,7 @@ const PurchasePrintView = ({ purchase }) => {
         maxWidth: 800,
         mx: 'auto',
         bgcolor: 'background.paper',
-        color: '#000000',
+        color: theme.palette.text.primary,
         '@media print': { p: 0, m: 0, maxWidth: '100% !important', width: '100% !important' },
       }}
     >
@@ -28,16 +29,16 @@ const PurchasePrintView = ({ purchase }) => {
           <Typography variant="subtitle2" sx={{ color: '#1e3a8a', fontWeight: 600, textTransform: 'uppercase', mb: 0.5, fontSize: '0.9rem' }}>
             PURCHASE INVOICE / VOUCHER
           </Typography>
-          <Typography variant="body2" sx={{ color: '#666', fontSize: '0.8rem' }}>
+          <Typography variant="body2" sx={{ color: theme.palette.text.secondary, fontSize: '0.8rem' }}>
             Phone: {companyMobile} | Email: {companyEmail}
           </Typography>
         </Box>
         <Box sx={{ textAlign: { xs: 'left', sm: 'right' } }}>
           <Typography variant="h5" sx={{ fontWeight: 700, color: '#1e3a8a', mb: 1 }}>{purchase.purchaseNumber}</Typography>
-          <Typography variant="body2" sx={{ color: '#000', mb: 0.25, fontSize: '0.85rem' }}>
+          <Typography variant="body2" sx={{ color: theme.palette.text.primary, mb: 0.25, fontSize: '0.85rem' }}>
             Date: {purchase.purchaseDate || '—'}
           </Typography>
-          <Typography variant="body2" sx={{ color: '#000', mb: 0.25, fontSize: '0.85rem' }}>
+          <Typography variant="body2" sx={{ color: theme.palette.text.primary, mb: 0.25, fontSize: '0.85rem' }}>
             Type: {purchase.purchaseType || 'CASH'}
           </Typography>
           <Typography variant="body2" sx={{ color: '#047857', fontWeight: 700, fontSize: '0.85rem' }}>
@@ -47,16 +48,16 @@ const PurchasePrintView = ({ purchase }) => {
       </Box>
 
       {/* Supplier Block */}
-      <Box sx={{ bgcolor: '#f0f4f8', p: 1.5, mb: 3, mt: 1, borderTop: '1px solid #d1d5db' }}>
+      <Box sx={{ bgcolor: theme.palette.background.default, p: 1.5, mb: 3, mt: 1, borderTop: `1px solid ${theme.palette.divider}` }}>
         <Typography variant="body2" sx={{ color: '#1e3a8a', fontWeight: 600, textTransform: 'uppercase', mb: 0.5, fontSize: '0.75rem' }}>
           SUPPLIER / VENDOR DETAILS:
         </Typography>
         <Typography variant="h6" sx={{ fontWeight: 700, color: '#1e3a8a', mb: 0.25, fontSize: '1.1rem' }}>{purchase.partyName}</Typography>
-        <Typography variant="body2" sx={{ color: '#4b5563', mb: 0.25, fontSize: '0.85rem' }}>
+        <Typography variant="body2" sx={{ color: theme.palette.text.secondary, mb: 0.25, fontSize: '0.85rem' }}>
           {purchase.partyCode && `Supplier Code: ${purchase.partyCode} | `}Phone: {purchase.partyMobile} | Email: {purchase.partyEmail}
         </Typography>
         {(purchase.partyAddress || purchase.partyCity) && (
-          <Typography variant="body2" sx={{ color: '#4b5563', fontSize: '0.85rem' }}>
+          <Typography variant="body2" sx={{ color: theme.palette.text.secondary, fontSize: '0.85rem' }}>
             Address: {[purchase.partyAddress, purchase.partyCity, purchase.partyState, purchase.partyPincode].filter(Boolean).join(', ')}
           </Typography>
         )}
@@ -64,8 +65,8 @@ const PurchasePrintView = ({ purchase }) => {
 
       {/* Items Table */}
       <TableContainer sx={{ overflowX: 'auto', maxWidth: '100%', mb: 2 }}>
-        <Table sx={{ minWidth: 600, border: '1px solid #e5e7eb' }} size="small">
-          <TableHead sx={{ bgcolor: '#f0f4f8' }}>
+        <Table sx={{ minWidth: 600, border: `1px solid ${theme.palette.divider}` }} size="small">
+          <TableHead sx={{ bgcolor: theme.palette.background.default }}>
             <TableRow>
               <TableCell sx={{ fontWeight: 700, color: '#1e3a8a', py: 1 }}>#</TableCell>
               <TableCell sx={{ fontWeight: 700, color: '#1e3a8a', py: 1 }}>ITEM DESCRIPTION</TableCell>
@@ -79,22 +80,22 @@ const PurchasePrintView = ({ purchase }) => {
           <TableBody>
             {(purchase.items || []).map((item, idx) => (
               <TableRow key={item.id || idx}>
-                <TableCell sx={{ color: '#000', py: 1.5, borderBottom: '1px solid #e5e7eb' }}>{idx + 1}</TableCell>
-                <TableCell sx={{ color: '#000', py: 1.5, borderBottom: '1px solid #e5e7eb' }}>
+                <TableCell sx={{ color: theme.palette.text.primary, py: 1.5, borderBottom: `1px solid ${theme.palette.divider}` }}>{idx + 1}</TableCell>
+                <TableCell sx={{ color: theme.palette.text.primary, py: 1.5, borderBottom: `1px solid ${theme.palette.divider}` }}>
                   <Typography variant="body2" sx={{ fontWeight: 700 }}>{item.itemNameSnapshot}</Typography>
-                  {item.itemCodeSnapshot && <Typography variant="caption" sx={{ color: '#666' }}>Code: {item.itemCodeSnapshot}</Typography>}
+                  {item.itemCodeSnapshot && <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>Code: {item.itemCodeSnapshot}</Typography>}
                 </TableCell>
-                <TableCell align="center" sx={{ color: '#000', fontWeight: 700, py: 1.5, borderBottom: '1px solid #e5e7eb' }}>
+                <TableCell align="center" sx={{ color: theme.palette.text.primary, fontWeight: 700, py: 1.5, borderBottom: `1px solid ${theme.palette.divider}` }}>
                   {formatQuantity(item.quantity)}
                 </TableCell>
-                <TableCell align="center" sx={{ color: '#000', py: 1.5, borderBottom: '1px solid #e5e7eb' }}>
+                <TableCell align="center" sx={{ color: theme.palette.text.primary, py: 1.5, borderBottom: `1px solid ${theme.palette.divider}` }}>
                   {item.unitSnapshot}
                 </TableCell>
-                <TableCell align="right" sx={{ color: '#000', py: 1.5, borderBottom: '1px solid #e5e7eb' }}>{formatCurrency(item.rate)}</TableCell>
-                <TableCell align="right" sx={{ color: '#000', py: 1.5, borderBottom: '1px solid #e5e7eb' }}>
+                <TableCell align="right" sx={{ color: theme.palette.text.primary, py: 1.5, borderBottom: `1px solid ${theme.palette.divider}` }}>{formatCurrency(item.rate)}</TableCell>
+                <TableCell align="right" sx={{ color: theme.palette.text.primary, py: 1.5, borderBottom: `1px solid ${theme.palette.divider}` }}>
                   {parseFloat(item.discountAmount) > 0 ? `- ${formatCurrency(item.discountAmount)}` : '—'}
                 </TableCell>
-                <TableCell align="right" sx={{ color: '#000', fontWeight: 700, py: 1.5, borderBottom: '1px solid #e5e7eb' }}>{formatCurrency(item.lineTotal)}</TableCell>
+                <TableCell align="right" sx={{ color: theme.palette.text.primary, fontWeight: 700, py: 1.5, borderBottom: `1px solid ${theme.palette.divider}` }}>{formatCurrency(item.lineTotal)}</TableCell>
               </TableRow>
             ))}
           </TableBody>
@@ -104,7 +105,7 @@ const PurchasePrintView = ({ purchase }) => {
       {/* Bottom Section */}
       <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, justifyContent: 'space-between', gap: 2, mb: 2 }}>
         <Box sx={{ width: { xs: '100%', sm: '50%' }, pt: 1 }}>
-          <Typography variant="body2" sx={{ color: '#4b5563', fontSize: '0.85rem' }}>
+          <Typography variant="body2" sx={{ color: theme.palette.text.secondary, fontSize: '0.85rem' }}>
             Payment Mode: {purchase.paymentMode || 'CASH'}
           </Typography>
         </Box>
@@ -112,28 +113,28 @@ const PurchasePrintView = ({ purchase }) => {
           <Table size="small">
             <TableBody>
               <TableRow>
-                <TableCell sx={{ color: '#4b5563', borderBottom: 'none', py: 0.5, px: 0 }}>Subtotal:</TableCell>
-                <TableCell align="right" sx={{ color: '#000', borderBottom: 'none', py: 0.5, px: 0 }}>{formatCurrency(purchase.subtotal)}</TableCell>
+                <TableCell sx={{ color: theme.palette.text.secondary, borderBottom: 'none', py: 0.5, px: 0 }}>Subtotal:</TableCell>
+                <TableCell align="right" sx={{ color: theme.palette.text.primary, borderBottom: 'none', py: 0.5, px: 0 }}>{formatCurrency(purchase.subtotal)}</TableCell>
               </TableRow>
               <TableRow>
-                <TableCell sx={{ color: '#4b5563', borderBottom: 'none', py: 0.5, px: 0 }}>Item Discount:</TableCell>
-                <TableCell align="right" sx={{ color: '#000', borderBottom: 'none', py: 0.5, px: 0 }}>- {formatCurrency(purchase.itemDiscount)}</TableCell>
+                <TableCell sx={{ color: theme.palette.text.secondary, borderBottom: 'none', py: 0.5, px: 0 }}>Item Discount:</TableCell>
+                <TableCell align="right" sx={{ color: theme.palette.text.primary, borderBottom: 'none', py: 0.5, px: 0 }}>- {formatCurrency(purchase.itemDiscount)}</TableCell>
               </TableRow>
               <TableRow>
-                <TableCell sx={{ color: '#4b5563', borderBottom: '1px solid #e5e7eb', py: 0.5, px: 0 }}>Total Discount:</TableCell>
-                <TableCell align="right" sx={{ color: '#000', borderBottom: '1px solid #e5e7eb', py: 0.5, px: 0 }}>- {formatCurrency(purchase.overallDiscount)}</TableCell>
+                <TableCell sx={{ color: theme.palette.text.secondary, borderBottom: `1px solid ${theme.palette.divider}`, py: 0.5, px: 0 }}>Total Discount:</TableCell>
+                <TableCell align="right" sx={{ color: theme.palette.text.primary, borderBottom: `1px solid ${theme.palette.divider}`, py: 0.5, px: 0 }}>- {formatCurrency(purchase.overallDiscount)}</TableCell>
               </TableRow>
               <TableRow>
-                <TableCell sx={{ fontWeight: 700, color: '#1e3a8a', borderBottom: '1px solid #e5e7eb', py: 1, px: 0, fontSize: '1rem' }}>Grand Total:</TableCell>
-                <TableCell align="right" sx={{ fontWeight: 700, color: '#1e3a8a', borderBottom: '1px solid #e5e7eb', py: 1, px: 0, fontSize: '1rem' }}>{formatCurrency(purchase.grandTotal)}</TableCell>
+                <TableCell sx={{ fontWeight: 700, color: '#1e3a8a', borderBottom: `1px solid ${theme.palette.divider}`, py: 1, px: 0, fontSize: '1rem' }}>Grand Total:</TableCell>
+                <TableCell align="right" sx={{ fontWeight: 700, color: '#1e3a8a', borderBottom: `1px solid ${theme.palette.divider}`, py: 1, px: 0, fontSize: '1rem' }}>{formatCurrency(purchase.grandTotal)}</TableCell>
               </TableRow>
               <TableRow>
-                <TableCell sx={{ color: '#000', borderBottom: 'none', py: 1, px: 0 }}>Paid Amount:</TableCell>
+                <TableCell sx={{ color: theme.palette.text.primary, borderBottom: 'none', py: 1, px: 0 }}>Paid Amount:</TableCell>
                 <TableCell align="right" sx={{ fontWeight: 700, color: '#047857', borderBottom: 'none', py: 1, px: 0 }}>{formatCurrency(purchase.paidAmount)}</TableCell>
               </TableRow>
               <TableRow>
-                <TableCell sx={{ color: '#000', borderBottom: 'none', py: 0.5, px: 0 }}>Balance Payable:</TableCell>
-                <TableCell align="right" sx={{ color: '#6b7280', borderBottom: 'none', py: 0.5, px: 0 }}>{formatCurrency(purchase.balanceAmount)}</TableCell>
+                <TableCell sx={{ color: theme.palette.text.primary, borderBottom: 'none', py: 0.5, px: 0 }}>Balance Payable:</TableCell>
+                <TableCell align="right" sx={{ color: theme.palette.text.secondary, borderBottom: 'none', py: 0.5, px: 0 }}>{formatCurrency(purchase.balanceAmount)}</TableCell>
               </TableRow>
             </TableBody>
           </Table>

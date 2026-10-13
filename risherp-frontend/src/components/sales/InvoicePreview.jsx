@@ -1,4 +1,4 @@
-import { Box, Typography, Divider, Table, TableBody, TableCell, TableHead, TableRow, useTheme
+import { Box, Typography, Divider, Table, TableBody, TableCell, TableHead, TableRow, Chip, useTheme
 } from '@mui/material';
 import { formatCurrency } from '../../utils/saleCalculations';
 

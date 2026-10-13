@@ -178,7 +178,7 @@ const SalesReturnDetails = () => {
               <IconButton
                 onClick={handlePrint}
                 sx={{
-                  border: '1px solid #cbd5e1',
+                  border: `1px solid ${theme.palette.divider}`,
                   bgcolor: 'background.paper',
                   borderRadius: 2,
                   p: '8px',
@@ -434,7 +434,7 @@ const SalesReturnDetails = () => {
           sx={{
             px: 2.5,
             py: 2,
-            bgcolor: '#fafbfc',
+            bgcolor: 'background.default',
             borderBottom: 1, borderColor: 'divider',
             display: 'flex',
             alignItems: 'center',

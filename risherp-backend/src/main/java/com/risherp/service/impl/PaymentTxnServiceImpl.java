@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -291,16 +292,28 @@ public class PaymentTxnServiceImpl implements PaymentTxnService {
     @Override
     @Transactional(readOnly = true)
     public List<OutstandingPurchaseResponse> getOutstandingPurchases(Long partyId, Long businessId) {
-        List<Purchase> purchases = purchaseRepository.findOutstandingPurchasesByPartyId(businessId, partyId);
-        return purchases.stream().map(p -> OutstandingPurchaseResponse.builder()
-                .purchaseId(p.getId())
-                .purchaseNumber(p.getPurchaseNumber())
-                .purchaseDate(p.getPurchaseDate())
-                .grandTotal(p.getGrandTotal())
-                .paidAmount(p.getPaidAmount())
-                .balanceAmount(p.getBalanceAmount())
-                .paymentStatus(p.getPaymentStatus())
-                .build()).collect(Collectors.toList());
+        if (partyId == null) {
+            return Collections.emptyList();
+        }
+        Long bizId = businessId != null ? businessId : 1L;
+        try {
+            List<Purchase> purchases = purchaseRepository.findOutstandingPurchasesByPartyId(bizId, partyId);
+            if (purchases == null) {
+                return Collections.emptyList();
+            }
+            return purchases.stream().map(p -> OutstandingPurchaseResponse.builder()
+                    .purchaseId(p.getId())
+                    .purchaseNumber(p.getPurchaseNumber())
+                    .purchaseDate(p.getPurchaseDate())
+                    .grandTotal(p.getGrandTotal())
+                    .paidAmount(p.getPaidAmount())
+                    .balanceAmount(p.getBalanceAmount())
+                    .paymentStatus(p.getPaymentStatus())
+                    .build()).collect(Collectors.toList());
+        } catch (Exception ex) {
+            log.error("Error fetching outstanding purchases for party {}: {}", partyId, ex.getMessage());
+            return Collections.emptyList();
+        }
     }
 
     // =========================================================================

@@ -161,8 +161,8 @@ const CategoryForm = ({
           </IconButton>
         </DialogTitle>
 
-        <DialogContent sx={{ px: { xs: 2.5, sm: 3 }, py: 3 }}>
-          <Stack spacing={2.5}>
+        <DialogContent sx={{ px: { xs: 2.5, sm: 3 }, pt: '24px !important', pb: 3 }}>
+          <Stack spacing={2.5} sx={{ pt: 0.5 }}>
             <TextField
               label="Category Name *"
               placeholder="e.g. Computer Accessories, Electronics, Stationery"

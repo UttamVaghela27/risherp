@@ -13,34 +13,32 @@ export default function ReturnablePurchaseItemsTable({
   disabled = false,
 }) {
   const headContent = (
-    <TableRow>
-      <TableCell padding="checkbox">
-        {/* Header checkbox could toggle all returnable */}
-      </TableCell>
-      <TableCell>#</TableCell>
-      <TableCell>Item & Code</TableCell>
-      <TableCell align="right">Purchased Qty</TableCell>
-      <TableCell align="right">Already Returned</TableCell>
-      <TableCell align="right">Returnable Qty</TableCell>
-      <TableCell align="right">Rate</TableCell>
-      <TableCell align="center" sx={{ width: 140 }}>Return Qty</TableCell>
-      <TableCell align="right">Return Amount</TableCell>
+    <TableRow sx={{ bgcolor: 'background.default' }}>
+      <TableCell padding="checkbox" />
+      <TableCell sx={{ fontWeight: 700, minWidth: 180 }}>Item</TableCell>
+      <TableCell sx={{ fontWeight: 700, width: 80 }}>Code</TableCell>
+      <TableCell align="right" sx={{ fontWeight: 700, width: 100 }}>Purchased Qty</TableCell>
+      <TableCell align="right" sx={{ fontWeight: 700, width: 110 }}>Returned</TableCell>
+      <TableCell align="right" sx={{ fontWeight: 700, width: 110 }}>Returnable</TableCell>
+      <TableCell align="right" sx={{ fontWeight: 700, width: 100 }}>Rate</TableCell>
+      <TableCell align="right" sx={{ fontWeight: 700, width: 140 }}>Return Qty</TableCell>
+      <TableCell align="right" sx={{ fontWeight: 700, width: 120 }}>Return Amt</TableCell>
     </TableRow>
   );
 
   return (
-    <Card sx={{ mb: 3 }}>
-      <Box sx={{ p: 2, borderBottom: '1px solid', borderColor: 'divider' }}>
-        <Typography variant="subtitle1" fontWeight={700}>
-          Select Items to Return
+    <Card sx={{ border: 1, borderColor: 'divider', borderRadius: 2, overflow: 'hidden', mb: 2.5 }}>
+      <Box sx={{ px: 2.5, py: 1.5, borderBottom: 1, borderColor: 'divider', bgcolor: 'background.paper' }}>
+        <Typography variant="subtitle2" fontWeight={700}>
+          Step 3 — Select Items to Return
         </Typography>
-        <Typography variant="body2" color="text.secondary">
-          Check the items you wish to return to the supplier and specify return quantities.
+        <Typography variant="caption" color="text.secondary">
+          Check items you want to return and enter return quantities. Only returnable quantities are allowed.
         </Typography>
       </Box>
 
       <AppTable headContent={headContent} hidePagination={true}>
-        {items.map((item, index) => {
+        {items.map((item) => {
           const isSelected = !!selectedItems[item.purchaseItemId];
           const returnQty = selectedItems[item.purchaseItemId]?.returnQuantity || '';
           const returnable = Number(item.returnableQuantity || 0);
@@ -70,14 +68,18 @@ export default function ReturnablePurchaseItemsTable({
                 />
               </TableCell>
 
-              <TableCell>{index + 1}</TableCell>
-
               <TableCell>
                 <Typography variant="body2" fontWeight={600}>
                   {item.itemNameSnapshot}
                 </Typography>
                 <Typography variant="caption" color="text.secondary">
-                  {item.itemCodeSnapshot} • {item.unitSnapshot}
+                  {item.unitSnapshot}
+                </Typography>
+              </TableCell>
+
+              <TableCell>
+                <Typography variant="caption" color="primary.main" fontWeight={600}>
+                  {item.itemCodeSnapshot || '—'}
                 </Typography>
               </TableCell>
 
@@ -106,7 +108,7 @@ export default function ReturnablePurchaseItemsTable({
                 {formatCurrency(item.rate)}
               </TableCell>
 
-              <TableCell align="center">
+              <TableCell align="right">
                 <TextField
                   type="number"
                   size="small"
@@ -117,7 +119,7 @@ export default function ReturnablePurchaseItemsTable({
                     min: 0.001,
                     max: returnable,
                     step: 'any',
-                    style: { textAlign: 'center', padding: '6px 8px' },
+                    style: { textAlign: 'right', padding: '6px 8px' },
                   }}
                   error={
                     isSelected &&

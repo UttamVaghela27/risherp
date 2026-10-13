@@ -21,6 +21,8 @@ const AppDialogTitle = ({
         m: 0,
         px: 3,
         py: 2,
+        borderBottom: 1,
+        borderColor: 'divider',
         display: 'flex',
         alignItems: 'flex-start',
         justifyContent: 'space-between',

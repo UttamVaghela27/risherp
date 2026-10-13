@@ -35,6 +35,8 @@ import {
  *   onClose    — callback when dialog should close
  *   onSuccess  — callback(purchase) after a purchase is created successfully
  */
+let cartIdCounter = 1;
+
 const CreatePurchaseDialog = ({ open, onClose, onSuccess }) => {
   const theme = useTheme();
   const navigate = useNavigate();

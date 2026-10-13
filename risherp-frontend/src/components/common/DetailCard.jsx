@@ -344,7 +344,7 @@ export const DetailCard = ({
           alignItems: 'center',
           justifyContent: 'space-between',
           borderBottom: 1, borderColor: 'divider',
-          bgcolor: '#fafbfc',
+          bgcolor: 'background.default',
         }}
       >
         <Stack direction="row" spacing={1.5} alignItems="center">

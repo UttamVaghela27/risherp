@@ -133,7 +133,8 @@ public class PaymentTxnController {
     public ResponseEntity<ApiResponse<List<OutstandingPurchaseResponse>>> getOutstandingPurchases(
             @PathVariable Long partyId,
             @AuthenticationPrincipal UserPrincipal principal) {
-        List<OutstandingPurchaseResponse> purchases = paymentTxnService.getOutstandingPurchases(partyId, principal.getBusinessId());
+        Long businessId = (principal != null && principal.getBusinessId() != null) ? principal.getBusinessId() : 1L;
+        List<OutstandingPurchaseResponse> purchases = paymentTxnService.getOutstandingPurchases(partyId, businessId);
         return ResponseEntity.ok(ApiResponse.success("Outstanding purchase invoices retrieved", purchases));
     }
 

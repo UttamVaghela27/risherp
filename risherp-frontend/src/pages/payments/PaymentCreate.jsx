@@ -13,6 +13,9 @@ import DoneAllIcon from '@mui/icons-material/DoneAll';
 
 
 
+import PageHeader from '../../components/common/PageHeader';
+import StatusChip from '../../components/common/StatusChip';
+import { paymentTxnService } from '../../services/paymentTxnService';
 import partyService from '../../services/partyService';
 import { formatCurrency, formatDate } from '../../utils/formatters';
 import toast from 'react-hot-toast';
@@ -69,9 +72,11 @@ export default function PaymentCreate({ isModal = false, onClose, onSuccess }) {
     setLoadingPurchases(true);
     try {
       const res = await paymentTxnService.getOutstandingPurchases(partyId);
-      setOutstandingPurchases(res.data || res || []);
-    } catch {
-      toast.error('Failed to load supplier outstanding purchases');
+      const list = res?.data || res || [];
+      setOutstandingPurchases(Array.isArray(list) ? list : []);
+    } catch (err) {
+      console.warn('Could not load supplier outstanding purchases:', err);
+      setOutstandingPurchases([]);
     } finally {
       setLoadingPurchases(false);
     }

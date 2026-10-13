@@ -1,8 +1,9 @@
-import { Box, Typography, Table, TableBody, TableCell, TableHead, TableRow, TableContainer } from '@mui/material';
+import { Box, Typography, Table, TableBody, TableCell, TableHead, TableRow, TableContainer, useTheme, alpha } from '@mui/material';
 import { formatCurrency, formatQuantity } from '../../utils/formatters';
 
 const PurchaseReturnPrintView = ({ ret }) => {
   if (!ret) return null;
+  const theme = useTheme();
 
   const companyName = ret.businessName || 'ABC Enterprise';
   const companyMobile = ret.businessMobile || '';
@@ -17,7 +18,7 @@ const PurchaseReturnPrintView = ({ ret }) => {
         maxWidth: 800,
         mx: 'auto',
         bgcolor: 'background.paper',
-        color: '#000000',
+        color: theme.palette.text.primary,
         '@media print': { p: 0, m: 0, maxWidth: '100% !important', width: '100% !important' },
       }}
     >
@@ -28,29 +29,29 @@ const PurchaseReturnPrintView = ({ ret }) => {
           <Typography variant="subtitle2" sx={{ color: '#dc2626', fontWeight: 600, textTransform: 'uppercase', mb: 0.5, fontSize: '0.9rem' }}>
             PURCHASE RETURN / DEBIT NOTE
           </Typography>
-          <Typography variant="body2" sx={{ color: '#666', fontSize: '0.8rem' }}>
+          <Typography variant="body2" sx={{ color: theme.palette.text.secondary, fontSize: '0.8rem' }}>
             Email: {companyEmail} &nbsp; Mobile: {companyMobile}
           </Typography>
         </Box>
         <Box sx={{ textAlign: { xs: 'left', sm: 'right' } }}>
           <Typography variant="h5" sx={{ fontWeight: 700, color: '#dc2626', mb: 1 }}>{ret.returnNumber}</Typography>
-          <Typography variant="body2" sx={{ color: '#000', mb: 0.5, fontSize: '0.85rem' }}>
+          <Typography variant="body2" sx={{ color: theme.palette.text.primary, mb: 0.5, fontSize: '0.85rem' }}>
             Return Date: {ret.returnDate || '—'}
           </Typography>
-          <Typography variant="body2" sx={{ color: '#000', mb: 0.5, fontSize: '0.85rem' }}>
+          <Typography variant="body2" sx={{ color: theme.palette.text.primary, mb: 0.5, fontSize: '0.85rem' }}>
             Against Purchase: {ret.purchaseNumber || '—'}
           </Typography>
         </Box>
       </Box>
 
       {/* Supplier Block */}
-      <Box sx={{ bgcolor: '#f0f4f8', p: 1.5, mb: 3, mt: 1, borderTop: '1px solid #d1d5db' }}>
-        <Typography variant="body2" sx={{ color: '#4b5563', mb: 0.5, fontSize: '0.8rem' }}>Supplier / Vendor Details</Typography>
+      <Box sx={{ bgcolor: theme.palette.background.default, p: 1.5, mb: 3, mt: 1, borderTop: `1px solid ${theme.palette.divider}` }}>
+        <Typography variant="body2" sx={{ color: theme.palette.text.secondary, mb: 0.5, fontSize: '0.8rem' }}>Supplier / Vendor Details</Typography>
         <Typography variant="subtitle1" sx={{ fontWeight: 700, color: '#1e3a8a', mb: 0.5 }}>{ret.partyName}</Typography>
-        <Typography variant="body2" sx={{ color: '#000', mb: 0.5, fontSize: '0.85rem' }}>Mobile: {ret.partyMobile}</Typography>
-        <Typography variant="body2" sx={{ color: '#000', mb: 0.5, fontSize: '0.85rem' }}>Email: {ret.partyEmail}</Typography>
+        <Typography variant="body2" sx={{ color: theme.palette.text.primary, mb: 0.5, fontSize: '0.85rem' }}>Mobile: {ret.partyMobile}</Typography>
+        <Typography variant="body2" sx={{ color: theme.palette.text.primary, mb: 0.5, fontSize: '0.85rem' }}>Email: {ret.partyEmail}</Typography>
         {(ret.partyAddress || ret.partyCity) && (
-          <Typography variant="body2" sx={{ color: '#000', fontSize: '0.85rem' }}>
+          <Typography variant="body2" sx={{ color: theme.palette.text.primary, fontSize: '0.85rem' }}>
             Address: {[ret.partyAddress, ret.partyCity, ret.partyState].filter(Boolean).join(', ')}
           </Typography>
         )}
@@ -58,8 +59,8 @@ const PurchaseReturnPrintView = ({ ret }) => {
 
       {/* Items Table */}
       <TableContainer sx={{ overflowX: 'auto', maxWidth: '100%', mb: 2 }}>
-        <Table sx={{ minWidth: 550, border: '1px solid #e5e7eb' }} size="small">
-          <TableHead sx={{ bgcolor: '#f0f4f8' }}>
+        <Table sx={{ minWidth: 550, border: `1px solid ${theme.palette.divider}` }} size="small">
+          <TableHead sx={{ bgcolor: theme.palette.background.default }}>
             <TableRow>
               <TableCell sx={{ fontWeight: 700, color: '#1e3a8a', py: 1 }}>#</TableCell>
               <TableCell sx={{ fontWeight: 700, color: '#1e3a8a', py: 1 }}>Item</TableCell>
@@ -72,19 +73,19 @@ const PurchaseReturnPrintView = ({ ret }) => {
           <TableBody>
             {(ret.items || []).map((item, idx) => (
               <TableRow key={item.id || idx}>
-                <TableCell sx={{ color: '#000', py: 1, borderBottom: '1px solid #e5e7eb' }}>{idx + 1}</TableCell>
-                <TableCell sx={{ color: '#000', py: 1, borderBottom: '1px solid #e5e7eb' }}>
+                <TableCell sx={{ color: theme.palette.text.primary, py: 1, borderBottom: `1px solid ${theme.palette.divider}` }}>{idx + 1}</TableCell>
+                <TableCell sx={{ color: theme.palette.text.primary, py: 1, borderBottom: `1px solid ${theme.palette.divider}` }}>
                   {item.itemNameSnapshot}
-                  {item.itemCodeSnapshot && <div style={{ fontSize: '0.75rem', color: '#666' }}>{item.itemCodeSnapshot}</div>}
+                  {item.itemCodeSnapshot && <div style={{ fontSize: '0.75rem', color: theme.palette.text.secondary }}>{item.itemCodeSnapshot}</div>}
                 </TableCell>
-                <TableCell align="center" sx={{ color: '#000', py: 1, borderBottom: '1px solid #e5e7eb' }}>
+                <TableCell align="center" sx={{ color: theme.palette.text.primary, py: 1, borderBottom: `1px solid ${theme.palette.divider}` }}>
                   {formatQuantity(item.originalQuantity)} {item.unitSnapshot}
                 </TableCell>
-                <TableCell align="center" sx={{ color: '#000', fontWeight: 700, py: 1, borderBottom: '1px solid #e5e7eb' }}>
+                <TableCell align="center" sx={{ color: theme.palette.text.primary, fontWeight: 700, py: 1, borderBottom: `1px solid ${theme.palette.divider}` }}>
                   {formatQuantity(item.returnQuantity)} {item.unitSnapshot}
                 </TableCell>
-                <TableCell align="right" sx={{ color: '#000', py: 1, borderBottom: '1px solid #e5e7eb' }}>{formatCurrency(item.rate)}</TableCell>
-                <TableCell align="right" sx={{ color: '#000', fontWeight: 700, py: 1, borderBottom: '1px solid #e5e7eb' }}>{formatCurrency(item.lineTotal)}</TableCell>
+                <TableCell align="right" sx={{ color: theme.palette.text.primary, py: 1, borderBottom: `1px solid ${theme.palette.divider}` }}>{formatCurrency(item.rate)}</TableCell>
+                <TableCell align="right" sx={{ color: theme.palette.text.primary, fontWeight: 700, py: 1, borderBottom: `1px solid ${theme.palette.divider}` }}>{formatCurrency(item.lineTotal)}</TableCell>
               </TableRow>
             ))}
           </TableBody>
@@ -95,28 +96,28 @@ const PurchaseReturnPrintView = ({ ret }) => {
       <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, justifyContent: 'space-between', gap: 2, mb: 4 }}>
         <Box sx={{ width: { xs: '100%', sm: '50%' }, pt: 1 }}>
           {ret.refundMode && (
-            <Typography variant="body2" sx={{ color: '#000', mb: 0.5, fontSize: '0.85rem' }}>
+            <Typography variant="body2" sx={{ color: theme.palette.text.primary, mb: 0.5, fontSize: '0.85rem' }}>
               Adjustment / Refund Mode: {ret.refundMode.replace('_', ' ')}
             </Typography>
           )}
           {ret.reason && (
-            <Typography variant="body2" sx={{ color: '#000', fontSize: '0.85rem' }}>
+            <Typography variant="body2" sx={{ color: theme.palette.text.primary, fontSize: '0.85rem' }}>
               Reason: {ret.reason}
             </Typography>
           )}
         </Box>
         <Box sx={{ width: { xs: '100%', sm: '48%' } }}>
-          <Table sx={{ border: '1px solid #e5e7eb' }} size="small">
+          <Table sx={{ border: `1px solid ${theme.palette.divider}` }} size="small">
             <TableBody>
               <TableRow>
-                <TableCell sx={{ color: '#000', borderBottom: '1px solid #e5e7eb', py: 1 }}>Subtotal</TableCell>
-                <TableCell align="right" sx={{ color: '#000', borderBottom: '1px solid #e5e7eb', py: 1 }}>{formatCurrency(ret.subtotal)}</TableCell>
+                <TableCell sx={{ color: theme.palette.text.primary, borderBottom: `1px solid ${theme.palette.divider}`, py: 1 }}>Subtotal</TableCell>
+                <TableCell align="right" sx={{ color: theme.palette.text.primary, borderBottom: `1px solid ${theme.palette.divider}`, py: 1 }}>{formatCurrency(ret.subtotal)}</TableCell>
               </TableRow>
               <TableRow>
-                <TableCell sx={{ color: '#000', borderBottom: '1px solid #e5e7eb', py: 1 }}>Item Discount</TableCell>
-                <TableCell align="right" sx={{ color: '#000', borderBottom: '1px solid #e5e7eb', py: 1 }}>- {formatCurrency(ret.totalDiscount)}</TableCell>
+                <TableCell sx={{ color: theme.palette.text.primary, borderBottom: `1px solid ${theme.palette.divider}`, py: 1 }}>Item Discount</TableCell>
+                <TableCell align="right" sx={{ color: theme.palette.text.primary, borderBottom: `1px solid ${theme.palette.divider}`, py: 1 }}>- {formatCurrency(ret.totalDiscount)}</TableCell>
               </TableRow>
-              <TableRow sx={{ bgcolor: '#fef2f2' }}>
+              <TableRow sx={{ bgcolor: alpha(theme.palette.error.main, 0.1) }}>
                 <TableCell sx={{ fontWeight: 700, color: '#dc2626', borderBottom: 'none', py: 1 }}>RETURN AMOUNT</TableCell>
                 <TableCell align="right" sx={{ fontWeight: 700, color: '#dc2626', borderBottom: 'none', py: 1 }}>{formatCurrency(ret.returnAmount)}</TableCell>
               </TableRow>
@@ -126,7 +127,7 @@ const PurchaseReturnPrintView = ({ ret }) => {
       </Box>
 
       {/* Footer */}
-      <Typography variant="body2" sx={{ fontStyle: 'italic', color: '#6b7280', fontSize: '0.8rem', borderTop: '1px solid #e5e7eb', pt: 1 }}>
+      <Typography variant="body2" sx={{ fontStyle: 'italic', color: theme.palette.text.secondary, fontSize: '0.8rem', borderTop: `1px solid ${theme.palette.divider}`, pt: 1 }}>
         This is a computer-generated debit note. No signature required.
       </Typography>
     </Box>

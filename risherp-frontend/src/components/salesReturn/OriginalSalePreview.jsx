@@ -1,5 +1,5 @@
 import {
-  Box, Card, Grid, Typography, Stack, Button,
+  Box, Card, Grid, Typography, Stack, Button, alpha, useTheme,
 } from '@mui/material';
 import ReceiptOutlinedIcon from '@mui/icons-material/ReceiptOutlined';
 import StatusChip from '../common/StatusChip';
@@ -9,6 +9,9 @@ import StatusChip from '../common/StatusChip';
  * Shows selected sale's key details before creating the return.
  */
 const OriginalSalePreview = ({ sale, onClear }) => {
+  const theme = useTheme();
+  const isDark = theme.palette.mode === 'dark';
+
   if (!sale) return null;
 
   const infoRow = (label, value) => (
@@ -23,9 +26,10 @@ const OriginalSalePreview = ({ sale, onClear }) => {
       sx={{
         p: 2.5,
         mb: 2.5,
-        border: '1px solid #c7d2fe',
+        border: '1px solid',
+        borderColor: isDark ? alpha(theme.palette.primary.main, 0.3) : '#c7d2fe',
         borderRadius: 2,
-        bgcolor: '#f5f3ff',
+        bgcolor: isDark ? alpha(theme.palette.primary.main, 0.08) : '#f5f3ff',
       }}
     >
       <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 2 }}>
@@ -43,7 +47,7 @@ const OriginalSalePreview = ({ sale, onClear }) => {
 
       <Grid container spacing={2}>
         <Grid item xs={12} sm={6} md={4}>
-          <Typography variant="caption" color="text.disabled" fontWeight={600} sx={{ display: 'block', mb: 0.5 }}>
+          <Typography variant="caption" color="text.secondary" fontWeight={700} sx={{ display: 'block', mb: 0.5, letterSpacing: 0.5 }}>
             CUSTOMER
           </Typography>
           {infoRow('Name', sale.partyName)}
@@ -51,7 +55,7 @@ const OriginalSalePreview = ({ sale, onClear }) => {
           {infoRow('Mobile', sale.partyMobile)}
         </Grid>
         <Grid item xs={12} sm={6} md={4}>
-          <Typography variant="caption" color="text.disabled" fontWeight={600} sx={{ display: 'block', mb: 0.5 }}>
+          <Typography variant="caption" color="text.secondary" fontWeight={700} sx={{ display: 'block', mb: 0.5, letterSpacing: 0.5 }}>
             INVOICE DETAILS
           </Typography>
           {infoRow('Invoice No.', sale.invoiceNumber)}
@@ -59,7 +63,7 @@ const OriginalSalePreview = ({ sale, onClear }) => {
           {infoRow('Payment Status', sale.paymentStatus)}
         </Grid>
         <Grid item xs={12} sm={6} md={4}>
-          <Typography variant="caption" color="text.disabled" fontWeight={600} sx={{ display: 'block', mb: 0.5 }}>
+          <Typography variant="caption" color="text.secondary" fontWeight={700} sx={{ display: 'block', mb: 0.5, letterSpacing: 0.5 }}>
             FINANCIALS
           </Typography>
           {infoRow('Grand Total', `₹ ${Number(sale.grandTotal || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 })}`)}

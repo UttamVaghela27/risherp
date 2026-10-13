@@ -379,6 +379,9 @@ export const getTheme = (mode) => {
         styleOverrides: {
           root: {
             padding: '20px',
+            '&.MuiDialogContent-root': {
+              paddingTop: '20px',
+            },
             overflowY: 'auto',
             flex: 1,
             '&.MuiDialogContent-dividers': { borderColor: divider },
