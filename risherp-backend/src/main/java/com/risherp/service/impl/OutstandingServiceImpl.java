@@ -34,6 +34,7 @@ public class OutstandingServiceImpl implements OutstandingService {
     private final PaymentTxnRepository paymentTxnRepository;
     private final SalesReturnRepository salesReturnRepository;
     private final PurchaseReturnRepository purchaseReturnRepository;
+    private final LedgerEntryRepository ledgerEntryRepository;
 
     @Override
     @Transactional(readOnly = true)
@@ -64,7 +65,7 @@ public class OutstandingServiceImpl implements OutstandingService {
             }
 
             BigDecimal totalSales = saleRepository.sumGrandTotalByBusinessIdAndPartyId(businessId, party.getId());
-            BigDecimal totalReceipts = receiptRepository.sumTotalAmountByBusinessIdAndPartyId(businessId, party.getId());
+            BigDecimal totalReceipts = ledgerEntryRepository.sumReceiptsByPartyId(businessId, party.getId());
             BigDecimal totalSalesReturns = salesReturnRepository.sumRefundAmountByBusinessIdAndPartyId(businessId, party.getId());
 
             if (totalSales == null) totalSales = BigDecimal.ZERO;
@@ -122,7 +123,7 @@ public class OutstandingServiceImpl implements OutstandingService {
             }
 
             BigDecimal totalPurchases = purchaseRepository.sumGrandTotalByBusinessIdAndPartyId(businessId, party.getId());
-            BigDecimal totalPayments = paymentTxnRepository.sumTotalAmountByBusinessIdAndPartyId(businessId, party.getId());
+            BigDecimal totalPayments = ledgerEntryRepository.sumPaymentsByPartyId(businessId, party.getId());
             BigDecimal totalPurchaseReturns = purchaseReturnRepository.sumRefundAmountByBusinessIdAndPartyId(businessId, party.getId());
 
             if (totalPurchases == null) totalPurchases = BigDecimal.ZERO;

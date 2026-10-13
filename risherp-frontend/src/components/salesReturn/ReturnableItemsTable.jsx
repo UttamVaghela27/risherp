@@ -109,17 +109,17 @@ const ReturnableItemsTable = ({ items = [], selectedItems = {}, onToggle, onQtyC
               </TableCell>
               <TableCell align="right">
                 <Typography variant="body2">
-                  ₹ {Number(item.lineTotal / item.originalQuantity || 0).toFixed(2)}
+                  ₹ {item.originalQuantity > 0 ? Number(item.lineTotal / item.originalQuantity).toFixed(2) : Number(item.rate || 0).toFixed(2)}
                 </Typography>
               </TableCell>
               <TableCell align="right">
                 {sel.selected ? (
                   <TextField
                     size="small"
-                    type="number"
+                    type="text"
                     value={sel.returnQty}
                     onChange={(e) => onQtyChange(item.saleItemId, e.target.value)}
-                    inputProps={{ min: 0.001, max: returnableNum, step: 0.001 }}
+                    inputProps={{ inputMode: 'decimal',  min: 0.001, max: returnableNum, step: 0.001 }}
                     error={!!sel.error}
                     helperText={sel.error}
                     sx={{ width: 110 }}

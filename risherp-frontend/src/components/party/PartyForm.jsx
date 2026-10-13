@@ -530,14 +530,14 @@ const PartyForm = ({
                 fullWidth
                 required
                 id="openingBalance"
-                type="number"
+                type="text"
                 label="Opening Balance"
                 value={formData.openingBalance}
                 onChange={(e) => handleChange('openingBalance', e.target.value)}
                 onBlur={() => handleBlur('openingBalance')}
                 error={Boolean(errors.openingBalance)}
                 helperText={errors.openingBalance || 'Initial opening balance'}
-                inputProps={{ min: '0', step: '0.01' }}
+                inputProps={{ inputMode: 'decimal',  min: '0', step: '0.01' }}
                 size="small"
                 disabled={loading}
                 InputProps={{
@@ -578,7 +578,7 @@ const PartyForm = ({
               <TextField
                 fullWidth
                 id="creditLimit"
-                type="number"
+                type="text"
                 label="Credit Limit"
                 placeholder="0.00"
                 value={formData.creditLimit}
@@ -586,7 +586,7 @@ const PartyForm = ({
                 onBlur={() => handleBlur('creditLimit')}
                 error={Boolean(errors.creditLimit)}
                 helperText={errors.creditLimit || '0 means no credit limit'}
-                inputProps={{ min: '0', step: '0.01' }}
+                inputProps={{ inputMode: 'decimal',  min: '0', step: '0.01' }}
                 size="small"
                 disabled={loading}
                 InputProps={{

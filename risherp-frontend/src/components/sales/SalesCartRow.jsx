@@ -107,12 +107,11 @@ const SalesCartRow = ({ item, index, onUpdate, onRemove }) => {
           </IconButton>
           <TextField
             size="small"
-            type="number"
+            type="text"
             value={item.quantity}
             onChange={(e) => handleChange('quantity', e.target.value)}
             slotProps={{
-              htmlInput: {
-                min: 0.001,
+              htmlInput: { inputMode: 'decimal', min: 0.001,
                 step: 0.001,
                 style: {
                   textAlign: 'center',
@@ -141,11 +140,11 @@ const SalesCartRow = ({ item, index, onUpdate, onRemove }) => {
       <TableCell sx={{ width: 110 }}>
         <TextField
           size="small"
-          type="number"
+          type="text"
           value={item.rate}
           onChange={(e) => handleChange('rate', e.target.value)}
           slotProps={{
-            htmlInput: { min: 0, step: 0.01, style: { textAlign: 'right', padding: '5px 8px', fontWeight: 600, fontFamily: 'monospace' } },
+            htmlInput: { inputMode: 'decimal', min: 0, step: 0.01, style: { textAlign: 'right', padding: '5px 8px', fontWeight: 600, fontFamily: 'monospace' } },
             input: {
               startAdornment: <InputAdornment position="start" sx={{ mr: 0.2, '& p': { fontSize: 12 } }}>₹</InputAdornment>
             }
@@ -168,11 +167,11 @@ const SalesCartRow = ({ item, index, onUpdate, onRemove }) => {
           </Select>
           <TextField
             size="small"
-            type="number"
+            type="text"
             value={item.discountValue}
             onChange={(e) => handleChange('discountValue', e.target.value)}
             slotProps={{
-              htmlInput: { min: 0, step: 0.01, style: { textAlign: 'right', padding: '5px 8px', fontWeight: 600, fontFamily: 'monospace' } }
+              htmlInput: { inputMode: 'decimal', min: 0, step: 0.01, style: { textAlign: 'right', padding: '5px 8px', fontWeight: 600, fontFamily: 'monospace' } }
             }}
             sx={{ width: 85, '& .MuiOutlinedInput-root': { borderRadius: '8px' } }}
           />

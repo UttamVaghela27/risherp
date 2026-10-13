@@ -263,14 +263,14 @@ export default function PaymentCreate({ isModal = false, onClose, onSuccess }) {
 
                 {/* Amount */}
                 <TextField
-                  type="number"
+                  type="text"
                   fullWidth
                   required
                   size="small"
                   label="Amount Paid (₹)"
                   value={amount}
                   onChange={(e) => setAmount(e.target.value)}
-                  inputProps={{ min: 0.01, step: 'any' }}
+                  inputProps={{ inputMode: 'decimal',  min: 0.01, step: 'any' }}
                   disabled={submitting}
                 />
 
@@ -377,11 +377,11 @@ export default function PaymentCreate({ isModal = false, onClose, onSuccess }) {
                               </TableCell>
                               <TableCell align="center">
                                 <TextField
-                                  type="number"
+                                  type="text"
                                   size="small"
                                   value={allocVal}
                                   onChange={(e) => handleAllocationChange(purchase.purchaseId, e.target.value, purchase.balanceAmount)}
-                                  inputProps={{ min: 0, max: purchase.balanceAmount, step: 'any', style: { textAlign: 'right' } }}
+                                  inputProps={{ inputMode: 'decimal',  min: 0, max: purchase.balanceAmount, step: 'any', style: { textAlign: 'right' } }}
                                   error={isInvalid}
                                   helperText={isInvalid ? `Max: ₹${purchase.balanceAmount}` : ''}
                                   disabled={submitting}

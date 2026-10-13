@@ -76,12 +76,12 @@ const PurchaseSummary = ({
             </ToggleButtonGroup>
             <TextField
               size="small"
-              type="number"
+              type="text"
               value={overallDiscount || ''}
               onChange={(e) => onOverallDiscountChange(e.target.value)}
               placeholder="0"
               slotProps={{
-                htmlInput: { min: 0, step: 0.01, style: { textAlign: 'right', fontVariantNumeric: 'tabular-nums' } },
+                htmlInput: { inputMode: 'decimal', min: 0, step: 0.01, style: { textAlign: 'right', fontVariantNumeric: 'tabular-nums' } },
                 input: {
                   startAdornment: overallDiscountType === 'AMOUNT'
                     ? <InputAdornment position="start">₹</InputAdornment>

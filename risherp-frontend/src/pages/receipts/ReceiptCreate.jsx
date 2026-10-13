@@ -35,7 +35,7 @@ export default function ReceiptCreate({ isModal = false, onClose, onSuccess } = 
   const [loadingSales, setLoadingSales] = useState(false);
 
   // Form
-  const [receiptDate, setReturnDate] = useState(new Date().toISOString().split('T')[0]);
+  const [receiptDate, setReceiptDate] = useState(new Date().toISOString().split('T')[0]);
   const [amount, setAmount] = useState('');
   const [paymentMode, setPaymentMode] = useState('CASH');
   const [referenceNumber, setReferenceNumber] = useState('');
@@ -255,7 +255,7 @@ export default function ReceiptCreate({ isModal = false, onClose, onSuccess } = 
                   size="small"
                   label="Receipt Date"
                   value={receiptDate}
-                  onChange={(e) => setReturnDate(e.target.value)}
+                  onChange={(e) => setReceiptDate(e.target.value)}
                   slotProps={{ inputLabel: { shrink: true } }}
                   InputLabelProps={{ shrink: true }}
                   disabled={submitting}
@@ -263,14 +263,14 @@ export default function ReceiptCreate({ isModal = false, onClose, onSuccess } = 
 
                 {/* Amount */}
                 <TextField
-                  type="number"
+                  type="text"
                   fullWidth
                   required
                   size="small"
                   label="Amount Received (₹)"
                   value={amount}
                   onChange={(e) => setAmount(e.target.value)}
-                  inputProps={{ min: 0.01, step: 'any' }}
+                  inputProps={{ inputMode: 'decimal',  min: 0.01, step: 'any' }}
                   disabled={submitting}
                 />
 
@@ -377,11 +377,11 @@ export default function ReceiptCreate({ isModal = false, onClose, onSuccess } = 
                               </TableCell>
                               <TableCell align="center">
                                 <TextField
-                                  type="number"
+                                  type="text"
                                   size="small"
                                   value={allocVal}
                                   onChange={(e) => handleAllocationChange(sale.saleId, e.target.value, sale.balanceAmount)}
-                                  inputProps={{ min: 0, max: sale.balanceAmount, step: 'any', style: { textAlign: 'right' } }}
+                                  inputProps={{ inputMode: 'decimal',  min: 0, max: sale.balanceAmount, step: 'any', style: { textAlign: 'right' } }}
                                   error={isInvalid}
                                   helperText={isInvalid ? `Max: ₹${sale.balanceAmount}` : ''}
                                   disabled={submitting}

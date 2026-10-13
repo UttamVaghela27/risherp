@@ -365,8 +365,8 @@ const ItemForm = ({
             <Grid item xs={12} sm={4}>
               <TextField
                 label="Purchase Rate *"
-                type="number"
-                inputProps={{ step: '0.01', min: '0' }}
+                type="text"
+                inputProps={{ inputMode: 'decimal',  step: '0.01', min: '0' }}
                 value={formData.purchaseRate}
                 onChange={(e) => handleChange('purchaseRate', e.target.value)}
                 fullWidth
@@ -384,8 +384,8 @@ const ItemForm = ({
             <Grid item xs={12} sm={4}>
               <TextField
                 label="Sale Rate *"
-                type="number"
-                inputProps={{ step: '0.01', min: '0' }}
+                type="text"
+                inputProps={{ inputMode: 'decimal',  step: '0.01', min: '0' }}
                 value={formData.saleRate}
                 onChange={(e) => handleChange('saleRate', e.target.value)}
                 fullWidth
@@ -496,8 +496,8 @@ const ItemForm = ({
               ) : (
                 <TextField
                   label="Opening / Initial Stock"
-                  type="number"
-                  inputProps={{ step: '1', min: '0' }}
+                  type="text"
+                  inputProps={{ inputMode: 'decimal',  step: '1', min: '0' }}
                   value={formData.initialStock}
                   onChange={(e) => handleChange('initialStock', e.target.value)}
                   fullWidth
@@ -518,8 +518,8 @@ const ItemForm = ({
             <Grid item xs={12} sm={6}>
               <TextField
                 label="Minimum Stock (Alert Level)"
-                type="number"
-                inputProps={{ step: '1', min: '0' }}
+                type="text"
+                inputProps={{ inputMode: 'decimal',  step: '1', min: '0' }}
                 value={formData.minimumStock}
                 onChange={(e) => handleChange('minimumStock', e.target.value)}
                 fullWidth

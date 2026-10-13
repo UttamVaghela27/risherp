@@ -67,4 +67,9 @@ public interface LedgerEntryRepository extends JpaRepository<LedgerEntry, Long>,
 
     @Query("SELECT COALESCE(SUM(le.creditAmount), 0) FROM LedgerEntry le WHERE le.business.id = :businessId AND le.party.id = :partyId")
     BigDecimal sumCreditByPartyId(@Param("businessId") Long businessId, @Param("partyId") Long partyId);
+    @Query("SELECT COALESCE(SUM(le.creditAmount), 0) FROM LedgerEntry le WHERE le.business.id = :businessId AND le.party.id = :partyId AND le.transactionType = com.risherp.entity.LedgerTransactionType.RECEIPT")
+    BigDecimal sumReceiptsByPartyId(@Param("businessId") Long businessId, @Param("partyId") Long partyId);
+
+    @Query("SELECT COALESCE(SUM(le.debitAmount), 0) FROM LedgerEntry le WHERE le.business.id = :businessId AND le.party.id = :partyId AND le.transactionType = com.risherp.entity.LedgerTransactionType.PAYMENT")
+    BigDecimal sumPaymentsByPartyId(@Param("businessId") Long businessId, @Param("partyId") Long partyId);
 }

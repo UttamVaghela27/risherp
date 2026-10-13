@@ -116,11 +116,11 @@ const PurchasePaymentSection = ({
           fullWidth
           size="small"
           label="Paid Amount"
-          type="number"
+          type="text"
           value={paidAmount}
           onChange={(e) => onPaidAmountChange(e.target.value)}
           slotProps={{
-            htmlInput: { min: 0, step: 0.01, style: { fontVariantNumeric: 'tabular-nums' } },
+            htmlInput: { inputMode: 'decimal', min: 0, step: 0.01, style: { fontVariantNumeric: 'tabular-nums' } },
             input: {
               startAdornment: (
                 <InputAdornment position="start">

@@ -30,7 +30,6 @@ import { useLocation, useNavigate, Link as RouterLink } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { ThemeContext } from '../context/ThemeContext';
 import GlobalSearch from '../components/layout/GlobalSearch';
-import NotificationMenu from '../components/layout/NotificationMenu';
 import { routeLabelMap } from '../utils/navigation';
 import { SIDEBAR_EXPANDED_WIDTH, SIDEBAR_COLLAPSED_WIDTH } from './Sidebar';
 
@@ -185,7 +184,6 @@ const Navbar = ({
             </IconButton>
           </Tooltip>
 
-          <NotificationMenu />
 
           {user?.businessName && (
             <Box

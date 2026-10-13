@@ -110,12 +110,12 @@ export default function ReturnablePurchaseItemsTable({
 
               <TableCell align="right">
                 <TextField
-                  type="number"
+                  type="text"
                   size="small"
                   disabled={disabled || !isSelected || isFullyReturned}
                   value={returnQty}
                   onChange={(e) => onQuantityChange(item.purchaseItemId, e.target.value, returnable)}
-                  inputProps={{
+                  inputProps={{ inputMode: 'decimal', 
                     min: 0.001,
                     max: returnable,
                     step: 'any',

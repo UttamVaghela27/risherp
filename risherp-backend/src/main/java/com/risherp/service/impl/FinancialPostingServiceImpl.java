@@ -126,6 +126,27 @@ public class FinancialPostingServiceImpl implements FinancialPostingService {
 
         ledgerEntryRepository.save(entry);
         log.info("Posted Sale to Ledger: Sale ID {}, Invoice {}, Debit={}", sale.getId(), sale.getInvoiceNumber(), sale.getGrandTotal());
+
+        if (sale.getPaidAmount() != null && sale.getPaidAmount().compareTo(BigDecimal.ZERO) > 0) {
+            if (!ledgerEntryRepository.existsByBusinessIdAndPartyIdAndReferenceTypeAndReferenceIdAndTransactionType(
+                    businessId, partyId, "SALE", sale.getId(), LedgerTransactionType.RECEIPT)) {
+                LedgerEntry paymentEntry = LedgerEntry.builder()
+                        .business(sale.getBusiness())
+                        .party(sale.getParty())
+                        .transactionDate(sale.getSaleDate())
+                        .transactionType(LedgerTransactionType.RECEIPT)
+                        .referenceType("SALE")
+                        .referenceId(sale.getId())
+                        .referenceNumber(sale.getInvoiceNumber())
+                        .debitAmount(BigDecimal.ZERO)
+                        .creditAmount(sale.getPaidAmount())
+                        .remarks("Payment received on Sale " + sale.getInvoiceNumber() + (sale.getPaymentMode() != null ? " (" + sale.getPaymentMode() + ")" : ""))
+                        .createdBy(user)
+                        .build();
+                ledgerEntryRepository.save(paymentEntry);
+                log.info("Posted Sale Initial Payment to Ledger: Sale ID {}, Invoice {}, Credit={}", sale.getId(), sale.getInvoiceNumber(), sale.getPaidAmount());
+            }
+        }
     }
 
     @Override
@@ -222,6 +243,27 @@ public class FinancialPostingServiceImpl implements FinancialPostingService {
 
         ledgerEntryRepository.save(entry);
         log.info("Posted Purchase to Ledger: Purchase ID {}, Number {}, Credit={}", purchase.getId(), purchase.getPurchaseNumber(), purchase.getGrandTotal());
+
+        if (purchase.getPaidAmount() != null && purchase.getPaidAmount().compareTo(BigDecimal.ZERO) > 0) {
+            if (!ledgerEntryRepository.existsByBusinessIdAndPartyIdAndReferenceTypeAndReferenceIdAndTransactionType(
+                    businessId, partyId, "PURCHASE", purchase.getId(), LedgerTransactionType.PAYMENT)) {
+                LedgerEntry paymentEntry = LedgerEntry.builder()
+                        .business(purchase.getBusiness())
+                        .party(purchase.getParty())
+                        .transactionDate(purchase.getPurchaseDate())
+                        .transactionType(LedgerTransactionType.PAYMENT)
+                        .referenceType("PURCHASE")
+                        .referenceId(purchase.getId())
+                        .referenceNumber(purchase.getPurchaseNumber())
+                        .debitAmount(purchase.getPaidAmount())
+                        .creditAmount(BigDecimal.ZERO)
+                        .remarks("Payment made on Purchase " + purchase.getPurchaseNumber() + (purchase.getPaymentMode() != null ? " (" + purchase.getPaymentMode() + ")" : ""))
+                        .createdBy(user)
+                        .build();
+                ledgerEntryRepository.save(paymentEntry);
+                log.info("Posted Purchase Initial Payment to Ledger: Purchase ID {}, Number {}, Debit={}", purchase.getId(), purchase.getPurchaseNumber(), purchase.getPaidAmount());
+            }
+        }
     }
 
     @Override

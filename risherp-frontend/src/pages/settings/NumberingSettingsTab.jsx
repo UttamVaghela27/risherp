@@ -304,11 +304,11 @@ const NumberingSettingsTab = () => {
               <TextField
                 label="Next Sequence Number"
                 name="nextNumber"
-                type="number"
+                type="text"
                 value={editForm.nextNumber}
                 onChange={handleEditChange}
                 fullWidth
-                inputProps={{ min: 1 }}
+                inputProps={{ inputMode: 'decimal',  min: 1 }}
                 helperText="Next sequential numeric identifier"
                 InputProps={{ sx: { borderRadius: 2 } }}
               />
@@ -316,11 +316,11 @@ const NumberingSettingsTab = () => {
               <TextField
                 label="Total Digits Length (Zero Padding)"
                 name="numberLength"
-                type="number"
+                type="text"
                 value={editForm.numberLength}
                 onChange={handleEditChange}
                 fullWidth
-                inputProps={{ min: 1, max: 12 }}
+                inputProps={{ inputMode: 'decimal',  min: 1, max: 12 }}
                 helperText="Between 1 and 12 digits (e.g. 6 digits = 000001)"
                 InputProps={{ sx: { borderRadius: 2 } }}
               />
