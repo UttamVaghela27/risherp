@@ -20,7 +20,8 @@ import org.springframework.web.cors.CorsConfigurationSource;
 
 /**
  * Spring Security Configuration
- * Configures stateless JWT authentication, password encoding, and route permissions.
+ * Configures stateless JWT authentication, password encoding, and route
+ * permissions.
  * Phase 17: Added 403 Forbidden handler and @PreAuthorize method security.
  */
 @Configuration
@@ -45,39 +46,40 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            // Disable CSRF since REST APIs use stateless JWT
-            .csrf(AbstractHttpConfigurer::disable)
-            // Enable CORS with our configured source
-            .cors(cors -> cors.configurationSource(corsConfigurationSource))
-            // Stateless session (no HTTP session)
-            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-            // Exception handling for 401 (unauthenticated) and 403 (forbidden)
-            .exceptionHandling(ex -> ex
-                .authenticationEntryPoint((request, response, authException) -> {
-                    response.setContentType("application/json");
-                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                    response.getWriter().write(
-                        "{\"success\":false,\"message\":\"Unauthorized: Full authentication is required to access this resource\"}"
-                    );
-                })
-                .accessDeniedHandler((request, response, accessDeniedException) -> {
-                    response.setContentType("application/json");
-                    response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-                    response.getWriter().write(
-                        "{\"success\":false,\"message\":\"Forbidden: You do not have permission to perform this action\"}"
-                    );
-                })
-            )
-            // URL authorization rules — method-level security (@PreAuthorize) handles fine-grained control
-            .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/auth/**").permitAll()
-                .requestMatchers("/api/health").permitAll()
-                .requestMatchers("/actuator/health").permitAll()
-                .requestMatchers("/error").permitAll()
-                .anyRequest().authenticated()
-            )
-            // Add JWT filter before standard username/password filter
-            .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+                // Disable CSRF since REST APIs use stateless JWT
+                .csrf(AbstractHttpConfigurer::disable)
+                // Enable CORS with our configured source
+                .cors(cors -> cors.configurationSource(corsConfigurationSource))
+                // Stateless session (no HTTP session)
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                // Exception handling for 401 (unauthenticated) and 403 (forbidden)
+                .exceptionHandling(ex -> ex
+                        .authenticationEntryPoint((request, response, authException) -> {
+                            response.setContentType("application/json");
+                            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                            response.getWriter().write(
+                                    "{\"success\":false,\"message\":\"Unauthorized: Full authentication is required to access this resource\"}");
+                        })
+                        .accessDeniedHandler((request, response, accessDeniedException) -> {
+                            response.setContentType("application/json");
+                            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                            response.getWriter().write(
+                                    "{\"success\":false,\"message\":\"Forbidden: You do not have permission to perform this action\"}");
+                        }))
+                // URL authorization rules — method-level security (@PreAuthorize) handles
+                // fine-grained control
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(
+                                org.springframework.http.HttpMethod.POST,
+                                "/api/user/loginUser")
+                        .permitAll()
+                        .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/api/health").permitAll()
+                        .requestMatchers("/actuator/health").permitAll()
+                        .requestMatchers("/error").permitAll()
+                        .anyRequest().authenticated())
+                // Add JWT filter before standard username/password filter
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }

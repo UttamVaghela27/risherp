@@ -8,15 +8,16 @@ import java.time.LocalDateTime;
 
 /**
  * AuditLog Entity
- * Stores immutable audit logs of system actions (Auth, Sales, Stock, Users, etc.)
+ * Stores immutable audit logs of system actions (Auth, Sales, Stock, Users,
+ * etc.)
  */
 @Entity
 @Table(name = "audit_logs")
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
 @Builder
+@AllArgsConstructor
 public class AuditLog {
 
     @Id
