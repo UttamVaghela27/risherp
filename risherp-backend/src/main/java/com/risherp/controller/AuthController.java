@@ -4,6 +4,7 @@ package com.risherp.controller;
 import com.risherp.dto.ApiResponse;
 import com.risherp.dto.auth.*;
 import com.risherp.service.AuthService;
+import com.risherp.service.OtpService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +15,8 @@ import org.springframework.web.bind.annotation.*;
 
 /**
  * Authentication Controller
- * Manages Business Registration, Security Code Verification, Login, and Session retrieval.
+ * Manages Business Registration, Security Code Verification, Login, Session retrieval,
+ * Email OTP Verification, and Forgot/Reset Password.
  */
 @RestController
 @RequestMapping("/api/auth")
@@ -22,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
 
     private final AuthService authService;
+    private final OtpService otpService;
 
     @PostMapping("/register")
     public ResponseEntity<ApiResponse<RegisterResponse>> register(
@@ -33,8 +36,93 @@ public class AuthController {
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(ApiResponse.success("Registration successful", response));
+                .body(ApiResponse.success("Registration successful. Please verify your email.", response));
     }
+
+    // ── Email Verification ─────────────────────────────────────────────────
+
+    /**
+     * Send (or re-send) an email verification OTP.
+     * Called automatically after registration and on demand (resend button).
+     * POST /api/auth/send-verification-otp
+     */
+    @PostMapping("/send-verification-otp")
+    public ResponseEntity<ApiResponse<Void>> sendVerificationOtp(
+            @Valid @RequestBody SendVerificationOtpRequest request) {
+
+        authService.sendEmailVerificationOtp(request.getEmail());
+        return ResponseEntity.ok(ApiResponse.success(
+                "Verification code sent. Please check your email.", null));
+    }
+
+    /**
+     * Verify email OTP entered by the user.
+     * POST /api/auth/verify-email-otp
+     */
+    @PostMapping("/verify-email-otp")
+    public ResponseEntity<ApiResponse<Void>> verifyEmailOtp(
+            @Valid @RequestBody VerifyEmailOtpRequest request) {
+
+        otpService.verifyEmailOtp(request);
+        return ResponseEntity.ok(ApiResponse.success(
+                "Email verified successfully. You may now log in.", null));
+    }
+
+    /**
+     * Resend email verification OTP (alias for send-verification-otp, kept for frontend clarity).
+     * POST /api/auth/resend-verification-otp
+     */
+    @PostMapping("/resend-verification-otp")
+    public ResponseEntity<ApiResponse<Void>> resendVerificationOtp(
+            @Valid @RequestBody SendVerificationOtpRequest request) {
+
+        authService.sendEmailVerificationOtp(request.getEmail());
+        return ResponseEntity.ok(ApiResponse.success(
+                "A new verification code has been sent to your email.", null));
+    }
+
+    // ── Forgot / Reset Password ────────────────────────────────────────────
+
+    /**
+     * Initiate forgot-password flow.
+     * Always returns a generic message to prevent account enumeration.
+     * POST /api/auth/forgot-password
+     */
+    @PostMapping("/forgot-password")
+    public ResponseEntity<ApiResponse<Void>> forgotPassword(
+            @Valid @RequestBody ForgotPasswordRequest request) {
+
+        otpService.sendPasswordResetOtp(request.getEmail());
+        return ResponseEntity.ok(ApiResponse.success(
+                "If an eligible account exists for this email, password reset instructions will be sent.", null));
+    }
+
+    /**
+     * Verify the password-reset OTP and receive a single-use reset token.
+     * POST /api/auth/verify-reset-otp
+     */
+    @PostMapping("/verify-reset-otp")
+    public ResponseEntity<ApiResponse<VerifyResetOtpResponse>> verifyResetOtp(
+            @Valid @RequestBody VerifyResetOtpRequest request) {
+
+        VerifyResetOtpResponse response = otpService.verifyResetOtp(request);
+        return ResponseEntity.ok(ApiResponse.success("OTP verified.", response));
+    }
+
+    /**
+     * Reset the user's password using the reset token.
+     * POST /api/auth/reset-password
+     */
+    @PostMapping("/reset-password")
+    public ResponseEntity<ApiResponse<Void>> resetPassword(
+            @Valid @RequestBody ResetPasswordRequest request) {
+
+        otpService.resetPassword(request);
+        return ResponseEntity.ok(ApiResponse.success(
+                "Password reset successfully. You may now log in with your new password.", null));
+    }
+
+    // ── Existing endpoints (unchanged) ─────────────────────────────────────
 
     @PostMapping("/verify-login")
     public ResponseEntity<ApiResponse<VerifySecurityCodeResponse>> verifyLogin(

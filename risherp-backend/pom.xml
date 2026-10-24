@@ -98,6 +98,12 @@
             <version>2.0.3</version>
         </dependency>
 
+        <!-- Spring Boot Mail: JavaMailSender for OTP email delivery -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-mail</artifactId>
+        </dependency>
+
         <!-- Spring Boot Actuator: Health and metrics observability -->
         <dependency>
             <groupId>org.springframework.boot</groupId>

@@ -33,6 +33,21 @@ spring:
     serialization:
       write-dates-as-timestamps: false
     default-property-inclusion: non_null
+  mail:
+    host: ${MAIL_HOST:smtp.gmail.com}
+    port: ${MAIL_PORT:587}
+    username: ${MAIL_USERNAME:vaghelauttam81@gmail.com}
+    password: ${MAIL_PASSWORD:plpxuzxarpcgiirw}
+    properties:
+      mail:
+        smtp:
+          auth: ${MAIL_SMTP_AUTH:true}
+          starttls:
+            enable: ${MAIL_SMTP_STARTTLS_ENABLE:true}
+            required: true
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
 
 logging:
   level:
@@ -50,6 +65,11 @@ app:
   jwt:
     secret: ${JWT_SECRET:404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970}
     expiration-ms: ${JWT_EXPIRATION_MS:86400000}
+  otp:
+    expiry-minutes: ${OTP_EXPIRY_MINUTES:10}
+    max-attempts: ${OTP_MAX_ATTEMPTS:5}
+    resend-cooldown-seconds: ${OTP_RESEND_COOLDOWN_SECONDS:60}
+    from-email: ${MAIL_FROM:vaghelauttam81@gmail.com}
 
 management:
   endpoints:

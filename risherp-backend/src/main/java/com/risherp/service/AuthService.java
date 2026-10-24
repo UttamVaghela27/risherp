@@ -13,4 +13,10 @@ public interface AuthService {
     UserSummaryDto getCurrentUser(String email);
 
     void logout(String email, String ipAddress);
+
+    /**
+     * Send email verification OTP to the user identified by email.
+     * Called after registration and for resend requests.
+     */
+    void sendEmailVerificationOtp(String email);
 }

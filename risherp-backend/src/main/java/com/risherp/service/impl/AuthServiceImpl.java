@@ -14,6 +14,7 @@ import com.risherp.repository.UserRepository;
 import com.risherp.security.JwtUtil;
 import com.risherp.service.AuditLogService;
 import com.risherp.service.AuthService;
+import com.risherp.service.OtpService;
 import com.risherp.util.SecurityCodeGenerator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -36,6 +37,7 @@ public class AuthServiceImpl implements AuthService {
     private final UserMapper userMapper;
     private final AuditLogService auditLogService;
     private final com.risherp.repository.PermissionRepository permissionRepository;
+    private final OtpService otpService;
 
     @Override
     @Transactional
@@ -103,6 +105,16 @@ public class AuthServiceImpl implements AuthService {
                 ipAddress
         );
 
+        // 8. Send email verification OTP (non-blocking: email failure should not prevent
+        //    the registration response, but the user must verify before logging in)
+        try {
+            otpService.sendEmailVerificationOtp(user.getId(), user.getEmail(), user.getName());
+        } catch (Exception e) {
+            log.warn("Email verification OTP could not be sent after registration for userId={}: {}",
+                    user.getId(), e.getMessage());
+            // Registration succeeds even if email fails; user can request resend
+        }
+
         return RegisterResponse.builder()
                 .businessId(business.getId())
                 .businessName(business.getBusinessName())
@@ -110,6 +122,7 @@ public class AuthServiceImpl implements AuthService {
                 .email(business.getEmail())
                 .securityCode(rawSecurityCode)
                 .instruction("Save this code securely. It will be required to verify this application.")
+                .needsEmailVerification(true)
                 .build();
     }
 
@@ -188,6 +201,12 @@ public class AuthServiceImpl implements AuthService {
             throw new BadRequestException("Your account is deactivated. Please contact administrator.");
         }
 
+        // Check email verification
+        if (!user.isEmailVerified()) {
+            auditLogService.log(user.getId(), email, user.getBusiness().getId(), "AUTH", "LOGIN_BLOCKED_UNVERIFIED", null, "Login attempt before email verification for: " + email, ipAddress);
+            throw new BadRequestException("Please verify your email address before logging in. Check your inbox for the verification code.");
+        }
+
         // Check business matching if businessId provided
         if (request.getBusinessId() != null && !user.getBusiness().getId().equals(request.getBusinessId())) {
             throw new BadRequestException("This account does not belong to the verified business.");
@@ -249,6 +268,18 @@ public class AuthServiceImpl implements AuthService {
                     ipAddress
             );
         });
+    }
+
+    @Override
+    @Transactional
+    public void sendEmailVerificationOtp(String email) {
+        String normalizedEmail = email.trim().toLowerCase();
+        User user = userRepository.findByEmail(normalizedEmail)
+                .orElseThrow(() -> new ResourceNotFoundException("No account found for email: " + normalizedEmail));
+        if (user.isEmailVerified()) {
+            throw new BadRequestException("This email address is already verified.");
+        }
+        otpService.sendEmailVerificationOtp(user.getId(), user.getEmail(), user.getName());
     }
 
     private Role getOrCreateRole(String roleName, String description) {

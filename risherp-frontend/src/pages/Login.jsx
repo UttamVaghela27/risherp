@@ -69,6 +69,7 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [loginLoading, setLoginLoading] = useState(false);
   const [loginError, setLoginError] = useState('');
+  const [unverifiedEmail, setUnverifiedEmail] = useState(null); // Set when server blocks due to unverified email
 
   // Auto-verify if code was prefilled from registration
   useEffect(() => {
@@ -108,12 +109,18 @@ const Login = () => {
 
     setLoginLoading(true);
     setLoginError('');
+    setUnverifiedEmail(null);
     try {
       await login(email, password, verifiedBusiness?.businessId);
       const origin = location.state?.from?.pathname || '/dashboard';
       navigate(origin, { replace: true });
     } catch (err) {
-      setLoginError(err.response?.data?.message || 'Invalid credentials');
+      const msg = err.response?.data?.message || 'Invalid credentials';
+      // Detect unverified email block from backend
+      if (msg.toLowerCase().includes('verify your email')) {
+        setUnverifiedEmail(email.trim().toLowerCase());
+      }
+      setLoginError(msg);
     } finally {
       setLoginLoading(false);
     }
@@ -276,7 +283,7 @@ const Login = () => {
 
             <TextField
               fullWidth
-              size="medium"
+              size="small"
               label="Business Security Code"
               placeholder="e.g. RISH-XXXXXX"
               value={securityCode}
@@ -289,6 +296,21 @@ const Login = () => {
                   e.preventDefault();
                   handleVerifyCode();
                 }
+              }}
+              slotProps={{
+                input: {
+                  sx: {
+                    fontFamily: 'monospace',
+                    fontWeight: 750,
+                    letterSpacing: 1.5,
+                    borderRadius: 2.5,
+                  },
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <VpnKeyIcon fontSize="small" sx={{ color: 'text.secondary' }} />
+                    </InputAdornment>
+                  ),
+                },
               }}
               InputProps={{
                 sx: {
@@ -413,6 +435,16 @@ const Login = () => {
                     setEmail(e.target.value);
                     if (loginError) setLoginError('');
                   }}
+                  slotProps={{
+                    input: {
+                      sx: { borderRadius: 2.5 },
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <EmailIcon fontSize="small" sx={{ color: 'text.secondary' }} />
+                        </InputAdornment>
+                      ),
+                    },
+                  }}
                   InputProps={{
                     sx: { borderRadius: 2.5 },
                     startAdornment: (
@@ -432,6 +464,28 @@ const Login = () => {
                   onChange={(e) => {
                     setPassword(e.target.value);
                     if (loginError) setLoginError('');
+                  }}
+                  slotProps={{
+                    input: {
+                      sx: { borderRadius: 2.5 },
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <LockIcon fontSize="small" sx={{ color: 'text.secondary' }} />
+                        </InputAdornment>
+                      ),
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <IconButton
+                            size="small"
+                            onClick={() => setShowPassword(!showPassword)}
+                            edge="end"
+                            sx={{ color: 'text.secondary' }}
+                          >
+                            {showPassword ? <VisibilityOff fontSize="small" /> : <Visibility fontSize="small" />}
+                          </IconButton>
+                        </InputAdornment>
+                      ),
+                    },
                   }}
                   InputProps={{
                     sx: { borderRadius: 2.5 },
@@ -454,6 +508,47 @@ const Login = () => {
                     ),
                   }}
                 />
+
+                {/* Forgot Password link */}
+                <Box sx={{ textAlign: 'right', mt: -0.75 }}>
+                  <Link
+                    component={RouterLink}
+                    to="/forgot-password"
+                    sx={{
+                      color: isDark ? '#a78bfa' : '#7c3aed',
+                      fontWeight: 600,
+                      fontSize: '0.8rem',
+                      textDecoration: 'none',
+                      '&:hover': { textDecoration: 'underline' },
+                    }}
+                  >
+                    Forgot Password?
+                  </Link>
+                </Box>
+
+                {/* Unverified email prompt */}
+                {unverifiedEmail && (
+                  <Box
+                    sx={{
+                      p: 1.5,
+                      borderRadius: 2,
+                      bgcolor: isDark ? alpha(theme.palette.warning.main, 0.12) : alpha(theme.palette.warning.main, 0.08),
+                      border: `1px solid ${alpha(theme.palette.warning.main, 0.4)}`,
+                    }}
+                  >
+                    <Typography variant="body2" sx={{ color: 'warning.main', fontSize: '0.82rem' }}>
+                      Your email is not verified.{' '}
+                      <Link
+                        component={RouterLink}
+                        to="/verify-email"
+                        state={{ email: unverifiedEmail }}
+                        sx={{ color: 'warning.main', fontWeight: 700, '&:hover': { textDecoration: 'underline' } }}
+                      >
+                        Verify now
+                      </Link>
+                    </Typography>
+                  </Box>
+                )}
 
                 <Button
                   type="submit"

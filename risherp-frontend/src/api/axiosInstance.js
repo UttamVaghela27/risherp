@@ -73,9 +73,13 @@ axiosInstance.interceptors.response.use(
           // Unauthorized — session expired or invalid token
           toast.error(data?.message || 'Session expired. Please login again.');
           localStorage.removeItem('token');
-          // Redirect to login (will be handled properly in Phase 3)
-          if (window.location.pathname !== '/login' && window.location.pathname !== '/register') {
-            window.location.href = '/login';
+          // Redirect to login (avoid redirect loops for auth pages)
+          {
+            const authPages = ['/login', '/register', '/verify-email', '/forgot-password', '/reset-password'];
+            const onAuthPage = authPages.some((p) => window.location.pathname.startsWith(p));
+            if (!onAuthPage) {
+              window.location.href = '/login';
+            }
           }
           break;
 

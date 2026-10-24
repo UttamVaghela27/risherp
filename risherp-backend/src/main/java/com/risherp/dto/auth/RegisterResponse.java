@@ -17,4 +17,8 @@ public class RegisterResponse {
     private String email;
     private String securityCode;
     private String instruction;
+
+    /** True when the user must verify their email before they can log in. */
+    @Builder.Default
+    private boolean needsEmailVerification = true;
 }

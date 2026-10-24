@@ -109,11 +109,14 @@ const Register = () => {
     }
   };
 
-  const handleProceedToLogin = () => {
+  const handleProceedToVerifyEmail = () => {
     setShowCodeModal(false);
-    // Pre-fill security code on login screen via query parameter or state
-    navigate('/login', {
-      state: { prefillCode: registrationResult?.securityCode },
+    // Redirect to email verification page, carrying the email and security code
+    navigate('/verify-email', {
+      state: {
+        email: registrationResult?.email,
+        prefillCode: registrationResult?.securityCode,
+      },
     });
   };
 
@@ -454,7 +457,7 @@ const Register = () => {
       <SecurityCodeModal
         open={showCodeModal}
         data={registrationResult}
-        onProceed={handleProceedToLogin}
+        onProceed={handleProceedToVerifyEmail}
       />
     </Box>
   );

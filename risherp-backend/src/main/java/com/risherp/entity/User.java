@@ -60,6 +60,15 @@ public class User {
     @Column(nullable = false, length = 20)
     private String status = "ACTIVE";
 
+    /**
+     * Whether the user's email has been verified via OTP.
+     * Set to true after successful email OTP verification.
+     * Login is blocked until this is true.
+     */
+    @Builder.Default
+    @Column(name = "email_verified", nullable = false)
+    private boolean emailVerified = false;
+
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
